@@ -3,7 +3,7 @@
 import csv
 from pathlib import Path
 
-from src.exporter import export_to_csv
+from src.exporter import export_to_csv, export_to_html
 from src.models import HotelPriceResult
 
 
@@ -91,3 +91,29 @@ def test_export_to_csv_append_merges_and_resorts(tmp_path: Path) -> None:
         "Trip.com [TW站 | IP:TW]",
     ]
     assert [row["price"] for row in rows] == ["3420", "3654"]
+
+
+def test_export_to_html_shows_no_plan_and_line_chart(tmp_path: Path) -> None:
+    csv_file = tmp_path / "history.csv"
+    html_file = tmp_path / "index.html"
+
+    results = [
+        HotelPriceResult(
+            hotel_name="沖繩餘家弗飯店",
+            platform="Trip.com [TW站 | IP:US]",
+            check_in="2027-01-26",
+            check_out="2027-01-27",
+            price=3654,
+            room_type="豪華雙床房",
+            scraped_at="2026-11-17T20:05:00+08:00",
+        )
+    ]
+    export_to_csv(results, csv_file)
+    export_to_html(csv_file, html_file)
+
+    content = html_file.read_text(encoding="utf-8")
+    assert "無此方案" in content
+    assert "尚無資料" not in content
+    assert '<canvas id="priceChart"></canvas>' in content
+    assert "CHART_DATA" in content
+    assert "3654" in content

@@ -2,6 +2,7 @@
 
 import csv
 import html
+import json
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Iterable
@@ -89,6 +90,52 @@ def export_to_csv(
     return output_path
 
 
+def _build_chart_payload(records: list[HotelPriceResult]) -> dict:
+    """整理供前端折線圖使用的時間序列資料（分批時間為 X 軸）。"""
+    valid = [r for r in records if r.price is not None and not r.error and r.scraped_at]
+    # 依抓取時間（精確到分鐘 YYYY-MM-DD HH:MM）作為時間標籤
+    labels = sorted({r.scraped_at[:16].replace("T", " ") for r in valid})
+    label_index = {lbl: idx for idx, lbl in enumerate(labels)}
+
+    hotels = sorted({r.hotel_name for r in valid})
+
+    # 1) 全部飯店最低價總覽
+    overview_datasets = []
+    for hotel in hotels:
+        series: list[float | None] = [None] * len(labels)
+        for r in valid:
+            if r.hotel_name != hotel or r.price is None:
+                continue
+            idx = label_index[r.scraped_at[:16].replace("T", " ")]
+            cur = series[idx]
+            series[idx] = r.price if cur is None else min(cur, r.price)
+        overview_datasets.append({"label": hotel, "data": series})
+
+    # 2) 各飯店細分分站與早餐方案
+    by_hotel: dict[str, list[dict]] = {}
+    for hotel in hotels:
+        hotel_recs = [r for r in valid if r.hotel_name == hotel]
+        platforms = sorted({r.platform for r in hotel_recs})
+        datasets = []
+        for plat in platforms:
+            series = [None] * len(labels)
+            for r in hotel_recs:
+                if r.platform != plat or r.price is None:
+                    continue
+                idx = label_index[r.scraped_at[:16].replace("T", " ")]
+                cur = series[idx]
+                series[idx] = r.price if cur is None else min(cur, r.price)
+            datasets.append({"label": plat, "data": series})
+        by_hotel[hotel] = datasets
+
+    return {
+        "labels": [lbl[5:] for lbl in labels],  # 顯示 MM-DD HH:MM
+        "hotels": hotels,
+        "overview": overview_datasets,
+        "byHotel": by_hotel,
+    }
+
+
 def export_to_html(
     csv_path: Path,
     html_path: Path,
@@ -112,7 +159,7 @@ def export_to_html(
 
         def _format_plan_box(title: str, plan_items: list[HotelPriceResult]) -> str:
             if not plan_items:
-                return f'<div class="plan-box"><div class="plan-title">{html.escape(title)}</div><div class="price-na">尚無資料</div></div>'
+                return f'<div class="plan-box"><div class="plan-title">{html.escape(title)}</div><div class="price-na">無此方案</div></div>'
             lowest = min(plan_items, key=lambda x: x.price or float("inf"))
             latest = max(plan_items, key=lambda x: x.scraped_at)
             diff = (latest.price or 0) - (lowest.price or 0)
@@ -143,21 +190,8 @@ def export_to_html(
             f"</section>"
         )
 
-    # 歷史紀錄表格（依抓取時間由新到舊排序，最多顯示最近 60 筆）
-    recent_rows = sorted(records, key=lambda r: r.scraped_at, reverse=True)[:60]
-    table_rows_html = []
-    for r in recent_rows:
-        price_str = "失敗" if r.price is None else f"{r.currency} {r.price:,.0f}"
-        time_short = r.scraped_at[:16].replace("T", " ")
-        table_rows_html.append(
-            f"<tr>"
-            f"<td>{html.escape(time_short)}</td>"
-            f"<td>{html.escape(r.hotel_name)}<br><small>{html.escape(r.check_in)}</small></td>"
-            f"<td>{html.escape(r.platform)}</td>"
-            f'<td class="td-price">{html.escape(price_str)}</td>'
-            f"<td>{html.escape(r.room_type)}</td>"
-            f"</tr>"
-        )
+    chart_payload = _build_chart_payload(records)
+    chart_json = json.dumps(chart_payload, ensure_ascii=False).replace("</", "<\\/")
 
     updated_str = (
         max((r.scraped_at for r in records), default="")[:19].replace("T", " ")
@@ -278,29 +312,46 @@ def export_to_html(
       text-decoration: none;
       font-weight: 600;
     }}
+    .price-na {{
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--muted);
+      margin-top: 8px;
+    }}
     .history-wrap {{
       background: var(--card);
       border-radius: 14px;
-      padding: 14px;
+      padding: 16px;
       border: 1px solid var(--border);
-      overflow-x: auto;
     }}
-    table {{
+    .chart-tabs {{
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 12px;
+    }}
+    .chart-tab {{
+      border: 1px solid var(--border);
+      background: #f8fafc;
+      color: var(--muted);
+      border-radius: 999px;
+      padding: 5px 12px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+    }}
+    .chart-tab.active {{
+      background: var(--primary);
+      color: #ffffff;
+      border-color: var(--primary);
+    }}
+    .chart-container {{
+      position: relative;
+      height: 300px;
       width: 100%;
-      border-collapse: collapse;
-      font-size: 0.8rem;
-    }}
-    th, td {{
-      text-align: left;
-      padding: 8px 6px;
-      border-bottom: 1px solid var(--border);
-    }}
-    .td-price {{
-      font-weight: 700;
-      color: var(--primary);
-      white-space: nowrap;
     }}
   </style>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
 </head>
 <body>
   <header>
@@ -309,16 +360,79 @@ def export_to_html(
   </header>
   {"".join(cards_html)}
   <div class="history-wrap">
-    <h2 style="font-size:1rem;margin:0 0 10px 0;">📊 歷史抓價紀錄（最近 60 筆）</h2>
-    <table>
-      <thead>
-        <tr><th>時間</th><th>飯店 / 入住日</th><th>分站與方案</th><th>含稅價</th><th>房型</th></tr>
-      </thead>
-      <tbody>
-        {"".join(table_rows_html)}
-      </tbody>
-    </table>
+    <h2 style="font-size:1rem;margin:0 0 10px 0;">📈 房價趨勢折線圖</h2>
+    <div id="chart-tabs" class="chart-tabs"></div>
+    <div class="chart-container">
+      <canvas id="priceChart"></canvas>
+    </div>
   </div>
+  <script>
+    const CHART_DATA = {chart_json};
+    const PALETTE = ["#2563eb", "#059669", "#d97706", "#dc2626", "#7c3aed", "#0891b2"];
+
+    function buildDatasets(rawSeries) {{
+      return rawSeries.map((item, idx) => {{
+        const color = PALETTE[idx % PALETTE.length];
+        return {{
+          label: item.label,
+          data: item.data,
+          borderColor: color,
+          backgroundColor: color + "22",
+          borderWidth: 2.5,
+          pointRadius: 4,
+          pointHoverRadius: 6,
+          tension: 0.25,
+          spanGaps: true
+        }};
+      }});
+    }}
+
+    const ctx = document.getElementById("priceChart").getContext("2d");
+    const chart = new Chart(ctx, {{
+      type: "line",
+      data: {{
+        labels: CHART_DATA.labels,
+        datasets: buildDatasets(CHART_DATA.overview)
+      }},
+      options: {{
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: {{ mode: "index", intersect: false }},
+        plugins: {{
+          legend: {{ position: "bottom", labels: {{ boxWidth: 12, font: {{ size: 11 }} }} }},
+          tooltip: {{
+            callbacks: {{
+              label: (c) => c.parsed.y == null ? `${{c.dataset.label}}: 無資料` : `${{c.dataset.label}}: TWD ${{c.parsed.y.toLocaleString()}}`
+            }}
+          }}
+        }},
+        scales: {{
+          y: {{
+            ticks: {{ callback: (v) => "NT$" + Number(v).toLocaleString() }}
+          }}
+        }}
+      }}
+    }});
+
+    const tabsEl = document.getElementById("chart-tabs");
+    const tabOptions = [{{ key: "__all__", label: "全部飯店（最低價）" }}].concat(
+      CHART_DATA.hotels.map((h) => ({{ key: h, label: h }}))
+    );
+    tabOptions.forEach((opt, i) => {{
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "chart-tab" + (i === 0 ? " active" : "");
+      btn.textContent = opt.label;
+      btn.addEventListener("click", () => {{
+        tabsEl.querySelectorAll(".chart-tab").forEach((b) => b.classList.remove("active"));
+        btn.classList.add("active");
+        const raw = opt.key === "__all__" ? CHART_DATA.overview : (CHART_DATA.byHotel[opt.key] || []);
+        chart.data.datasets = buildDatasets(raw);
+        chart.update();
+      }});
+      tabsEl.appendChild(btn);
+    }});
+  </script>
 </body>
 </html>
 """
