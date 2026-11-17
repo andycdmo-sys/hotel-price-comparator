@@ -105,8 +105,19 @@ def test_export_to_html_shows_no_plan_and_line_chart(tmp_path: Path) -> None:
             check_out="2027-01-27",
             price=3654,
             room_type="豪華雙床房",
+            url="https://tw.trip.com/hotels/list?optionId=704038&locale=zh-TW",
             scraped_at="2026-11-17T20:05:00+08:00",
-        )
+        ),
+        HotelPriceResult(
+            hotel_name="沖繩餘家弗飯店",
+            platform="Trip.com [JP站 | IP:US]",
+            check_in="2027-01-26",
+            check_out="2027-01-27",
+            price=3500,
+            room_type="デラックスツイン",
+            url="https://jp.trip.com/hotels/list?optionId=704038&locale=ja-JP",
+            scraped_at="2026-11-17T20:05:10+08:00",
+        ),
     ]
     export_to_csv(results, csv_file)
     export_to_html(csv_file, html_file)
@@ -117,3 +128,5 @@ def test_export_to_html_shows_no_plan_and_line_chart(tmp_path: Path) -> None:
     assert '<canvas id="priceChart"></canvas>' in content
     assert "CHART_DATA" in content
     assert "3654" in content
+    assert "https://tw.trip.com/hotels/list?optionId=704038&amp;locale=zh-TW" in content
+    assert "jp.trip.com" not in content

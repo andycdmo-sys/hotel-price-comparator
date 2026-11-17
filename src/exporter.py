@@ -162,13 +162,17 @@ def export_to_html(
                 return f'<div class="plan-box"><div class="plan-title">{html.escape(title)}</div><div class="price-na">無此方案</div></div>'
             lowest = min(plan_items, key=lambda x: x.price or float("inf"))
             latest = max(plan_items, key=lambda x: x.scraped_at)
+            tw_items = [x for x in plan_items if "TW站" in x.platform and x.url]
+            target_url = max(tw_items, key=lambda x: x.scraped_at).url if tw_items else latest.url
+            if target_url:
+                target_url = target_url.replace("://jp.trip.com/", "://tw.trip.com/").replace("locale=ja-JP", "locale=zh-TW")
             diff = (latest.price or 0) - (lowest.price or 0)
             badge = (
                 '<span class="badge low">★ 目前即歷史最低</span>'
                 if diff <= 0
                 else f'<span class="badge">比最低高 TWD {diff:,.0f}</span>'
             )
-            link = f'<a class="book-btn" href="{html.escape(latest.url)}" target="_blank" rel="noopener">查看 Trip.com</a>' if latest.url else ""
+            link = f'<a class="book-btn" href="{html.escape(target_url)}" target="_blank" rel="noopener">查看 Trip.com</a>' if target_url else ""
             return (
                 f'<div class="plan-box">'
                 f'<div class="plan-title">{html.escape(title)}</div>'
