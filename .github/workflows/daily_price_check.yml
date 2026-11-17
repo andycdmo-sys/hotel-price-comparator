@@ -1,0 +1,47 @@
+name: 沖繩飯店每日兩次比價 (08:00 & 20:00 TW)
+
+on:
+  schedule:
+    # UTC 00:00 = 台灣時間 08:00；UTC 12:00 = 台灣時間 20:00
+    - cron: "0 0,12 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  scrape-prices:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: 檢出專案原始碼
+        uses: actions/checkout@v4
+
+      - name: 設定 Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: 安裝 Python 相依套件
+        run: pip install -r requirements.txt
+
+      - name: 安裝 Playwright Chromium 瀏覽器
+        run: playwright install --with-deps chromium
+
+      - name: 執行 4 間沖繩飯店比價並更新 CSV 與手機版網頁
+        env:
+          TZ: Asia/Taipei
+        run: |
+          python main.py --watchlist --sites tw,jp --append --output output/okinawa_2027_history.csv
+
+      - name: 提交並推送最新比價結果與網頁看板
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add output/okinawa_2027_history.csv docs/index.html
+          if ! git diff --cached --quiet; then
+            git commit -m "chore: update Okinawa hotel prices ($(date +'%Y-%m-%d %H:%M'))"
+            git push
+          fi

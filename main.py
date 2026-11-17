@@ -1,0 +1,206 @@
+"""飯店比價 CLI 主程式。"""
+
+import argparse
+import asyncio
+from dataclasses import replace
+from datetime import datetime
+from pathlib import Path
+
+from src.browser import open_incognito_context
+from src.config import load_config
+from src.exporter import export_to_csv, export_to_html
+from src.ip_checker import detect_current_ip_info
+from src.models import HotelPriceResult
+from src.scrapers import DemoHotelScraper, TripComScraper, run_scrapers
+
+PROJECT_ROOT = Path(__file__).resolve().parent
+
+OKINAWA_WATCHLIST: list[tuple[str, str, str, str]] = [
+    ("沖繩餘家弗飯店", "704038", "2027-01-26", "2027-01-27"),
+    ("REF沖繩體育館by Vessel酒店集團", "106709440", "2027-01-27", "2027-01-28"),
+    ("B/C 那霸飯店", "120097372", "2027-01-28", "2027-01-29"),
+    ("艾斯汀納特飯店", "2845951", "2027-01-29", "2027-01-30"),
+]
+
+
+def build_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(description="Python + Playwright 飯店比價工具")
+    parser.add_argument(
+        "--mode",
+        choices=["trip", "demo"],
+        default="trip",
+        help="執行模式：trip（真實抓取 Trip.com）或 demo（本機測試頁）",
+    )
+    parser.add_argument(
+        "--watchlist",
+        action="store_true",
+        help="一次批次抓取預設的 4 間沖繩飯店追蹤清單 (2027-01-26 ~ 2027-01-30)",
+    )
+    parser.add_argument("--hotel", default="沖繩餘家弗飯店", help="欲查詢的飯店名稱")
+    parser.add_argument("--hotel-id", default="704038", help="Trip.com 飯店 optionId")
+    parser.add_argument("--check-in", default="2027-01-26", help="入住日期 (YYYY-MM-DD)")
+    parser.add_argument("--check-out", default="2027-01-27", help="退房日期 (YYYY-MM-DD)")
+    parser.add_argument("--adults", type=int, default=2, help="成人人數")
+    parser.add_argument("--children", type=int, default=1, help="兒童人數")
+    parser.add_argument("--child-ages", default="11", help="兒童年齡（多位以逗號分隔）")
+    parser.add_argument(
+        "--sites",
+        default="tw,jp",
+        help="要比較的 Trip.com 分站代碼，以逗號分隔（支援 tw,jp,hk,sg,us）",
+    )
+    parser.add_argument(
+        "--meal-plan",
+        choices=["both", "any", "breakfast"],
+        default="both",
+        help="早餐方案：both（預設同時抓不限早餐與含早餐）、breakfast（只抓含早餐）、any（只抓最低價不限早餐）",
+    )
+    meal_group = parser.add_mutually_exclusive_group()
+    meal_group.add_argument(
+        "--breakfast",
+        action="store_true",
+        help="捷徑：只抓「含早餐」方案（等同 --meal-plan breakfast）",
+    )
+    meal_group.add_argument(
+        "--no-breakfast",
+        action="store_true",
+        help="捷徑：只抓「不限早餐/最低價」方案（等同 --meal-plan any）",
+    )
+    parser.add_argument(
+        "--append",
+        action="store_true",
+        help="將本次比價結果附加並依價格合併排序至既有 CSV",
+    )
+    parser.add_argument(
+        "--output",
+        default="",
+        help="輸出 CSV 路徑（預設存放於 output/hotel_prices_<timestamp>.csv）",
+    )
+    headless_group = parser.add_mutually_exclusive_group()
+    headless_group.add_argument(
+        "--headless",
+        dest="headless",
+        action="store_true",
+        default=None,
+        help="強制以無頭模式執行瀏覽器",
+    )
+    headless_group.add_argument(
+        "--no-headless",
+        dest="headless",
+        action="store_false",
+        help="顯示瀏覽器視窗以利除錯",
+    )
+    return parser
+
+
+def _resolve_breakfast_options(args: argparse.Namespace) -> list[bool]:
+    meal_plan = args.meal_plan
+    if args.breakfast:
+        meal_plan = "breakfast"
+    elif args.no_breakfast:
+        meal_plan = "any"
+
+    if meal_plan == "both":
+        return [False, True]
+    if meal_plan == "breakfast":
+        return [True]
+    return [False]
+
+
+async def run_cli(args: argparse.Namespace) -> Path:
+    env_file = PROJECT_ROOT / ".env"
+    config = load_config(env_path=env_file if env_file.exists() else None)
+    if args.headless is not None:
+        config = replace(config, headless=args.headless)
+
+    if args.watchlist:
+        targets = OKINAWA_WATCHLIST
+    else:
+        targets = [(args.hotel, args.hotel_id, args.check_in, args.check_out)]
+
+    all_results: list[HotelPriceResult] = []
+
+    if args.mode == "demo":
+        scrapers = [
+            DemoHotelScraper("DemoBooking", sample_price=4850, room_type="豪華雙人房", currency=config.default_currency),
+            DemoHotelScraper("DemoAgoda", sample_price=4520, room_type="標準雙人房", currency=config.default_currency),
+            DemoHotelScraper("DemoHotels", sample_price=5100, room_type="尊榮雙人房", currency=config.default_currency),
+        ]
+        async with open_incognito_context(config) as context:
+            for hotel_name, _, check_in, check_out in targets:
+                batch = await run_scrapers(
+                    scrapers=scrapers,
+                    context=context,
+                    hotel_name=hotel_name,
+                    check_in=check_in,
+                    check_out=check_out,
+                    currency=config.default_currency,
+                )
+                all_results.extend(batch)
+    else:
+        ip_info = detect_current_ip_info()
+        print(f"目前對外 IP / 國家：{ip_info}")
+        site_codes = [s.strip() for s in args.sites.split(",") if s.strip()]
+        breakfast_options = _resolve_breakfast_options(args)
+
+        async with open_incognito_context(config) as context:
+            for hotel_name, hotel_id, check_in, check_out in targets:
+                scrapers = [
+                    TripComScraper(
+                        site_code=code,
+                        hotel_id=hotel_id,
+                        adults=args.adults,
+                        children=args.children,
+                        child_ages=args.child_ages,
+                        currency=config.default_currency,
+                        breakfast_only=bf_only,
+                        ip_info=ip_info,
+                    )
+                    for code in site_codes
+                    for bf_only in breakfast_options
+                ]
+                batch = await run_scrapers(
+                    scrapers=scrapers,
+                    context=context,
+                    hotel_name=hotel_name,
+                    check_in=check_in,
+                    check_out=check_out,
+                    currency=config.default_currency,
+                )
+                all_results.extend(batch)
+
+                print(
+                    f"比價完成：{hotel_name} ({check_in} ~ {check_out} | "
+                    f"{args.adults}大{args.children}小)"
+                )
+                for item in sorted(batch, key=lambda r: (r.price is None, r.price or 0)):
+                    if item.error:
+                        print(f"  - [{item.platform}] 查詢失敗：{item.error}")
+                    else:
+                        room_info = f" ({item.room_type})" if item.room_type else ""
+                        print(f"  - [{item.platform}] {item.currency} {item.price:,.0f}{room_info}")
+
+    if args.output:
+        out_candidate = Path(args.output)
+        output_path = out_candidate if out_candidate.is_absolute() else (PROJECT_ROOT / out_candidate)
+    else:
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        output_path = PROJECT_ROOT / "output" / f"hotel_prices_{timestamp}.csv"
+
+    exported_path = export_to_csv(all_results, output_path, append=args.append)
+    print(f"CSV 已匯出至：{exported_path}")
+
+    if args.watchlist:
+        html_path = export_to_html(exported_path, PROJECT_ROOT / "docs" / "index.html")
+        print(f"手機版網頁看板已更新至：{html_path}")
+
+    return exported_path
+
+
+def main() -> None:
+    parser = build_parser()
+    args = parser.parse_args()
+    asyncio.run(run_cli(args))
+
+
+if __name__ == "__main__":
+    main()

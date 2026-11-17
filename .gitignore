@@ -1,0 +1,15 @@
+# 環境變數（請勿提交至 Git）
+.env
+
+# Python 虛擬環境與快取
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+
+# 輸出與紀錄檔（保留沖繩追蹤歷史 CSV 供 GitHub Actions 自動更新）
+output/*.csv
+!output/okinawa_2027_history.csv
+logs/
