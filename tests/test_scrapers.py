@@ -3,6 +3,7 @@
 from typing import Any, Coroutine, TypeVar
 
 from src.models import HotelPriceResult
+from src.scrapers.agoda import AgodaScraper, extract_agoda_room_grid_price
 from src.scrapers.base import BaseHotelScraper, run_scrapers
 from src.scrapers.trip_com import TripComScraper
 
@@ -71,3 +72,66 @@ def test_trip_com_scraper_breakfast_url_and_platform_label() -> None:
     assert "listFilters=5~1*5*1" in url_bf
     assert "不限早餐" in scraper_any.platform_name
     assert "含早餐" in scraper_bf.platform_name
+
+
+def test_extract_agoda_room_grid_price_filters_fit_and_breakfast() -> None:
+    room_grid_data = {
+        "masterRooms": [
+            {
+                "name": "小型雙床間",
+                "rooms": [
+                    {
+                        "name": "小型雙床間",
+                        "isFit": False,
+                        "availability": 1,
+                        "isBreakfastIncluded": False,
+                        "inclusivePrice": {"display": 2714.98},
+                    }
+                ],
+            },
+            {
+                "name": "Deluxe Ocean",
+                "rooms": [
+                    {
+                        "name": "Deluxe Ocean",
+                        "isFit": True,
+                        "availability": 0,
+                        "isBreakfastIncluded": False,
+                        "inclusivePrice": {"display": 3100.0},
+                    },
+                    {
+                        "name": "Deluxe Ocean",
+                        "isFit": True,
+                        "availability": 1,
+                        "isBreakfastIncluded": False,
+                        "inclusivePrice": {"display": 3500.45},
+                    },
+                    {
+                        "name": "Deluxe Ocean",
+                        "isFit": True,
+                        "availability": 1,
+                        "isBreakfastIncluded": True,
+                        "inclusivePrice": {"display": 4380.37},
+                    },
+                ],
+            },
+        ]
+    }
+
+    price_any, room_any = extract_agoda_room_grid_price(room_grid_data, breakfast_only=False)
+    price_bf, room_bf = extract_agoda_room_grid_price(room_grid_data, breakfast_only=True)
+
+    assert price_any == 3500.0
+    assert room_any == "Deluxe Ocean"
+    assert price_bf == 4380.0
+    assert room_bf == "Deluxe Ocean"
+
+    scraper = AgodaScraper(
+        hotel_path="/zh-tw/hotel-yugaf-inn-okinawa/hotel/okinawa-main-island-jp.html",
+        breakfast_only=True,
+        ip_info="TW",
+    )
+    url = scraper.build_search_url("2027-01-26", "2027-01-27")
+    assert "checkIn=2027-01-26&los=1" in url
+    assert "adults=2&children=1&childages=11" in url
+    assert "Agoda [含早餐 | IP:TW]" == scraper.platform_name

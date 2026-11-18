@@ -235,3 +235,56 @@ def test_export_to_html_separates_breakfast_charts_and_target_line(tmp_path: Pat
     assert "🍴 含早餐方案" in content
     assert "borderDash: [6, 6]" in content
     assert "🎯 目標價" in content
+
+
+def test_export_to_html_renders_winner_and_collapses_extra_otas(tmp_path: Path) -> None:
+    csv_file = tmp_path / "history.csv"
+    html_file = tmp_path / "index.html"
+
+    records = [
+        HotelPriceResult(
+            hotel_name="沖繩餘家弗飯店",
+            platform="Trip.com [TW站 | 不限早餐 | IP:TW]",
+            check_in="2027-01-26",
+            check_out="2027-01-27",
+            price=3654,
+            url="https://tw.trip.com/hotels/list?optionId=704038",
+            scraped_at="2026-11-18T13:00:00+08:00",
+        ),
+        HotelPriceResult(
+            hotel_name="沖繩餘家弗飯店",
+            platform="Trip.com [JP站 | 不限早餐 | IP:TW]",
+            check_in="2027-01-26",
+            check_out="2027-01-27",
+            price=3773,
+            url="https://jp.trip.com/hotels/list?optionId=704038&locale=ja-JP",
+            scraped_at="2026-11-18T13:00:10+08:00",
+        ),
+        HotelPriceResult(
+            hotel_name="沖繩餘家弗飯店",
+            platform="Agoda [不限早餐 | IP:TW]",
+            check_in="2027-01-26",
+            check_out="2027-01-27",
+            price=3500,
+            url="https://www.agoda.com/zh-tw/hotel-yugaf-inn-okinawa/hotel/okinawa-main-island-jp.html",
+            scraped_at="2026-11-18T13:00:20+08:00",
+        ),
+        HotelPriceResult(
+            hotel_name="沖繩餘家弗飯店",
+            platform="Booking [不限早餐 | IP:TW]",
+            check_in="2027-01-26",
+            check_out="2027-01-27",
+            price=3900,
+            url="https://www.booking.com/hotel/jp/yugaf.html",
+            scraped_at="2026-11-18T13:00:30+08:00",
+        ),
+    ]
+
+    export_to_csv(records, csv_file)
+    export_to_html(csv_file, html_file)
+
+    content = html_file.read_text(encoding="utf-8")
+    assert "🏆 Agoda 最低" in content
+    assert 'data-current-price="3500"' in content
+    assert "展開其他 1 家報價" in content
+    assert "jp.trip.com" not in content

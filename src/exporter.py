@@ -100,6 +100,23 @@ def _normalize_series_label(platform: str) -> str:
     return re.sub(r"\s*\|\s*IP:[^\]]+", "", platform).strip()
 
 
+def _short_platform_label(normalized_platform: str) -> str:
+    """將平台標籤精簡為適合手機比價清單顯示的短名稱（例如 `Trip.com (TW站)`、`Agoda`）。"""
+    cleaned = re.sub(r"\s*\|\s*(?:不限早餐|含早餐)", "", normalized_platform).strip()
+    if cleaned.startswith("Trip.com [") and cleaned.endswith("]"):
+        inner = cleaned[len("Trip.com [") : -1].strip()
+        return f"Trip.com ({inner})"
+    if cleaned.startswith("Agoda [") and cleaned.endswith("]"):
+        return "Agoda"
+    return cleaned
+
+
+def _normalize_ota_url(url: str) -> str:
+    if not url:
+        return ""
+    return url.replace("://jp.trip.com/", "://tw.trip.com/").replace("locale=ja-JP", "locale=zh-TW")
+
+
 def _cluster_batch_labels(timestamps: list[str], gap_minutes: int = 10) -> tuple[list[str], dict[str, str]]:
     """將相隔在 `gap_minutes` 分鐘內的抓價時間合併為同一個批次標籤（MM-DD HH:MM）。"""
     parsed: list[tuple[datetime, str]] = []
@@ -220,34 +237,80 @@ def export_to_html(
         def _format_plan_box(title: str, plan_items: list[HotelPriceResult]) -> str:
             if not plan_items:
                 return f'<div class="plan-box"><div class="plan-title">{html.escape(title)}</div><div class="price-na">無此方案</div></div>'
+
+            # 依正規化平台名分組，各取最新一次紀錄並依價格由低到高排序
+            by_plat: dict[str, HotelPriceResult] = {}
+            for item in plan_items:
+                norm = _normalize_series_label(item.platform)
+                prev = by_plat.get(norm)
+                if prev is None or item.scraped_at >= prev.scraped_at:
+                    by_plat[norm] = item
+
+            latest_by_plat = sorted(
+                by_plat.items(),
+                key=lambda pair: (pair[1].price is None, pair[1].price or float("inf"), pair[0]),
+            )
+            winner_norm, winner = latest_by_plat[0]
+            winner_short = _short_platform_label(winner_norm)
             lowest = min(plan_items, key=lambda x: x.price or float("inf"))
-            latest = max(plan_items, key=lambda x: x.scraped_at)
-            tw_items = [x for x in plan_items if "TW站" in x.platform and x.url]
-            target_url = max(tw_items, key=lambda x: x.scraped_at).url if tw_items else latest.url
-            if target_url:
-                target_url = target_url.replace("://jp.trip.com/", "://tw.trip.com/").replace("locale=ja-JP", "locale=zh-TW")
-            diff = (latest.price or 0) - (lowest.price or 0)
+
+            diff = (winner.price or 0) - (lowest.price or 0)
             badge = (
                 '<span class="badge low">★ 目前即歷史最低</span>'
                 if diff <= 0
                 else f'<span class="badge">比最低高 TWD {diff:,.0f}</span>'
             )
-            link = f'<a class="book-btn" href="{html.escape(target_url)}" target="_blank" rel="noopener">查看 Trip.com</a>' if target_url else ""
+
+            def _render_ota_row(norm_name: str, rec: HotelPriceResult, is_winner: bool) -> str:
+                short_name = _short_platform_label(norm_name)
+                url_clean = _normalize_ota_url(rec.url)
+                go_link = (
+                    f'<a class="ota-link" href="{html.escape(url_clean)}" target="_blank" rel="noopener">前往</a>'
+                    if url_clean
+                    else ""
+                )
+                row_cls = "ota-row is-best" if is_winner else "ota-row"
+                return (
+                    f'<div class="{row_cls}">'
+                    f'<span class="ota-name">{html.escape(short_name)}</span>'
+                    f'<span class="ota-price">{html.escape(rec.currency)} {rec.price:,.0f}</span>'
+                    f"{go_link}"
+                    f"</div>"
+                )
+
+            primary_rows = [
+                _render_ota_row(norm_n, rec, idx == 0)
+                for idx, (norm_n, rec) in enumerate(latest_by_plat[:3])
+            ]
+            extra_rows = [
+                _render_ota_row(norm_n, rec, False)
+                for norm_n, rec in latest_by_plat[3:]
+            ]
+            more_block = ""
+            if extra_rows:
+                more_block = (
+                    f'<details class="ota-more">'
+                    f'<summary>展開其他 {len(extra_rows)} 家報價</summary>'
+                    f'{"".join(extra_rows)}'
+                    f"</details>"
+                )
+
             target_key = f"{hotel_name}||{title}"
             default_target = targets.get((hotel_name, title))
             target_val_attr = str(default_target) if default_target is not None else ""
             return (
-                f'<div class="plan-box" data-target-key="{html.escape(target_key)}" data-current-price="{latest.price:.0f}">'
+                f'<div class="plan-box" data-target-key="{html.escape(target_key)}" data-current-price="{winner.price:.0f}">'
                 f'<div class="plan-title">{html.escape(title)}</div>'
-                f'<div class="price-main">{html.escape(latest.currency)} {latest.price:,.0f}</div>'
-                f'<div class="room-sub">{html.escape(latest.room_type or "標準房型")}</div>'
+                f'<div class="winner-row"><span class="winner-plat">🏆 {html.escape(winner_short)} 最低</span></div>'
+                f'<div class="price-main">{html.escape(winner.currency)} {winner.price:,.0f}</div>'
+                f'<div class="room-sub">{html.escape(winner.room_type or "標準房型")}</div>'
                 f'<div class="meta-sub">歷史最低：{html.escape(lowest.currency)} {lowest.price:,.0f} {badge}</div>'
+                f'<div class="ota-list">{"".join(primary_rows)}{more_block}</div>'
                 f'<div class="target-row">'
                 f'<span class="target-label">🎯 目標價</span>'
                 f'<input type="number" class="target-input" min="0" step="1" placeholder="未設定" value="{html.escape(target_val_attr)}">'
                 f'<span class="target-status"></span>'
                 f'</div>'
-                f"{link}"
                 f"</div>"
             )
 
@@ -346,6 +409,66 @@ def export_to_html(
     .plan-box.target-hit {{
       background: #ecfdf5;
       border-color: #10b981;
+    }}
+    .winner-row {{
+      margin: 4px 0 2px 0;
+    }}
+    .winner-plat {{
+      display: inline-block;
+      background: #eff6ff;
+      color: #1d4ed8;
+      border: 1px solid #bfdbfe;
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 999px;
+    }}
+    .ota-list {{
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px dashed var(--border);
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }}
+    .ota-row {{
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      font-size: 0.75rem;
+      color: #475569;
+    }}
+    .ota-row.is-best {{
+      color: var(--text);
+      font-weight: 700;
+    }}
+    .ota-name {{
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }}
+    .ota-price {{
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+    }}
+    .ota-link {{
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 600;
+      white-space: nowrap;
+    }}
+    .ota-more {{
+      margin-top: 2px;
+      font-size: 0.74rem;
+      color: var(--muted);
+    }}
+    .ota-more summary {{
+      cursor: pointer;
+      color: var(--primary);
+      font-weight: 600;
+      user-select: none;
     }}
     .target-row {{
       display: flex;
