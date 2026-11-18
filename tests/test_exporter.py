@@ -409,3 +409,37 @@ def test_manage_panel_dropdowns_single_url_and_no_overlap(tmp_path: Path) -> Non
     assert "➕ 新增房價網" in content
     assert "width: 100%;" in content
     assert "hotel-row-line3" in content
+
+
+def test_save_profile_from_json_str_and_hotel_id_url(tmp_path: Path) -> None:
+    import json
+    from src.profiles import load_profile, save_profile_from_json_str
+
+    raw_json = json.dumps(
+        {
+            "user_id": "Guest2027",
+            "adults": 2,
+            "children": 1,
+            "child_ages": "9",
+            "hotels": [
+                {
+                    "name": "沖繩餘家弗飯店",
+                    "check_in": "2027-01-26",
+                    "check_out": "2027-01-27",
+                    "urls": [
+                        "https://tw.trip.com/hotels/detail/?hotelId=704038&checkIn=2027-01-26",
+                        "https://www.agoda.com/zh-tw/hotel-yugaf-inn-okinawa/hotel/okinawa-main-island-jp.html",
+                    ],
+                }
+            ],
+        },
+        ensure_ascii=False,
+    )
+
+    saved_path = save_profile_from_json_str(raw_json, tmp_path, expected_user_id="Guest2027")
+    assert saved_path == tmp_path / "Guest2027.json"
+
+    loaded = load_profile(saved_path)
+    assert loaded.user_id == "Guest2027"
+    assert loaded.hotels[0].trip_hotel_id == "704038"
+    assert loaded.hotels[0].agoda_path == "/zh-tw/hotel-yugaf-inn-okinawa/hotel/okinawa-main-island-jp.html"

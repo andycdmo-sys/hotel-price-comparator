@@ -4,10 +4,12 @@ import re
 from typing import Optional
 from urllib.parse import quote
 
-from playwright.async_api import BrowserContext
+from playwright.async_api import BrowserContext, Response
 
 from src.models import HotelPriceResult
 from src.scrapers.base import BaseHotelScraper
+
+_RESOLVED_HOTEL_CACHE: dict[str, str] = {}
 
 SITE_MAP: dict[str, tuple[str, str]] = {
     "tw": ("tw.trip.com", "zh-TW"),
@@ -263,6 +265,49 @@ class TripComScraper(BaseHotelScraper):
         url += f"&curr={self.currency}&locale={self.locale}"
         return url
 
+    async def _lookup_hotel_id(self, context: BrowserContext, hotel_name: str) -> str:
+        cached = _RESOLVED_HOTEL_CACHE.get(hotel_name)
+        if cached:
+            return cached
+
+        page = await context.new_page()
+        found: dict[str, str] = {}
+
+        async def _on_resp(resp: Response) -> None:
+            if "getHotelKeywords" not in resp.url or resp.status != 200:
+                return
+            try:
+                data = await resp.json()
+                kw_list = data.get("data", {}).get("mainKeywordList", {}).get("keywords", [])
+                if kw_list:
+                    first = kw_list[0].get("keyword", {})
+                    hotel_id = str(
+                        (first.get("hotelInfo") or {}).get("hotelId")
+                        or (first.get("keywordContentInfo") or {}).get("keywordId")
+                        or ""
+                    ).strip()
+                    if hotel_id:
+                        found["hotel_id"] = hotel_id
+            except Exception:  # noqa: BLE001
+                pass
+
+        page.on("response", _on_resp)
+        try:
+            await page.goto("https://tw.trip.com/hotels/?locale=zh-TW&curr=TWD", wait_until="domcontentloaded")
+            await page.wait_for_timeout(2000)
+            search_input = page.locator("input[placeholder='打算去哪玩？'], input[type='text']").first
+            if await search_input.count() > 0:
+                await search_input.click()
+                await search_input.fill(hotel_name)
+                await page.wait_for_timeout(2500)
+        finally:
+            await page.close()
+
+        resolved = found.get("hotel_id", "")
+        if resolved:
+            _RESOLVED_HOTEL_CACHE[hotel_name] = resolved
+        return resolved
+
     async def fetch_price(
         self,
         context: BrowserContext,
@@ -270,6 +315,16 @@ class TripComScraper(BaseHotelScraper):
         check_in: str,
         check_out: str,
     ) -> HotelPriceResult:
+        if not self.hotel_id:
+            self.hotel_id = await self._lookup_hotel_id(context, hotel_name)
+            if not self.hotel_id:
+                raise RuntimeError(f"無法在 Trip.com 自動搜尋到 {hotel_name} 的飯店 ID，請貼上飯店網址")
+            # 非預設沖繩測試飯店時清除預設名護市地區參數，避免錯配
+            if self.hotel_id not in {"704038", "106709440", "120097372", "2845951"}:
+                self.city_id = ""
+                self.province_id = ""
+                self.country_id = ""
+
         target_url = self.build_search_url(hotel_name=hotel_name, check_in=check_in, check_out=check_out)
         page = await context.new_page()
         try:

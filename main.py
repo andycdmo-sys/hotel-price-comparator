@@ -143,7 +143,7 @@ async def _run_profile_batch(
     profile_results: list[HotelPriceResult] = []
     for hotel in profile.hotels:
         scrapers = []
-        if "trip" in profile.platforms and hotel.trip_hotel_id:
+        if "trip" in profile.platforms:
             scrapers.extend(
                 TripComScraper(
                     site_code=code,

@@ -1143,8 +1143,8 @@ def export_to_html(
       const tokens = String(rawText || "").split(/[\\s,]+/).map((t) => t.trim()).filter(Boolean);
       tokens.forEach((tok) => {{
         const low = tok.toLowerCase();
-        if (low.includes("trip.com") || /^\\d+$/.test(tok) || /optionid=\\d+|hotel-detail-\\d+/i.test(tok)) {{
-          const m = tok.match(/(?:optionId=|hotel-detail-)(\\d+)/i);
+        if (low.includes("trip.com") || /^\\d+$/.test(tok) || /(?:optionid|hotelid)=\\d+|hotel-detail-\\d+/i.test(tok)) {{
+          const m = tok.match(/(?:optionId=|hotelId=|hotel-detail-)(\\d+)/i);
           trip_hotel_id = m ? m[1] : (/^\\d+$/.test(tok) ? tok : trip_hotel_id);
           if (trip_hotel_id && !detectedLabels.includes("Trip.com")) {{
             detectedLabels.push("Trip.com");
@@ -1395,21 +1395,23 @@ def export_to_html(
       const statusEl = document.getElementById("manage-status");
       const profileObj = collectProfileFromForm();
       localStorage.setItem(`profile_draft:${{activeUserId}}`, JSON.stringify(profileObj));
-      if (CLOUD_SYNC_URL) {{
-        statusEl.textContent = "正在同步至雲端排程...";
+      const syncUrl = localStorage.getItem("hpc_cloud_sync_url") || CLOUD_SYNC_URL;
+      if (syncUrl) {{
+        statusEl.textContent = "正在上傳設定至 GitHub 並啟動雲端抓價...";
         try {{
-          const resp = await fetch(CLOUD_SYNC_URL, {{
+          const resp = await fetch(syncUrl, {{
             method: "POST",
-            headers: {{ "Content-Type": "application/json" }},
+            headers: {{ "Content-Type": "text/plain;charset=utf-8" }},
             body: JSON.stringify(profileObj),
           }});
-          if (!resp.ok) throw new Error("SYNC_FAIL");
-          statusEl.textContent = "✅ 已儲存並觸發雲端抓價，請約 1～2 分鐘後重新整理網頁查看！";
+          const resData = await resp.json().catch(() => ({{}}));
+          if (!resp.ok || resData.ok === false) throw new Error(resData.error || "SYNC_FAIL");
+          statusEl.textContent = "✅ 已儲存至 GitHub 並啟動雲端抓價！請約 1～2 分鐘後重新整理網頁查看價格。";
         }} catch (_e) {{
           statusEl.textContent = "⚠️ 已暫存於本機瀏覽器，但雲端同步失敗（請改用複製 JSON 提交）。";
         }}
       }} else {{
-        statusEl.textContent = "✅ 已暫存於本機瀏覽器！（尚未設定雲端轉發網址，如需加入每日排程請點「📋 複製設定檔 JSON」傳給管理員，或稍後串接免費 Google 轉發器即可一鍵同步。）";
+        statusEl.textContent = "✅ 已暫存於本機瀏覽器！（尚未設定雲端轉發網址，如需加入每日排程請點「📋 複製設定檔 JSON」傳給管理員，或填入免費 Google 轉發器即可一鍵同步。）";
       }}
     }});
 

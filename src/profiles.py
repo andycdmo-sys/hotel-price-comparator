@@ -16,7 +16,7 @@ def _extract_trip_hotel_id(raw_value: str) -> str:
         return ""
     if val.isdigit():
         return val
-    m = re.search(r"(?:optionId=|hotel-detail-)(\d+)", val)
+    m = re.search(r"(?:optionId=|hotelId=|hotel-detail-)(\d+)", val, re.IGNORECASE)
     return m.group(1) if m else val
 
 
@@ -42,7 +42,7 @@ def parse_hotel_urls(
     tokens = [tok.strip() for tok in re.split(r"[\s,]+", raw_url_field or "") if tok.strip()]
     for tok in tokens:
         low = tok.lower()
-        if "trip.com" in low or tok.isdigit() or "optionid=" in low or "hotel-detail-" in low:
+        if "trip.com" in low or tok.isdigit() or "optionid=" in low or "hotelid=" in low or "hotel-detail-" in low:
             extracted = _extract_trip_hotel_id(tok)
             if extracted:
                 resolved_trip = extracted
@@ -104,10 +104,9 @@ def _optional_int(val: Any) -> Optional[int]:
         return None
 
 
-def load_profile(path: Path) -> UserProfile:
-    """從 JSON 檔案載入單一使用者 Profile 並驗證代號格式。"""
-    raw = json.loads(path.read_text(encoding="utf-8"))
-    user_id = validate_user_id(str(raw.get("user_id") or path.stem))
+def parse_profile_dict(raw: dict[str, Any], fallback_user_id: str = "") -> UserProfile:
+    """從字典解析並正規化單一使用者 Profile。"""
+    user_id = validate_user_id(str(raw.get("user_id") or fallback_user_id))
 
     hotels: list[HotelWatchItem] = []
     for item in raw.get("hotels", []) or []:
@@ -152,6 +151,34 @@ def load_profile(path: Path) -> UserProfile:
         platforms=platforms or ["trip", "agoda"],
         hotels=hotels,
     )
+
+
+def load_profile(path: Path) -> UserProfile:
+    """從 JSON 檔案載入單一使用者 Profile 並驗證代號格式。"""
+    raw = json.loads(path.read_text(encoding="utf-8"))
+    return parse_profile_dict(raw, fallback_user_id=path.stem)
+
+
+def save_profile_from_json_str(
+    profile_json: str,
+    profiles_dir: Path,
+    expected_user_id: str = "",
+) -> Path:
+    """驗證來自網頁或工作流程的 JSON 字串，並安全寫入 `profiles/<user_id>.json`。"""
+    raw = json.loads(profile_json)
+    if not isinstance(raw, dict):
+        raise ValueError("Profile JSON 必須為 JSON 物件格式")
+    profile = parse_profile_dict(raw, fallback_user_id=expected_user_id)
+    if expected_user_id and profile.user_id != validate_user_id(expected_user_id):
+        raise ValueError(f"user_id 不一致：{profile.user_id!r} != {expected_user_id!r}")
+
+    profiles_dir.mkdir(parents=True, exist_ok=True)
+    target_path = profiles_dir / f"{profile.user_id}.json"
+    target_path.write_text(
+        json.dumps(profile.to_dict(), ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
+    return target_path
 
 
 def load_all_profiles(profiles_dir: Path) -> list[UserProfile]:
