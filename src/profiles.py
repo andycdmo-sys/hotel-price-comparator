@@ -77,7 +77,7 @@ class UserProfile:
     children: int = 0
     child_ages: str = ""
     currency: str = "TWD"
-    sites: list[str] = field(default_factory=lambda: ["tw", "jp"])
+    sites: list[str] = field(default_factory=lambda: ["tw"])
     platforms: list[str] = field(default_factory=lambda: ["trip", "agoda"])
     hotels: list[HotelWatchItem] = field(default_factory=list)
 
@@ -137,7 +137,7 @@ def parse_profile_dict(raw: dict[str, Any], fallback_user_id: str = "") -> UserP
             )
         )
 
-    sites = [str(s).strip().lower() for s in (raw.get("sites") or ["tw", "jp"]) if str(s).strip()]
+    sites = [str(s).strip().lower() for s in (raw.get("sites") or ["tw"]) if str(s).strip()]
     platforms = [str(p).strip().lower() for p in (raw.get("platforms") or ["trip", "agoda"]) if str(p).strip()]
 
     return UserProfile(
@@ -147,7 +147,7 @@ def parse_profile_dict(raw: dict[str, Any], fallback_user_id: str = "") -> UserP
         children=max(0, int(raw.get("children") or 0)),
         child_ages=str(raw.get("child_ages") or "").strip(),
         currency=str(raw.get("currency") or "TWD").strip().upper() or "TWD",
-        sites=sites or ["tw", "jp"],
+        sites=sites or ["tw"],
         platforms=platforms or ["trip", "agoda"],
         hotels=hotels,
     )

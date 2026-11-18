@@ -5,7 +5,7 @@
   "children": 1,
   "child_ages": "11",
   "currency": "TWD",
-  "sites": ["tw", "jp"],
+  "sites": ["tw"],
   "platforms": ["trip", "agoda"],
   "hotels": [
     {

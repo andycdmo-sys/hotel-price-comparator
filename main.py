@@ -78,7 +78,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--child-ages", default="11", help="兒童年齡（多位以逗號分隔）")
     parser.add_argument(
         "--sites",
-        default="tw,jp",
+        default="tw",
         help="要比較的 Trip.com 分站代碼，以逗號分隔（支援 tw,jp,hk,sg,us）",
     )
     parser.add_argument(

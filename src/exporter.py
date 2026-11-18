@@ -96,8 +96,24 @@ def export_to_csv(
     return output_path
 
 
+def _is_record_allowed_by_profile(
+    rec: HotelPriceResult,
+    profile: UserProfile,
+    active_keys: Optional[set[tuple[str, str, str]]] = None,
+) -> bool:
+    """檢查紀錄是否屬於目前清單內的飯店與啟用中的分站。"""
+    keys = active_keys if active_keys is not None else {(h.name, h.check_in, h.check_out) for h in profile.hotels}
+    if (rec.hotel_name, rec.check_in, rec.check_out) not in keys:
+        return False
+    if rec.platform.startswith("Trip.com [") and "站" in rec.platform:
+        allowed_sites = [f"{s.strip().upper()}站" for s in profile.sites if s.strip()]
+        if allowed_sites and not any(tag in rec.platform for tag in allowed_sites):
+            return False
+    return True
+
+
 def prune_csv_by_profile(csv_path: Path, profile: UserProfile) -> list[HotelPriceResult]:
-    """依使用者目前追蹤的飯店清單清理歷史 CSV，移除已刪除飯店或日期的舊紀錄。"""
+    """依使用者目前追蹤的飯店清單與分站設定清理歷史 CSV，移除已刪除飯店、日期或停用分站的舊紀錄。"""
     if not profile.hotels:
         if csv_path.exists():
             csv_path.unlink()
@@ -107,7 +123,7 @@ def prune_csv_by_profile(csv_path: Path, profile: UserProfile) -> list[HotelPric
 
     active_keys = {(h.name, h.check_in, h.check_out) for h in profile.hotels}
     records = _load_existing_csv(csv_path)
-    kept = [r for r in records if (r.hotel_name, r.check_in, r.check_out) in active_keys]
+    kept = [r for r in records if _is_record_allowed_by_profile(r, profile, active_keys)]
     if len(kept) != len(records):
         export_to_csv(kept, csv_path, append=False)
     return kept
@@ -358,7 +374,7 @@ def export_user_dashboard_json(
     records = _load_existing_csv(csv_path) if csv_path.exists() else []
     if profile is not None:
         active_keys = {(h.name, h.check_in, h.check_out) for h in profile.hotels}
-        records = [r for r in records if (r.hotel_name, r.check_in, r.check_out) in active_keys]
+        records = [r for r in records if _is_record_allowed_by_profile(r, profile, active_keys)]
     json_path.parent.mkdir(parents=True, exist_ok=True)
     targets = profile_to_target_prices(profile) if profile is not None else DEFAULT_TARGET_PRICES
 
@@ -1328,7 +1344,7 @@ def export_to_html(
         children: Number(document.getElementById("cfg-children").value || 0),
         child_ages: ageValues.join(","),
         currency: (document.getElementById("cfg-currency").value || "TWD").trim().toUpperCase(),
-        sites: ["tw", "jp"],
+        sites: ["tw"],
         platforms: ["trip", "agoda"],
         hotels,
       }};
@@ -1479,7 +1495,7 @@ def export_to_html(
         children: 0,
         child_ages: "",
         currency: "TWD",
-        sites: ["tw", "jp"],
+        sites: ["tw"],
         platforms: ["trip", "agoda"],
         hotels: [],
       }};

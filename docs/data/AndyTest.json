@@ -1,9 +1,9 @@
 {
   "user_id": "AndyTest",
   "title": "AndyTest 的飯店比價看板",
-  "subtitle": "條件：2 成人 ｜ 幣別：TWD 含稅 ｜ 最後更新：2026-11-18 15:54:36",
-  "updated_at": "2026-11-18 15:54:36",
-  "cards_html": "<section class=\"hotel-card\"><div class=\"date-pill\">2026-11-30 ～ 2026-12-01</div><h2 class=\"hotel-name\">礁溪老爺酒店</h2><div class=\"plans-grid\"><div class=\"plan-box\" data-target-key=\"礁溪老爺酒店||不限早餐（最低價）\" data-current-price=\"12731\"><div class=\"plan-title\">不限早餐（最低價）</div><div class=\"winner-row\"><span class=\"winner-plat\">🏆 Trip.com (TW站) 最低</span></div><div class=\"price-main\">TWD 12,731</div><div class=\"room-sub\">標準套房-2床</div><div class=\"meta-sub\">歷史最低：TWD 12,731 <span class=\"badge low\">★ 目前即歷史最低</span></div><div class=\"ota-list\"><div class=\"ota-row is-best\"><span class=\"ota-name\">Trip.com (TW站)</span><span class=\"ota-price\">TWD 12,731</span><a class=\"ota-link\" href=\"https://tw.trip.com/hotels/list?flexType=1&amp;districtId=0&amp;searchWord=%E7%A4%81%E6%BA%AA%E8%80%81%E7%88%BA%E9%85%92%E5%BA%97&amp;searchType=H&amp;optionId=1001027&amp;searchValue=31%7C1001027*31*1001027&amp;checkin=2026-11-30&amp;checkout=2026-12-01&amp;crn=1&amp;adult=2&amp;children=0&amp;curr=TWD&amp;locale=zh-TW\" target=\"_blank\" rel=\"noopener\">前往</a></div><div class=\"ota-row\"><span class=\"ota-name\">Trip.com (JP站)</span><span class=\"ota-price\">TWD 12,868</span><a class=\"ota-link\" href=\"https://tw.trip.com/hotels/list?flexType=1&amp;districtId=0&amp;searchWord=%E7%A4%81%E6%BA%AA%E8%80%81%E7%88%BA%E9%85%92%E5%BA%97&amp;searchType=H&amp;optionId=1001027&amp;searchValue=31%7C1001027*31*1001027&amp;checkin=2026-11-30&amp;checkout=2026-12-01&amp;crn=1&amp;adult=2&amp;children=0&amp;curr=TWD&amp;locale=zh-TW\" target=\"_blank\" rel=\"noopener\">前往</a></div></div><div class=\"target-row\"><span class=\"target-label\">🎯 目標價</span><input type=\"number\" class=\"target-input\" min=\"0\" step=\"1\" placeholder=\"未設定\" value=\"\"><span class=\"target-status\"></span></div></div><div class=\"plan-box\" data-target-key=\"礁溪老爺酒店||含早餐方案\" data-current-price=\"12731\"><div class=\"plan-title\">含早餐方案</div><div class=\"winner-row\"><span class=\"winner-plat\">🏆 Trip.com (TW站) 最低</span></div><div class=\"price-main\">TWD 12,731</div><div class=\"room-sub\">標準套房-2床</div><div class=\"meta-sub\">歷史最低：TWD 12,731 <span class=\"badge low\">★ 目前即歷史最低</span></div><div class=\"ota-list\"><div class=\"ota-row is-best\"><span class=\"ota-name\">Trip.com (TW站)</span><span class=\"ota-price\">TWD 12,731</span><a class=\"ota-link\" href=\"https://tw.trip.com/hotels/list?flexType=1&amp;districtId=0&amp;searchWord=%E7%A4%81%E6%BA%AA%E8%80%81%E7%88%BA%E9%85%92%E5%BA%97&amp;searchType=H&amp;optionId=1001027&amp;searchValue=31%7C1001027*31*1001027&amp;checkin=2026-11-30&amp;checkout=2026-12-01&amp;crn=1&amp;adult=2&amp;children=0&amp;listFilters=5~1*5*1&amp;curr=TWD&amp;locale=zh-TW\" target=\"_blank\" rel=\"noopener\">前往</a></div><div class=\"ota-row\"><span class=\"ota-name\">Trip.com (JP站)</span><span class=\"ota-price\">TWD 12,868</span><a class=\"ota-link\" href=\"https://tw.trip.com/hotels/list?flexType=1&amp;districtId=0&amp;searchWord=%E7%A4%81%E6%BA%AA%E8%80%81%E7%88%BA%E9%85%92%E5%BA%97&amp;searchType=H&amp;optionId=1001027&amp;searchValue=31%7C1001027*31*1001027&amp;checkin=2026-11-30&amp;checkout=2026-12-01&amp;crn=1&amp;adult=2&amp;children=0&amp;listFilters=5~1*5*1&amp;curr=TWD&amp;locale=zh-TW\" target=\"_blank\" rel=\"noopener\">前往</a></div></div><div class=\"target-row\"><span class=\"target-label\">🎯 目標價</span><input type=\"number\" class=\"target-input\" min=\"0\" step=\"1\" placeholder=\"未設定\" value=\"\"><span class=\"target-status\"></span></div></div></div></section>",
+  "subtitle": "條件：2 成人 ｜ 幣別：TWD 含稅 ｜ 最後更新：2026-11-18 15:54:22",
+  "updated_at": "2026-11-18 15:54:22",
+  "cards_html": "<section class=\"hotel-card\"><div class=\"date-pill\">2026-11-30 ～ 2026-12-01</div><h2 class=\"hotel-name\">礁溪老爺酒店</h2><div class=\"plans-grid\"><div class=\"plan-box\" data-target-key=\"礁溪老爺酒店||不限早餐（最低價）\" data-current-price=\"12731\"><div class=\"plan-title\">不限早餐（最低價）</div><div class=\"winner-row\"><span class=\"winner-plat\">🏆 Trip.com (TW站) 最低</span></div><div class=\"price-main\">TWD 12,731</div><div class=\"room-sub\">標準套房-2床</div><div class=\"meta-sub\">歷史最低：TWD 12,731 <span class=\"badge low\">★ 目前即歷史最低</span></div><div class=\"ota-list\"><div class=\"ota-row is-best\"><span class=\"ota-name\">Trip.com (TW站)</span><span class=\"ota-price\">TWD 12,731</span><a class=\"ota-link\" href=\"https://tw.trip.com/hotels/list?flexType=1&amp;districtId=0&amp;searchWord=%E7%A4%81%E6%BA%AA%E8%80%81%E7%88%BA%E9%85%92%E5%BA%97&amp;searchType=H&amp;optionId=1001027&amp;searchValue=31%7C1001027*31*1001027&amp;checkin=2026-11-30&amp;checkout=2026-12-01&amp;crn=1&amp;adult=2&amp;children=0&amp;curr=TWD&amp;locale=zh-TW\" target=\"_blank\" rel=\"noopener\">前往</a></div></div><div class=\"target-row\"><span class=\"target-label\">🎯 目標價</span><input type=\"number\" class=\"target-input\" min=\"0\" step=\"1\" placeholder=\"未設定\" value=\"\"><span class=\"target-status\"></span></div></div><div class=\"plan-box\" data-target-key=\"礁溪老爺酒店||含早餐方案\" data-current-price=\"12731\"><div class=\"plan-title\">含早餐方案</div><div class=\"winner-row\"><span class=\"winner-plat\">🏆 Trip.com (TW站) 最低</span></div><div class=\"price-main\">TWD 12,731</div><div class=\"room-sub\">標準套房-2床</div><div class=\"meta-sub\">歷史最低：TWD 12,731 <span class=\"badge low\">★ 目前即歷史最低</span></div><div class=\"ota-list\"><div class=\"ota-row is-best\"><span class=\"ota-name\">Trip.com (TW站)</span><span class=\"ota-price\">TWD 12,731</span><a class=\"ota-link\" href=\"https://tw.trip.com/hotels/list?flexType=1&amp;districtId=0&amp;searchWord=%E7%A4%81%E6%BA%AA%E8%80%81%E7%88%BA%E9%85%92%E5%BA%97&amp;searchType=H&amp;optionId=1001027&amp;searchValue=31%7C1001027*31*1001027&amp;checkin=2026-11-30&amp;checkout=2026-12-01&amp;crn=1&amp;adult=2&amp;children=0&amp;listFilters=5~1*5*1&amp;curr=TWD&amp;locale=zh-TW\" target=\"_blank\" rel=\"noopener\">前往</a></div></div><div class=\"target-row\"><span class=\"target-label\">🎯 目標價</span><input type=\"number\" class=\"target-input\" min=\"0\" step=\"1\" placeholder=\"未設定\" value=\"\"><span class=\"target-status\"></span></div></div></div></section>",
   "chart_payload": {
     "labels": [
       "11-18 15:54"
@@ -22,12 +22,6 @@
       ],
       "byHotel": {
         "礁溪老爺酒店": [
-          {
-            "label": "Trip.com [JP站 | 不限早餐]",
-            "data": [
-              12868.0
-            ]
-          },
           {
             "label": "Trip.com [TW站 | 不限早餐]",
             "data": [
@@ -49,12 +43,6 @@
       "byHotel": {
         "礁溪老爺酒店": [
           {
-            "label": "Trip.com [JP站 | 含早餐]",
-            "data": [
-              12868.0
-            ]
-          },
-          {
             "label": "Trip.com [TW站 | 含早餐]",
             "data": [
               12731.0
@@ -74,12 +62,6 @@
     "byHotel": {
       "礁溪老爺酒店": [
         {
-          "label": "Trip.com [JP站 | 不限早餐]",
-          "data": [
-            12868.0
-          ]
-        },
-        {
           "label": "Trip.com [TW站 | 不限早餐]",
           "data": [
             12731.0
@@ -96,8 +78,7 @@
     "child_ages": "",
     "currency": "TWD",
     "sites": [
-      "tw",
-      "jp"
+      "tw"
     ],
     "platforms": [
       "trip",
