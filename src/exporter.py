@@ -9,6 +9,10 @@ from typing import Iterable
 
 from src.models import HotelPriceResult
 
+DEFAULT_TARGET_PRICES: dict[tuple[str, str], int] = {
+    ("沖繩餘家弗飯店", "含早餐方案"): 4193,
+}
+
 CSV_COLUMNS = [
     "hotel_name",
     "platform",
@@ -139,10 +143,12 @@ def _build_chart_payload(records: list[HotelPriceResult]) -> dict:
 def export_to_html(
     csv_path: Path,
     html_path: Path,
+    target_prices: dict[tuple[str, str], int] | None = None,
 ) -> Path:
     """根據歷史 CSV 產出適合手機瀏覽的響應式比價看板網頁 (`docs/index.html`)。"""
     records = _load_existing_csv(csv_path) if csv_path.exists() else []
     html_path.parent.mkdir(parents=True, exist_ok=True)
+    targets = DEFAULT_TARGET_PRICES if target_prices is None else target_prices
 
     # 依入住日期與飯店分組整理最新價格與歷史最低價
     grouped: dict[tuple[str, str, str], list[HotelPriceResult]] = {}
@@ -173,12 +179,20 @@ def export_to_html(
                 else f'<span class="badge">比最低高 TWD {diff:,.0f}</span>'
             )
             link = f'<a class="book-btn" href="{html.escape(target_url)}" target="_blank" rel="noopener">查看 Trip.com</a>' if target_url else ""
+            target_key = f"{hotel_name}||{title}"
+            default_target = targets.get((hotel_name, title))
+            target_val_attr = str(default_target) if default_target is not None else ""
             return (
-                f'<div class="plan-box">'
+                f'<div class="plan-box" data-target-key="{html.escape(target_key)}" data-current-price="{latest.price:.0f}">'
                 f'<div class="plan-title">{html.escape(title)}</div>'
                 f'<div class="price-main">{html.escape(latest.currency)} {latest.price:,.0f}</div>'
                 f'<div class="room-sub">{html.escape(latest.room_type or "標準房型")}</div>'
                 f'<div class="meta-sub">歷史最低：{html.escape(lowest.currency)} {lowest.price:,.0f} {badge}</div>'
+                f'<div class="target-row">'
+                f'<span class="target-label">🎯 目標價</span>'
+                f'<input type="number" class="target-input" min="0" step="1" placeholder="未設定" value="{html.escape(target_val_attr)}">'
+                f'<span class="target-status"></span>'
+                f'</div>'
                 f"{link}"
                 f"</div>"
             )
@@ -274,6 +288,41 @@ def export_to_html(
       border: 1px solid var(--border);
       border-radius: 10px;
       padding: 12px;
+    }}
+    .plan-box.target-hit {{
+      background: #ecfdf5;
+      border-color: #10b981;
+    }}
+    .target-row {{
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px;
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px dashed var(--border);
+      font-size: 0.76rem;
+    }}
+    .target-label {{
+      color: var(--muted);
+      font-weight: 600;
+    }}
+    .target-input {{
+      width: 78px;
+      padding: 3px 6px;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--text);
+      background: #ffffff;
+    }}
+    .target-status {{
+      font-weight: 600;
+      color: #b45309;
+    }}
+    .target-status.hit {{
+      color: var(--accent);
     }}
     .plan-title {{
       font-size: 0.82rem;
@@ -435,6 +484,45 @@ def export_to_html(
         chart.update();
       }});
       tabsEl.appendChild(btn);
+    }});
+
+    function updateTargetBox(box) {{
+      const input = box.querySelector(".target-input");
+      const status = box.querySelector(".target-status");
+      const current = Number(box.dataset.currentPrice);
+      const target = Number(input.value);
+      box.classList.remove("target-hit");
+      status.classList.remove("hit");
+      if (!input.value || isNaN(target) || target <= 0) {{
+        status.textContent = "";
+        return;
+      }}
+      const diff = current - target;
+      if (diff <= 0) {{
+        box.classList.add("target-hit");
+        status.classList.add("hit");
+        status.textContent = diff === 0 ? "✅ 已達目標價！" : `✅ 低於目標 TWD ${{Math.abs(diff).toLocaleString()}}`;
+      }} else {{
+        status.textContent = `還差 TWD ${{diff.toLocaleString()}}`;
+      }}
+    }}
+
+    document.querySelectorAll(".plan-box[data-target-key]").forEach((box) => {{
+      const key = "target:" + box.dataset.targetKey;
+      const input = box.querySelector(".target-input");
+      const saved = localStorage.getItem(key);
+      if (saved !== null) {{
+        input.value = saved;
+      }}
+      updateTargetBox(box);
+      input.addEventListener("input", () => {{
+        if (input.value === "") {{
+          localStorage.removeItem(key);
+        }} else {{
+          localStorage.setItem(key, input.value);
+        }}
+        updateTargetBox(box);
+      }});
     }});
   </script>
 </body>

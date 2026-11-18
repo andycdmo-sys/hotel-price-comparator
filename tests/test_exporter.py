@@ -130,3 +130,27 @@ def test_export_to_html_shows_no_plan_and_line_chart(tmp_path: Path) -> None:
     assert "3654" in content
     assert "https://tw.trip.com/hotels/list?optionId=704038&amp;locale=zh-TW" in content
     assert "jp.trip.com" not in content
+
+
+def test_export_to_html_renders_target_prices(tmp_path: Path) -> None:
+    csv_file = tmp_path / "history.csv"
+    html_file = tmp_path / "index.html"
+
+    results = [
+        HotelPriceResult(
+            hotel_name="沖繩餘家弗飯店",
+            platform="Trip.com [TW站 | 含早餐 | IP:TW]",
+            check_in="2027-01-26",
+            check_out="2027-01-27",
+            price=4830,
+            room_type="豪華雙床房",
+            scraped_at="2026-11-18T08:40:00+08:00",
+        )
+    ]
+    export_to_csv(results, csv_file)
+    export_to_html(csv_file, html_file)
+
+    content = html_file.read_text(encoding="utf-8")
+    assert 'data-target-key="沖繩餘家弗飯店||含早餐方案"' in content
+    assert 'value="4193"' in content
+    assert "target-input" in content
