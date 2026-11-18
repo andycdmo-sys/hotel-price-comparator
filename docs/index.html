@@ -379,23 +379,40 @@
     }
     .url-item-row {
       display: flex;
-      align-items: center;
+      flex-direction: column;
+      gap: 3px;
+    }
+    .url-item-top {
+      display: flex;
+      align-items: stretch;
       gap: 8px;
     }
-    .url-item-input-wrap {
+    .url-item-top .h-url {
       flex: 1;
       min-width: 0;
+    }
+    .url-item-top .bar-btn {
+      flex-shrink: 0;
+      white-space: nowrap;
+    }
+    .manage-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 10px;
     }
     .hotel-row-footer {
       display: flex;
       justify-content: flex-end;
     }
     .url-detected {
-      display: inline-block;
-      margin-top: 3px;
       font-size: 0.72rem;
       color: var(--accent);
       font-weight: 700;
+    }
+    .url-detected:empty {
+      display: none;
     }
     @media (max-width: 560px) {
       .manage-grid {
@@ -404,7 +421,7 @@
       .hotel-row-line1, .hotel-row-line2 {
         grid-template-columns: 1fr;
       }
-      .url-item-row {
+      .url-item-top {
         flex-wrap: wrap;
       }
     }
@@ -449,7 +466,10 @@
   </section>
 
   <section id="manage-panel" class="manage-card hidden">
-    <h2 style="font-size:1.05rem;margin:0 0 10px 0;">⚙️ 管理我的飯店與追蹤條件</h2>
+    <div class="manage-header">
+      <h2 style="font-size:1.05rem;margin:0;">⚙️ 管理我的飯店與追蹤條件</h2>
+      <button type="button" id="btn-close-manage" class="bar-btn">🔼 收回</button>
+    </div>
     <div class="manage-grid">
       <div>
         <label class="field-label">成人人數</label>
@@ -494,6 +514,7 @@
       <button type="button" id="btn-add-hotel" class="bar-btn">➕ 新增一間飯店</button>
       <button type="button" id="btn-save-profile" class="bar-btn primary">💾 儲存我的清單</button>
       <button type="button" id="btn-copy-profile" class="bar-btn">📋 複製設定檔 JSON</button>
+      <button type="button" id="btn-collapse-manage" class="bar-btn" style="margin-left:auto;">🔼 收回面板</button>
     </div>
     <div id="manage-status" class="manage-status"></div>
   </section>
@@ -769,11 +790,11 @@
         ? '<button type="button" class="bar-btn btn-add-url">➕ 新增房價網</button>'
         : '<button type="button" class="bar-btn btn-del-url">✕ 移除</button>';
       urlRow.innerHTML = `
-        <div class="url-item-input-wrap">
+        <div class="url-item-top">
           <input class="field-input h-url" type="text" placeholder="貼上單一房價網網址（如 Trip.com 或 Agoda），系統自動判斷">
-          <div class="url-detected h-url-detected"></div>
+          ${actionBtnHtml}
         </div>
-        ${actionBtnHtml}
+        <div class="url-detected h-url-detected"></div>
       `;
       const inputEl = urlRow.querySelector(".h-url");
       inputEl.value = initialValue;
@@ -970,6 +991,14 @@
 
     document.getElementById("btn-toggle-manage").addEventListener("click", () => {
       document.getElementById("manage-panel").classList.toggle("hidden");
+    });
+
+    document.getElementById("btn-close-manage").addEventListener("click", () => {
+      document.getElementById("manage-panel").classList.add("hidden");
+    });
+
+    document.getElementById("btn-collapse-manage").addEventListener("click", () => {
+      document.getElementById("manage-panel").classList.add("hidden");
     });
 
     document.getElementById("btn-add-hotel").addEventListener("click", () => addHotelRow({}));

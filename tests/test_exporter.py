@@ -402,7 +402,10 @@ def test_manage_panel_dropdowns_single_url_and_no_overlap(tmp_path: Path) -> Non
     assert 'id="cfg-ages-wrap"' in content
     assert "class=\"field-input h-url\"" in content
     assert "url-item-row" in content
+    assert "url-item-top" in content
     assert "btn-add-url" in content
+    assert 'id="btn-close-manage"' in content
+    assert 'id="btn-collapse-manage"' in content
     assert "➕ 新增房價網" in content
     assert "width: 100%;" in content
     assert "hotel-row-line3" in content
