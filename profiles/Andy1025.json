@@ -5,8 +5,14 @@
   "children": 1,
   "child_ages": "11",
   "currency": "TWD",
-  "sites": ["tw"],
-  "platforms": ["trip", "agoda", "booking"],
+  "sites": [
+    "tw"
+  ],
+  "platforms": [
+    "trip",
+    "agoda",
+    "booking"
+  ],
   "hotels": [
     {
       "name": "沖繩餘家弗飯店",
@@ -25,7 +31,7 @@
       "trip_hotel_id": "106709440",
       "agoda_path": "/zh-tw/ref-okinawa-arena-by-vessel-hotels/hotel/okinawa-main-island-jp.html",
       "booking_path": "/hotel/jp/rehuchong-nawa-arinaby-betuseruhoteruzu.zh-tw.html",
-      "target_any": null,
+      "target_any": 2982,
       "target_bf": null
     },
     {
@@ -35,8 +41,8 @@
       "trip_hotel_id": "120097372",
       "agoda_path": "/zh-tw/b-c-hotel/hotel/okinawa-main-island-jp.html",
       "booking_path": "/hotel/jp/bbyc-naha-hotel-with-rental-car.zh-tw.html",
-      "target_any": null,
-      "target_bf": null
+      "target_any": 2066,
+      "target_bf": 2066
     },
     {
       "name": "艾斯汀納特飯店",
@@ -45,7 +51,7 @@
       "trip_hotel_id": "2845951",
       "agoda_path": "/zh-tw/estinate-hotel/hotel/okinawa-main-island-jp.html",
       "booking_path": "/hotel/jp/estination.zh-tw.html",
-      "target_any": null,
+      "target_any": 1957,
       "target_bf": null
     }
   ]
