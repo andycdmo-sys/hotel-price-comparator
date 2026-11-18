@@ -356,3 +356,47 @@ def test_profile_loading_and_user_dashboard_json_export(tmp_path: Path) -> None:
     assert 'id="manage-panel"' in html_content
     assert '<div id="dashboard-content" class="hidden">' in html_content
     assert '"請手動複製以下設定：\\n"' in html_content
+
+
+def test_manage_panel_dropdowns_single_url_and_no_overlap(tmp_path: Path) -> None:
+    import json
+    from src.profiles import load_profile
+
+    profile_file = tmp_path / "FriendTest.json"
+    profile_file.write_text(
+        json.dumps(
+            {
+                "user_id": "FriendTest",
+                "adults": 2,
+                "children": 1,
+                "child_ages": "11",
+                "hotels": [
+                    {
+                        "name": "沖繩餘家弗飯店",
+                        "check_in": "2027-01-26",
+                        "check_out": "2027-01-27",
+                        "url": "https://tw.trip.com/hotels/list?optionId=704038 https://www.agoda.com/zh-tw/hotel-yugaf-inn-okinawa/hotel/okinawa-main-island-jp.html",
+                    }
+                ],
+            },
+            ensure_ascii=False,
+        ),
+        encoding="utf-8",
+    )
+
+    profile = load_profile(profile_file)
+    assert profile.hotels[0].trip_hotel_id == "704038"
+    assert profile.hotels[0].agoda_path == "/zh-tw/hotel-yugaf-inn-okinawa/hotel/okinawa-main-island-jp.html"
+
+    csv_file = tmp_path / "history.csv"
+    html_out = tmp_path / "index.html"
+    export_to_csv([], csv_file)
+    export_to_html(csv_file, html_out)
+
+    content = html_out.read_text(encoding="utf-8")
+    assert '<select id="cfg-adults"' in content
+    assert '<select id="cfg-children"' in content
+    assert 'id="cfg-ages-wrap"' in content
+    assert "class=\"field-input h-url\"" in content
+    assert "width: 100%;" in content
+    assert "hotel-row-line3" in content

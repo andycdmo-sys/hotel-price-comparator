@@ -302,7 +302,7 @@
       gap: 8px;
       margin-top: 12px;
     }
-    .gate-input, .field-input {
+    .gate-input {
       flex: 1;
       min-width: 140px;
       padding: 8px 10px;
@@ -310,11 +310,38 @@
       border-radius: 8px;
       font-size: 0.9rem;
     }
+    .field-input {
+      width: 100%;
+      min-width: 0;
+      display: block;
+      box-sizing: border-box;
+      padding: 8px 10px;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      font-size: 0.88rem;
+      background: #ffffff;
+      color: var(--text);
+    }
     .manage-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-      gap: 8px;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
       margin-bottom: 12px;
+    }
+    .manage-grid > div, .hotel-row-line1 > div, .hotel-row-line2 > div {
+      min-width: 0;
+    }
+    .ages-wrap {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: center;
+      min-height: 36px;
+    }
+    .ages-wrap .field-input {
+      width: auto;
+      flex: 1;
+      min-width: 72px;
     }
     .field-label {
       display: block;
@@ -327,13 +354,46 @@
       background: #f8fafc;
       border: 1px solid var(--border);
       border-radius: 10px;
-      padding: 10px;
+      padding: 12px;
+      margin-bottom: 10px;
+    }
+    .hotel-row-line1 {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr;
+      gap: 10px;
       margin-bottom: 8px;
     }
-    .hotel-edit-grid {
+    .hotel-row-line2 {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(135px, 1fr));
-      gap: 6px;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+    .hotel-row-line3 {
+      display: flex;
+      align-items: flex-end;
+      gap: 10px;
+    }
+    .hotel-row-line3 > div {
+      flex: 1;
+      min-width: 0;
+    }
+    .url-detected {
+      margin-left: 6px;
+      color: var(--accent);
+      font-weight: 700;
+    }
+    @media (max-width: 560px) {
+      .manage-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+      .hotel-row-line1, .hotel-row-line2 {
+        grid-template-columns: 1fr;
+      }
+      .hotel-row-line3 {
+        flex-direction: column;
+        align-items: stretch;
+      }
     }
     .manage-status {
       font-size: 0.8rem;
@@ -378,10 +438,43 @@
   <section id="manage-panel" class="manage-card hidden">
     <h2 style="font-size:1.05rem;margin:0 0 10px 0;">⚙️ 管理我的飯店與追蹤條件</h2>
     <div class="manage-grid">
-      <div><label class="field-label">成人人數</label><input id="cfg-adults" class="field-input" type="number" min="1" value="2"></div>
-      <div><label class="field-label">兒童人數</label><input id="cfg-children" class="field-input" type="number" min="0" value="0"></div>
-      <div><label class="field-label">兒童年齡（逗號分隔）</label><input id="cfg-ages" class="field-input" type="text" placeholder="如 11"></div>
-      <div><label class="field-label">幣別</label><input id="cfg-currency" class="field-input" type="text" value="TWD"></div>
+      <div>
+        <label class="field-label">成人人數</label>
+        <select id="cfg-adults" class="field-input">
+          <option value="1">1 位成人</option>
+          <option value="2" selected>2 位成人</option>
+          <option value="3">3 位成人</option>
+          <option value="4">4 位成人</option>
+          <option value="5">5 位成人</option>
+          <option value="6">6 位成人</option>
+          <option value="7">7 位成人</option>
+          <option value="8">8 位成人</option>
+        </select>
+      </div>
+      <div>
+        <label class="field-label">兒童人數</label>
+        <select id="cfg-children" class="field-input">
+          <option value="0" selected>0 位兒童</option>
+          <option value="1">1 位兒童</option>
+          <option value="2">2 位兒童</option>
+          <option value="3">3 位兒童</option>
+          <option value="4">4 位兒童</option>
+        </select>
+      </div>
+      <div>
+        <label class="field-label">兒童年齡</label>
+        <div id="cfg-ages-wrap" class="ages-wrap"></div>
+      </div>
+      <div>
+        <label class="field-label">幣別</label>
+        <select id="cfg-currency" class="field-input">
+          <option value="TWD" selected>TWD (台幣)</option>
+          <option value="JPY">JPY (日圓)</option>
+          <option value="USD">USD (美金)</option>
+          <option value="HKD">HKD (港幣)</option>
+          <option value="SGD">SGD (新幣)</option>
+        </select>
+      </div>
     </div>
     <div id="manage-hotels-list"></div>
     <div class="bar-actions" style="margin-top:10px;">
@@ -591,37 +684,121 @@
       });
     }
 
+    function renderChildAgeSelects(count, existingAgesStr = "") {
+      const wrap = document.getElementById("cfg-ages-wrap");
+      const currentVals = Array.from(wrap.querySelectorAll(".cfg-age-select")).map((s) => s.value);
+      const parsed = existingAgesStr
+        ? existingAgesStr.split(",").map((x) => x.trim()).filter(Boolean)
+        : currentVals;
+      wrap.innerHTML = "";
+      if (count <= 0) {
+        wrap.innerHTML = '<span class="sub-info">無須設定兒童年齡</span>';
+        return;
+      }
+      for (let i = 0; i < count; i += 1) {
+        const sel = document.createElement("select");
+        sel.className = "field-input cfg-age-select";
+        for (let age = 0; age <= 17; age += 1) {
+          const opt = document.createElement("option");
+          opt.value = String(age);
+          opt.textContent = `${age} 歲`;
+          sel.appendChild(opt);
+        }
+        const fallbackAge = parsed[i] !== undefined ? parsed[i] : "11";
+        sel.value = String(Math.min(17, Math.max(0, Number(fallbackAge) || 0)));
+        wrap.appendChild(sel);
+      }
+    }
+
+    document.getElementById("cfg-children").addEventListener("change", (e) => {
+      renderChildAgeSelects(Number(e.target.value || 0));
+    });
+
+    function parseBookingUrls(rawText) {
+      let trip_hotel_id = "";
+      let agoda_path = "";
+      const detectedLabels = [];
+      const tokens = String(rawText || "").split(/[\s,]+/).map((t) => t.trim()).filter(Boolean);
+      tokens.forEach((tok) => {
+        const low = tok.toLowerCase();
+        if (low.includes("trip.com") || /^\d+$/.test(tok) || /optionid=\d+|hotel-detail-\d+/i.test(tok)) {
+          const m = tok.match(/(?:optionId=|hotel-detail-)(\d+)/i);
+          trip_hotel_id = m ? m[1] : (/^\d+$/.test(tok) ? tok : trip_hotel_id);
+          if (trip_hotel_id && !detectedLabels.includes("Trip.com")) {
+            detectedLabels.push("Trip.com");
+          }
+        } else if (low.includes("agoda.com") || (tok.startsWith("/") && low.includes(".html"))) {
+          try {
+            const parsed = new URL(tok.startsWith("http") ? tok : "https://www.agoda.com" + tok);
+            agoda_path = parsed.pathname;
+          } catch (_e) {
+            agoda_path = tok;
+          }
+          if (agoda_path && !detectedLabels.includes("Agoda")) {
+            detectedLabels.push("Agoda");
+          }
+        }
+      });
+      return { trip_hotel_id, agoda_path, detectedLabels };
+    }
+
+    function updateUrlDetectedLabel(row) {
+      const input = row.querySelector(".h-url");
+      const badge = row.querySelector(".h-url-detected");
+      const { detectedLabels } = parseBookingUrls(input.value);
+      badge.textContent = detectedLabels.length > 0 ? `✅ 已自動辨識：${detectedLabels.join(" + ")}` : "";
+    }
+
     function addHotelRow(item = {}) {
       const listEl = document.getElementById("manage-hotels-list");
       const row = document.createElement("div");
       row.className = "hotel-edit-row";
       row.innerHTML = `
-        <div class="hotel-edit-grid">
+        <div class="hotel-row-line1">
           <div><label class="field-label">飯店名稱</label><input class="field-input h-name" type="text" placeholder="如 沖繩餘家弗飯店"></div>
           <div><label class="field-label">入住日期</label><input class="field-input h-in" type="date"></div>
           <div><label class="field-label">退房日期</label><input class="field-input h-out" type="date"></div>
-          <div><label class="field-label">Trip.com ID / 網址（選填）</label><input class="field-input h-trip" type="text" placeholder="如 704038 或貼上網址"></div>
-          <div><label class="field-label">Agoda 路徑 / 網址（選填）</label><input class="field-input h-agoda" type="text" placeholder="/zh-tw/.../hotel/...html"></div>
+        </div>
+        <div class="hotel-row-line2">
           <div><label class="field-label">不含早目標價</label><input class="field-input h-tany" type="number" min="0" placeholder="選填"></div>
           <div><label class="field-label">含早目標價</label><input class="field-input h-tbf" type="number" min="0" placeholder="選填"></div>
-          <div style="display:flex;align-items:flex-end;"><button type="button" class="bar-btn btn-del-hotel">🗑️ 刪除</button></div>
+        </div>
+        <div class="hotel-row-line3">
+          <div>
+            <label class="field-label">房價網網址（選填，貼上 Trip.com 或 Agoda 網址自動判斷）<span class="url-detected h-url-detected"></span></label>
+            <input class="field-input h-url" type="text" placeholder="貼上 Trip.com 或 Agoda 網址（多個請以空白分隔）">
+          </div>
+          <button type="button" class="bar-btn btn-del-hotel">🗑️ 刪除</button>
         </div>
       `;
       row.querySelector(".h-name").value = item.name || "";
       row.querySelector(".h-in").value = item.check_in || "";
       row.querySelector(".h-out").value = item.check_out || "";
-      row.querySelector(".h-trip").value = item.trip_hotel_id || "";
-      row.querySelector(".h-agoda").value = item.agoda_path || "";
       row.querySelector(".h-tany").value = item.target_any ?? "";
       row.querySelector(".h-tbf").value = item.target_bf ?? "";
+      const initialUrls = [];
+      if (item.url) {
+        initialUrls.push(item.url);
+      } else {
+        if (item.trip_hotel_id) {
+          initialUrls.push(/^\d+$/.test(String(item.trip_hotel_id)) ? `https://tw.trip.com/hotels/list?optionId=${item.trip_hotel_id}` : String(item.trip_hotel_id));
+        }
+        if (item.agoda_path) {
+          initialUrls.push(String(item.agoda_path).startsWith("http") ? String(item.agoda_path) : `https://www.agoda.com${item.agoda_path}`);
+        }
+      }
+      row.querySelector(".h-url").value = initialUrls.join(" ");
+      updateUrlDetectedLabel(row);
+      row.querySelector(".h-url").addEventListener("input", () => updateUrlDetectedLabel(row));
       row.querySelector(".btn-del-hotel").addEventListener("click", () => row.remove());
       listEl.appendChild(row);
     }
 
     function renderManageForm(profileObj) {
-      document.getElementById("cfg-adults").value = profileObj?.adults ?? 2;
-      document.getElementById("cfg-children").value = profileObj?.children ?? 0;
-      document.getElementById("cfg-ages").value = profileObj?.child_ages || "";
+      document.getElementById("cfg-adults").value = String(profileObj?.adults ?? 2);
+      const childCount = Number(profileObj?.children ?? 0);
+      document.getElementById("cfg-children").value = String(childCount);
+      renderChildAgeSelects(childCount, profileObj?.child_ages || "");
       document.getElementById("cfg-currency").value = profileObj?.currency || "TWD";
       const listEl = document.getElementById("manage-hotels-list");
       listEl.innerHTML = "";
@@ -640,26 +817,28 @@
         const check_in = row.querySelector(".h-in").value.trim();
         const check_out = row.querySelector(".h-out").value.trim();
         if (!name || !check_in || !check_out) return;
-        const rawTrip = row.querySelector(".h-trip").value.trim();
-        const rawAgoda = row.querySelector(".h-agoda").value.trim();
+        const rawUrl = row.querySelector(".h-url").value.trim();
+        const { trip_hotel_id, agoda_path } = parseBookingUrls(rawUrl);
         const tAny = row.querySelector(".h-tany").value.trim();
         const tBf = row.querySelector(".h-tbf").value.trim();
         hotels.push({
           name,
           check_in,
           check_out,
-          trip_hotel_id: rawTrip,
-          agoda_path: rawAgoda,
+          url: rawUrl,
+          trip_hotel_id,
+          agoda_path,
           target_any: tAny ? Number(tAny) : null,
           target_bf: tBf ? Number(tBf) : null,
         });
       });
+      const ageValues = Array.from(document.querySelectorAll("#cfg-ages-wrap .cfg-age-select")).map((s) => s.value);
       return {
         user_id: activeUserId,
         title: `${activeUserId} 的飯店比價看板`,
         adults: Number(document.getElementById("cfg-adults").value || 2),
         children: Number(document.getElementById("cfg-children").value || 0),
-        child_ages: document.getElementById("cfg-ages").value.trim(),
+        child_ages: ageValues.join(","),
         currency: (document.getElementById("cfg-currency").value || "TWD").trim().toUpperCase(),
         sites: ["tw", "jp"],
         platforms: ["trip", "agoda"],

@@ -30,6 +30,30 @@ def _extract_agoda_path(raw_value: str) -> str:
     return val if val.startswith("/") else "/" + val
 
 
+def parse_hotel_urls(
+    raw_url_field: str,
+    trip_id: str = "",
+    agoda_path: str = "",
+) -> tuple[str, str]:
+    """從單一網址輸入欄自動辨識 Trip.com ID 與 Agoda 頁面路徑（可同時包含多個以空白或逗號分隔的網址）。"""
+    resolved_trip = _extract_trip_hotel_id(trip_id)
+    resolved_agoda = _extract_agoda_path(agoda_path)
+
+    tokens = [tok.strip() for tok in re.split(r"[\s,]+", raw_url_field or "") if tok.strip()]
+    for tok in tokens:
+        low = tok.lower()
+        if "trip.com" in low or tok.isdigit() or "optionid=" in low or "hotel-detail-" in low:
+            extracted = _extract_trip_hotel_id(tok)
+            if extracted:
+                resolved_trip = extracted
+        elif "agoda.com" in low or (tok.startswith("/") and ".html" in low):
+            extracted_path = _extract_agoda_path(tok)
+            if extracted_path:
+                resolved_agoda = extracted_path
+
+    return resolved_trip, resolved_agoda
+
+
 @dataclass
 class HotelWatchItem:
     """單一追蹤飯店與日期／目標價設定。"""
@@ -92,13 +116,18 @@ def load_profile(path: Path) -> UserProfile:
         check_out = str(item.get("check_out") or "").strip()
         if not name or not check_in or not check_out:
             continue
+        parsed_trip, parsed_agoda = parse_hotel_urls(
+            str(item.get("url") or item.get("urls") or ""),
+            trip_id=str(item.get("trip_hotel_id") or ""),
+            agoda_path=str(item.get("agoda_path") or ""),
+        )
         hotels.append(
             HotelWatchItem(
                 name=name,
                 check_in=check_in,
                 check_out=check_out,
-                trip_hotel_id=_extract_trip_hotel_id(str(item.get("trip_hotel_id") or "")),
-                agoda_path=_extract_agoda_path(str(item.get("agoda_path") or "")),
+                trip_hotel_id=parsed_trip,
+                agoda_path=parsed_agoda,
                 target_any=_optional_int(item.get("target_any")),
                 target_bf=_optional_int(item.get("target_bf")),
             )
