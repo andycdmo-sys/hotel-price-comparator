@@ -238,3 +238,70 @@ def test_booking_scraper_table_occupancy_tax_and_search_cards() -> None:
     assert "group_adults=2&no_rooms=1&group_children=1&age=11" in search_url
     assert "nflt=mealplan%3D1" in search_url
     assert scraper.platform_name == "Booking [含早餐 | IP:TW]"
+
+
+def test_agoda_currency_mismatch_and_low_twd_guard() -> None:
+    import pytest
+    from src.scrapers.agoda import _detect_payload_currency
+
+    usd_payload = {
+        "currencyInfo": {"code": "USD"},
+        "roomGridData": {
+            "masterRooms": [
+                {
+                    "name": "Deluxe Ocean",
+                    "rooms": [
+                        {
+                            "name": "Deluxe Ocean",
+                            "currency": "USD",
+                            "isFit": True,
+                            "availability": 1,
+                            "isBreakfastIncluded": False,
+                            "inclusivePrice": {"display": 111.0},
+                        }
+                    ],
+                }
+            ]
+        },
+    }
+    assert _detect_payload_currency(usd_payload) == "USD"
+    with pytest.raises(ValueError, match="幣別不符"):
+        extract_agoda_room_grid_price(usd_payload["roomGridData"], expected_currency="TWD")
+
+    suspicious_twd_grid = {
+        "masterRooms": [
+            {
+                "name": "Deluxe Ocean",
+                "rooms": [
+                    {
+                        "name": "Deluxe Ocean",
+                        "isFit": True,
+                        "availability": 1,
+                        "inclusivePrice": {"display": 145.0},
+                    }
+                ],
+            }
+        ]
+    }
+    with pytest.raises(ValueError, match="疑似外幣"):
+        extract_agoda_room_grid_price(suspicious_twd_grid, expected_currency="TWD")
+
+    valid_twd_grid = {
+        "masterRooms": [
+            {
+                "name": "Deluxe Ocean",
+                "rooms": [
+                    {
+                        "name": "Deluxe Ocean",
+                        "currency": "TWD",
+                        "isFit": True,
+                        "availability": 1,
+                        "inclusivePrice": {"display": 3500.0},
+                    }
+                ],
+            }
+        ]
+    }
+    price, room = extract_agoda_room_grid_price(valid_twd_grid, expected_currency="TWD")
+    assert price == 3500.0
+    assert room == "Deluxe Ocean"
