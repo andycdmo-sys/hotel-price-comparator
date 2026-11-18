@@ -928,7 +928,7 @@ def export_to_html(
   </div>
   <script>
     const CHART_DATA = {chart_json};
-    const CLOUD_SYNC_URL = "";
+    const CLOUD_SYNC_URL = "https://script.google.com/macros/s/AKfycbztzmxWteIkVBG6yTGp_cSiJr9fnaOqYSnspyv4GuoGmUcAGPi_gMiGT4_iKqqfK9uH/exec";
     const PALETTE = ["#2563eb", "#059669", "#d97706", "#7c3aed", "#0891b2", "#db2777"];
     let activeChartData = CHART_DATA;
     let activeHotelKey = "__all__";
@@ -1407,8 +1407,8 @@ def export_to_html(
           const resData = await resp.json().catch(() => ({{}}));
           if (!resp.ok || resData.ok === false) throw new Error(resData.error || "SYNC_FAIL");
           statusEl.textContent = "✅ 已儲存至 GitHub 並啟動雲端抓價！請約 1～2 分鐘後重新整理網頁查看價格。";
-        }} catch (_e) {{
-          statusEl.textContent = "⚠️ 已暫存於本機瀏覽器，但雲端同步失敗（請改用複製 JSON 提交）。";
+        }} catch (err) {{
+          statusEl.textContent = "⚠️ 已暫存於本機瀏覽器，但雲端同步失敗（" + (err && err.message ? err.message : "請改用複製 JSON 提交") + "）。";
         }}
       }} else {{
         statusEl.textContent = "✅ 已暫存於本機瀏覽器！（尚未設定雲端轉發網址，如需加入每日排程請點「📋 複製設定檔 JSON」傳給管理員，或填入免費 Google 轉發器即可一鍵同步。）";
