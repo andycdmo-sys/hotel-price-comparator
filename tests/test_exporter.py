@@ -192,3 +192,46 @@ def test_build_chart_payload_merges_different_ips_and_clusters_batches() -> None
     assert len(bc_series) == 1
     assert bc_series[0]["label"] == "Trip.com [TW站 | 不限早餐]"
     assert bc_series[0]["data"] == [2299, 2250]
+
+
+def test_export_to_html_separates_breakfast_charts_and_target_line(tmp_path: Path) -> None:
+    from src.exporter import _build_chart_payload
+
+    csv_file = tmp_path / "history.csv"
+    html_file = tmp_path / "index.html"
+
+    records = [
+        HotelPriceResult(
+            hotel_name="沖繩餘家弗飯店",
+            platform="Trip.com [TW站 | 不限早餐 | IP:TW]",
+            check_in="2027-01-26",
+            check_out="2027-01-27",
+            price=3654,
+            scraped_at="2026-11-18T08:40:00+08:00",
+        ),
+        HotelPriceResult(
+            hotel_name="沖繩餘家弗飯店",
+            platform="Trip.com [TW站 | 含早餐 | IP:TW]",
+            check_in="2027-01-26",
+            check_out="2027-01-27",
+            price=4830,
+            scraped_at="2026-11-18T08:40:00+08:00",
+        ),
+    ]
+
+    payload = _build_chart_payload(records)
+    assert len(payload["any"]["byHotel"]["沖繩餘家弗飯店"]) == 1
+    assert payload["any"]["byHotel"]["沖繩餘家弗飯店"][0]["label"] == "Trip.com [TW站 | 不限早餐]"
+    assert len(payload["bf"]["byHotel"]["沖繩餘家弗飯店"]) == 1
+    assert payload["bf"]["byHotel"]["沖繩餘家弗飯店"][0]["label"] == "Trip.com [TW站 | 含早餐]"
+
+    export_to_csv(records, csv_file)
+    export_to_html(csv_file, html_file)
+
+    content = html_file.read_text(encoding="utf-8")
+    assert 'id="priceChart"' in content
+    assert 'id="priceChartBf"' in content
+    assert "🛏️ 不限早餐（最低價）" in content
+    assert "🍴 含早餐方案" in content
+    assert "borderDash: [6, 6]" in content
+    assert "🎯 目標價" in content

@@ -180,9 +180,15 @@
       color: #ffffff;
       border-color: var(--primary);
     }
+    .chart-subtitle {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--text);
+      margin: 14px 0 8px 0;
+    }
     .chart-container {
       position: relative;
-      height: 300px;
+      height: 280px;
       width: 100%;
     }
   </style>
@@ -197,76 +203,19 @@
   <div class="history-wrap">
     <h2 style="font-size:1rem;margin:0 0 10px 0;">📈 房價趨勢折線圖</h2>
     <div id="chart-tabs" class="chart-tabs"></div>
+    <h3 class="chart-subtitle">🛏️ 不限早餐（最低價）</h3>
     <div class="chart-container">
       <canvas id="priceChart"></canvas>
     </div>
+    <h3 class="chart-subtitle">🍴 含早餐方案</h3>
+    <div class="chart-container">
+      <canvas id="priceChartBf"></canvas>
+    </div>
   </div>
   <script>
-    const CHART_DATA = {"labels": ["11-17 16:57", "11-17 17:07", "11-17 20:48", "11-18 08:42"], "hotels": ["B/C 那霸飯店", "REF沖繩體育館by Vessel酒店集團", "沖繩餘家弗飯店", "艾斯汀納特飯店"], "overview": [{"label": "B/C 那霸飯店", "data": [2299.0, 2251.0, 2253.0, 2249.0]}, {"label": "REF沖繩體育館by Vessel酒店集團", "data": [3328.0, 3257.0, 3260.0, 3254.0]}, {"label": "沖繩餘家弗飯店", "data": [3654.0, 3654.0, 3660.0, 3660.0]}, {"label": "艾斯汀納特飯店", "data": [2126.0, 2082.0, 2084.0, 2080.0]}], "byHotel": {"B/C 那霸飯店": [{"label": "Trip.com [JP站 | 不限早餐]", "data": [null, 2251.0, 2253.0, 2249.0]}, {"label": "Trip.com [JP站 | 含早餐]", "data": [null, 2251.0, 2253.0, 2249.0]}, {"label": "Trip.com [TW站 | 不限早餐]", "data": [2299.0, 2299.0, 2302.0, 2297.0]}, {"label": "Trip.com [TW站 | 含早餐]", "data": [2299.0, 2299.0, 2302.0, 2297.0]}], "REF沖繩體育館by Vessel酒店集團": [{"label": "Trip.com [JP站 | 不限早餐]", "data": [null, 3257.0, 3260.0, 3254.0]}, {"label": "Trip.com [JP站 | 含早餐]", "data": [null, 3909.0, 3913.0, 3905.0]}, {"label": "Trip.com [TW站 | 不限早餐]", "data": [3328.0, 3328.0, 3331.0, 3325.0]}, {"label": "Trip.com [TW站 | 含早餐]", "data": [3995.0, 3995.0, 3999.0, 3991.0]}], "沖繩餘家弗飯店": [{"label": "Trip.com [JP站 | 不限早餐]", "data": [null, 3771.0, 3775.0, 3768.0]}, {"label": "Trip.com [JP站 | 含早餐]", "data": [null, 4872.0, 4876.0, 4868.0]}, {"label": "Trip.com [TW站 | 不限早餐]", "data": [3654.0, 3654.0, 3660.0, 3660.0]}, {"label": "Trip.com [TW站 | 含早餐]", "data": [4830.0, 4830.0, 4838.0, 4838.0]}], "艾斯汀納特飯店": [{"label": "Trip.com [JP站 | 不限早餐]", "data": [null, 2082.0, 2084.0, 2080.0]}, {"label": "Trip.com [JP站 | 含早餐]", "data": [null, 2379.0, 2381.0, 2377.0]}, {"label": "Trip.com [TW站 | 不限早餐]", "data": [2126.0, 2126.0, 2128.0, 2124.0]}, {"label": "Trip.com [TW站 | 含早餐]", "data": [2429.0, 2430.0, 2431.0, 2428.0]}]}};
-    const PALETTE = ["#2563eb", "#059669", "#d97706", "#dc2626", "#7c3aed", "#0891b2"];
-
-    function buildDatasets(rawSeries) {
-      return rawSeries.map((item, idx) => {
-        const color = PALETTE[idx % PALETTE.length];
-        return {
-          label: item.label,
-          data: item.data,
-          borderColor: color,
-          backgroundColor: color + "22",
-          borderWidth: 2.5,
-          pointRadius: 4,
-          pointHoverRadius: 6,
-          tension: 0.25,
-          spanGaps: true
-        };
-      });
-    }
-
-    const ctx = document.getElementById("priceChart").getContext("2d");
-    const chart = new Chart(ctx, {
-      type: "line",
-      data: {
-        labels: CHART_DATA.labels,
-        datasets: buildDatasets(CHART_DATA.overview)
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        interaction: { mode: "index", intersect: false },
-        plugins: {
-          legend: { position: "bottom", labels: { boxWidth: 12, font: { size: 11 } } },
-          tooltip: {
-            callbacks: {
-              label: (c) => c.parsed.y == null ? `${c.dataset.label}: 無資料` : `${c.dataset.label}: TWD ${c.parsed.y.toLocaleString()}`
-            }
-          }
-        },
-        scales: {
-          y: {
-            ticks: { callback: (v) => "NT$" + Number(v).toLocaleString() }
-          }
-        }
-      }
-    });
-
-    const tabsEl = document.getElementById("chart-tabs");
-    const tabOptions = [{ key: "__all__", label: "全部飯店（最低價）" }].concat(
-      CHART_DATA.hotels.map((h) => ({ key: h, label: h }))
-    );
-    tabOptions.forEach((opt, i) => {
-      const btn = document.createElement("button");
-      btn.type = "button";
-      btn.className = "chart-tab" + (i === 0 ? " active" : "");
-      btn.textContent = opt.label;
-      btn.addEventListener("click", () => {
-        tabsEl.querySelectorAll(".chart-tab").forEach((b) => b.classList.remove("active"));
-        btn.classList.add("active");
-        const raw = opt.key === "__all__" ? CHART_DATA.overview : (CHART_DATA.byHotel[opt.key] || []);
-        chart.data.datasets = buildDatasets(raw);
-        chart.update();
-      });
-      tabsEl.appendChild(btn);
-    });
+    const CHART_DATA = {"labels": ["11-17 16:57", "11-17 17:07", "11-17 20:48", "11-18 08:42"], "hotels": ["B/C 那霸飯店", "REF沖繩體育館by Vessel酒店集團", "沖繩餘家弗飯店", "艾斯汀納特飯店"], "any": {"overview": [{"label": "B/C 那霸飯店", "data": [2299.0, 2251.0, 2253.0, 2249.0]}, {"label": "REF沖繩體育館by Vessel酒店集團", "data": [3328.0, 3257.0, 3260.0, 3254.0]}, {"label": "沖繩餘家弗飯店", "data": [3654.0, 3654.0, 3660.0, 3660.0]}, {"label": "艾斯汀納特飯店", "data": [2126.0, 2082.0, 2084.0, 2080.0]}], "byHotel": {"B/C 那霸飯店": [{"label": "Trip.com [JP站 | 不限早餐]", "data": [null, 2251.0, 2253.0, 2249.0]}, {"label": "Trip.com [TW站 | 不限早餐]", "data": [2299.0, 2299.0, 2302.0, 2297.0]}], "REF沖繩體育館by Vessel酒店集團": [{"label": "Trip.com [JP站 | 不限早餐]", "data": [null, 3257.0, 3260.0, 3254.0]}, {"label": "Trip.com [TW站 | 不限早餐]", "data": [3328.0, 3328.0, 3331.0, 3325.0]}], "沖繩餘家弗飯店": [{"label": "Trip.com [JP站 | 不限早餐]", "data": [null, 3771.0, 3775.0, 3768.0]}, {"label": "Trip.com [TW站 | 不限早餐]", "data": [3654.0, 3654.0, 3660.0, 3660.0]}], "艾斯汀納特飯店": [{"label": "Trip.com [JP站 | 不限早餐]", "data": [null, 2082.0, 2084.0, 2080.0]}, {"label": "Trip.com [TW站 | 不限早餐]", "data": [2126.0, 2126.0, 2128.0, 2124.0]}]}}, "bf": {"overview": [{"label": "B/C 那霸飯店", "data": [2299.0, 2251.0, 2253.0, 2249.0]}, {"label": "REF沖繩體育館by Vessel酒店集團", "data": [3995.0, 3909.0, 3913.0, 3905.0]}, {"label": "沖繩餘家弗飯店", "data": [4830.0, 4830.0, 4838.0, 4838.0]}, {"label": "艾斯汀納特飯店", "data": [2429.0, 2379.0, 2381.0, 2377.0]}], "byHotel": {"B/C 那霸飯店": [{"label": "Trip.com [JP站 | 含早餐]", "data": [null, 2251.0, 2253.0, 2249.0]}, {"label": "Trip.com [TW站 | 含早餐]", "data": [2299.0, 2299.0, 2302.0, 2297.0]}], "REF沖繩體育館by Vessel酒店集團": [{"label": "Trip.com [JP站 | 含早餐]", "data": [null, 3909.0, 3913.0, 3905.0]}, {"label": "Trip.com [TW站 | 含早餐]", "data": [3995.0, 3995.0, 3999.0, 3991.0]}], "沖繩餘家弗飯店": [{"label": "Trip.com [JP站 | 含早餐]", "data": [null, 4872.0, 4876.0, 4868.0]}, {"label": "Trip.com [TW站 | 含早餐]", "data": [4830.0, 4830.0, 4838.0, 4838.0]}], "艾斯汀納特飯店": [{"label": "Trip.com [JP站 | 含早餐]", "data": [null, 2379.0, 2381.0, 2377.0]}, {"label": "Trip.com [TW站 | 含早餐]", "data": [2429.0, 2430.0, 2431.0, 2428.0]}]}}, "overview": [{"label": "B/C 那霸飯店", "data": [2299.0, 2251.0, 2253.0, 2249.0]}, {"label": "REF沖繩體育館by Vessel酒店集團", "data": [3328.0, 3257.0, 3260.0, 3254.0]}, {"label": "沖繩餘家弗飯店", "data": [3654.0, 3654.0, 3660.0, 3660.0]}, {"label": "艾斯汀納特飯店", "data": [2126.0, 2082.0, 2084.0, 2080.0]}], "byHotel": {"B/C 那霸飯店": [{"label": "Trip.com [JP站 | 不限早餐]", "data": [null, 2251.0, 2253.0, 2249.0]}, {"label": "Trip.com [TW站 | 不限早餐]", "data": [2299.0, 2299.0, 2302.0, 2297.0]}], "REF沖繩體育館by Vessel酒店集團": [{"label": "Trip.com [JP站 | 不限早餐]", "data": [null, 3257.0, 3260.0, 3254.0]}, {"label": "Trip.com [TW站 | 不限早餐]", "data": [3328.0, 3328.0, 3331.0, 3325.0]}], "沖繩餘家弗飯店": [{"label": "Trip.com [JP站 | 不限早餐]", "data": [null, 3771.0, 3775.0, 3768.0]}, {"label": "Trip.com [TW站 | 不限早餐]", "data": [3654.0, 3654.0, 3660.0, 3660.0]}], "艾斯汀納特飯店": [{"label": "Trip.com [JP站 | 不限早餐]", "data": [null, 2082.0, 2084.0, 2080.0]}, {"label": "Trip.com [TW站 | 不限早餐]", "data": [2126.0, 2126.0, 2128.0, 2124.0]}]}};
+    const PALETTE = ["#2563eb", "#059669", "#d97706", "#7c3aed", "#0891b2", "#db2777"];
+    let activeHotelKey = "__all__";
 
     function updateTargetBox(box) {
       const input = box.querySelector(".target-input");
@@ -297,6 +246,127 @@
         input.value = saved;
       }
       updateTargetBox(box);
+    });
+
+    function getTargetPrice(hotelName, planTitle) {
+      const expectedKey = `${hotelName}||${planTitle}`;
+      let foundVal = null;
+      document.querySelectorAll(".plan-box[data-target-key]").forEach((box) => {
+        if (box.dataset.targetKey !== expectedKey) return;
+        const input = box.querySelector(".target-input");
+        const val = Number(input && input.value);
+        if (input && input.value && !isNaN(val) && val > 0) {
+          foundVal = val;
+        }
+      });
+      return foundVal;
+    }
+
+    function buildDatasets(rawSeries, hotelKey, planTitle) {
+      const datasets = rawSeries.map((item, idx) => {
+        const color = PALETTE[idx % PALETTE.length];
+        return {
+          label: item.label,
+          data: item.data,
+          borderColor: color,
+          backgroundColor: color + "22",
+          borderWidth: 2.5,
+          pointRadius: 4,
+          pointHoverRadius: 6,
+          tension: 0.25,
+          spanGaps: true
+        };
+      });
+
+      if (hotelKey !== "__all__") {
+        const targetVal = getTargetPrice(hotelKey, planTitle);
+        if (targetVal !== null) {
+          datasets.push({
+            label: `🎯 目標價 (TWD ${targetVal.toLocaleString()})`,
+            data: CHART_DATA.labels.map(() => targetVal),
+            borderColor: "#dc2626",
+            backgroundColor: "#dc262622",
+            borderWidth: 2,
+            borderDash: [6, 6],
+            pointRadius: 0,
+            pointHoverRadius: 4,
+            tension: 0,
+            spanGaps: true
+          });
+        }
+      }
+      return datasets;
+    }
+
+    function createChartOptions() {
+      return {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: { mode: "index", intersect: false },
+        plugins: {
+          legend: { position: "bottom", labels: { boxWidth: 12, font: { size: 11 } } },
+          tooltip: {
+            callbacks: {
+              label: (c) => c.parsed.y == null ? `${c.dataset.label}: 無資料` : `${c.dataset.label}: TWD ${c.parsed.y.toLocaleString()}`
+            }
+          }
+        },
+        scales: {
+          y: {
+            ticks: { callback: (v) => "NT$" + Number(v).toLocaleString() }
+          }
+        }
+      };
+    }
+
+    const chartAny = new Chart(document.getElementById("priceChart").getContext("2d"), {
+      type: "line",
+      data: {
+        labels: CHART_DATA.labels,
+        datasets: buildDatasets(CHART_DATA.any.overview, "__all__", "不限早餐（最低價）")
+      },
+      options: createChartOptions()
+    });
+
+    const chartBf = new Chart(document.getElementById("priceChartBf").getContext("2d"), {
+      type: "line",
+      data: {
+        labels: CHART_DATA.labels,
+        datasets: buildDatasets(CHART_DATA.bf.overview, "__all__", "含早餐方案")
+      },
+      options: createChartOptions()
+    });
+
+    function refreshCharts() {
+      const rawAny = activeHotelKey === "__all__" ? CHART_DATA.any.overview : (CHART_DATA.any.byHotel[activeHotelKey] || []);
+      const rawBf = activeHotelKey === "__all__" ? CHART_DATA.bf.overview : (CHART_DATA.bf.byHotel[activeHotelKey] || []);
+      chartAny.data.datasets = buildDatasets(rawAny, activeHotelKey, "不限早餐（最低價）");
+      chartBf.data.datasets = buildDatasets(rawBf, activeHotelKey, "含早餐方案");
+      chartAny.update();
+      chartBf.update();
+    }
+
+    const tabsEl = document.getElementById("chart-tabs");
+    const tabOptions = [{ key: "__all__", label: "全部飯店（最低價）" }].concat(
+      CHART_DATA.hotels.map((h) => ({ key: h, label: h }))
+    );
+    tabOptions.forEach((opt, i) => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "chart-tab" + (i === 0 ? " active" : "");
+      btn.textContent = opt.label;
+      btn.addEventListener("click", () => {
+        tabsEl.querySelectorAll(".chart-tab").forEach((b) => b.classList.remove("active"));
+        btn.classList.add("active");
+        activeHotelKey = opt.key;
+        refreshCharts();
+      });
+      tabsEl.appendChild(btn);
+    });
+
+    document.querySelectorAll(".plan-box[data-target-key]").forEach((box) => {
+      const key = "target:" + box.dataset.targetKey;
+      const input = box.querySelector(".target-input");
       input.addEventListener("input", () => {
         if (input.value === "") {
           localStorage.removeItem(key);
@@ -304,6 +374,7 @@
           localStorage.setItem(key, input.value);
         }
         updateTargetBox(box);
+        refreshCharts();
       });
     });
   </script>

@@ -126,19 +126,19 @@ def _cluster_batch_labels(timestamps: list[str], gap_minutes: int = 10) -> tuple
     return batch_labels, raw_to_label
 
 
-def _build_chart_payload(records: list[HotelPriceResult]) -> dict:
-    """整理供前端折線圖使用的時間序列資料（分批時間為 X 軸）。"""
-    valid = [r for r in records if r.price is not None and not r.error and r.scraped_at]
-    labels, raw_to_label = _cluster_batch_labels([r.scraped_at for r in valid])
+def _build_plan_group(
+    subset: list[HotelPriceResult],
+    hotels: list[str],
+    labels: list[str],
+    raw_to_label: dict[str, str],
+) -> dict:
+    """依傳入子集（不限早餐或含早餐）產生總覽與各飯店時間序列。"""
     label_index = {lbl: idx for idx, lbl in enumerate(labels)}
 
-    hotels = sorted({r.hotel_name for r in valid})
-
-    # 1) 全部飯店最低價總覽
     overview_datasets = []
     for hotel in hotels:
         series: list[float | None] = [None] * len(labels)
-        for r in valid:
+        for r in subset:
             if r.hotel_name != hotel or r.price is None:
                 continue
             lbl = raw_to_label.get(r.scraped_at)
@@ -147,12 +147,12 @@ def _build_chart_payload(records: list[HotelPriceResult]) -> dict:
             idx = label_index[lbl]
             cur = series[idx]
             series[idx] = r.price if cur is None else min(cur, r.price)
-        overview_datasets.append({"label": hotel, "data": series})
+        if any(v is not None for v in series):
+            overview_datasets.append({"label": hotel, "data": series})
 
-    # 2) 各飯店細分分站與早餐方案（忽略每次變動的對外 IP，讓同一方案連成折線）
     by_hotel: dict[str, list[dict]] = {}
     for hotel in hotels:
-        hotel_recs = [r for r in valid if r.hotel_name == hotel]
+        hotel_recs = [r for r in subset if r.hotel_name == hotel]
         series_names = sorted({_normalize_series_label(r.platform) for r in hotel_recs})
         datasets = []
         for s_name in series_names:
@@ -169,11 +169,28 @@ def _build_chart_payload(records: list[HotelPriceResult]) -> dict:
             datasets.append({"label": s_name, "data": series})
         by_hotel[hotel] = datasets
 
+    return {"overview": overview_datasets, "byHotel": by_hotel}
+
+
+def _build_chart_payload(records: list[HotelPriceResult]) -> dict:
+    """整理供前端折線圖使用的時間序列資料（拆分為不限早餐與含早餐兩組）。"""
+    valid = [r for r in records if r.price is not None and not r.error and r.scraped_at]
+    labels, raw_to_label = _cluster_batch_labels([r.scraped_at for r in valid])
+    hotels = sorted({r.hotel_name for r in valid})
+
+    any_records = [r for r in valid if "含早餐" not in r.platform]
+    bf_records = [r for r in valid if "含早餐" in r.platform]
+
+    any_group = _build_plan_group(any_records, hotels, labels, raw_to_label)
+    bf_group = _build_plan_group(bf_records, hotels, labels, raw_to_label)
+
     return {
         "labels": labels,
         "hotels": hotels,
-        "overview": overview_datasets,
-        "byHotel": by_hotel,
+        "any": any_group,
+        "bf": bf_group,
+        "overview": any_group["overview"],
+        "byHotel": any_group["byHotel"],
     }
 
 
@@ -435,9 +452,15 @@ def export_to_html(
       color: #ffffff;
       border-color: var(--primary);
     }}
+    .chart-subtitle {{
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--text);
+      margin: 14px 0 8px 0;
+    }}
     .chart-container {{
       position: relative;
-      height: 300px;
+      height: 280px;
       width: 100%;
     }}
   </style>
@@ -452,76 +475,19 @@ def export_to_html(
   <div class="history-wrap">
     <h2 style="font-size:1rem;margin:0 0 10px 0;">📈 房價趨勢折線圖</h2>
     <div id="chart-tabs" class="chart-tabs"></div>
+    <h3 class="chart-subtitle">🛏️ 不限早餐（最低價）</h3>
     <div class="chart-container">
       <canvas id="priceChart"></canvas>
+    </div>
+    <h3 class="chart-subtitle">🍴 含早餐方案</h3>
+    <div class="chart-container">
+      <canvas id="priceChartBf"></canvas>
     </div>
   </div>
   <script>
     const CHART_DATA = {chart_json};
-    const PALETTE = ["#2563eb", "#059669", "#d97706", "#dc2626", "#7c3aed", "#0891b2"];
-
-    function buildDatasets(rawSeries) {{
-      return rawSeries.map((item, idx) => {{
-        const color = PALETTE[idx % PALETTE.length];
-        return {{
-          label: item.label,
-          data: item.data,
-          borderColor: color,
-          backgroundColor: color + "22",
-          borderWidth: 2.5,
-          pointRadius: 4,
-          pointHoverRadius: 6,
-          tension: 0.25,
-          spanGaps: true
-        }};
-      }});
-    }}
-
-    const ctx = document.getElementById("priceChart").getContext("2d");
-    const chart = new Chart(ctx, {{
-      type: "line",
-      data: {{
-        labels: CHART_DATA.labels,
-        datasets: buildDatasets(CHART_DATA.overview)
-      }},
-      options: {{
-        responsive: true,
-        maintainAspectRatio: false,
-        interaction: {{ mode: "index", intersect: false }},
-        plugins: {{
-          legend: {{ position: "bottom", labels: {{ boxWidth: 12, font: {{ size: 11 }} }} }},
-          tooltip: {{
-            callbacks: {{
-              label: (c) => c.parsed.y == null ? `${{c.dataset.label}}: 無資料` : `${{c.dataset.label}}: TWD ${{c.parsed.y.toLocaleString()}}`
-            }}
-          }}
-        }},
-        scales: {{
-          y: {{
-            ticks: {{ callback: (v) => "NT$" + Number(v).toLocaleString() }}
-          }}
-        }}
-      }}
-    }});
-
-    const tabsEl = document.getElementById("chart-tabs");
-    const tabOptions = [{{ key: "__all__", label: "全部飯店（最低價）" }}].concat(
-      CHART_DATA.hotels.map((h) => ({{ key: h, label: h }}))
-    );
-    tabOptions.forEach((opt, i) => {{
-      const btn = document.createElement("button");
-      btn.type = "button";
-      btn.className = "chart-tab" + (i === 0 ? " active" : "");
-      btn.textContent = opt.label;
-      btn.addEventListener("click", () => {{
-        tabsEl.querySelectorAll(".chart-tab").forEach((b) => b.classList.remove("active"));
-        btn.classList.add("active");
-        const raw = opt.key === "__all__" ? CHART_DATA.overview : (CHART_DATA.byHotel[opt.key] || []);
-        chart.data.datasets = buildDatasets(raw);
-        chart.update();
-      }});
-      tabsEl.appendChild(btn);
-    }});
+    const PALETTE = ["#2563eb", "#059669", "#d97706", "#7c3aed", "#0891b2", "#db2777"];
+    let activeHotelKey = "__all__";
 
     function updateTargetBox(box) {{
       const input = box.querySelector(".target-input");
@@ -552,6 +518,127 @@ def export_to_html(
         input.value = saved;
       }}
       updateTargetBox(box);
+    }});
+
+    function getTargetPrice(hotelName, planTitle) {{
+      const expectedKey = `${{hotelName}}||${{planTitle}}`;
+      let foundVal = null;
+      document.querySelectorAll(".plan-box[data-target-key]").forEach((box) => {{
+        if (box.dataset.targetKey !== expectedKey) return;
+        const input = box.querySelector(".target-input");
+        const val = Number(input && input.value);
+        if (input && input.value && !isNaN(val) && val > 0) {{
+          foundVal = val;
+        }}
+      }});
+      return foundVal;
+    }}
+
+    function buildDatasets(rawSeries, hotelKey, planTitle) {{
+      const datasets = rawSeries.map((item, idx) => {{
+        const color = PALETTE[idx % PALETTE.length];
+        return {{
+          label: item.label,
+          data: item.data,
+          borderColor: color,
+          backgroundColor: color + "22",
+          borderWidth: 2.5,
+          pointRadius: 4,
+          pointHoverRadius: 6,
+          tension: 0.25,
+          spanGaps: true
+        }};
+      }});
+
+      if (hotelKey !== "__all__") {{
+        const targetVal = getTargetPrice(hotelKey, planTitle);
+        if (targetVal !== null) {{
+          datasets.push({{
+            label: `🎯 目標價 (TWD ${{targetVal.toLocaleString()}})`,
+            data: CHART_DATA.labels.map(() => targetVal),
+            borderColor: "#dc2626",
+            backgroundColor: "#dc262622",
+            borderWidth: 2,
+            borderDash: [6, 6],
+            pointRadius: 0,
+            pointHoverRadius: 4,
+            tension: 0,
+            spanGaps: true
+          }});
+        }}
+      }}
+      return datasets;
+    }}
+
+    function createChartOptions() {{
+      return {{
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: {{ mode: "index", intersect: false }},
+        plugins: {{
+          legend: {{ position: "bottom", labels: {{ boxWidth: 12, font: {{ size: 11 }} }} }},
+          tooltip: {{
+            callbacks: {{
+              label: (c) => c.parsed.y == null ? `${{c.dataset.label}}: 無資料` : `${{c.dataset.label}}: TWD ${{c.parsed.y.toLocaleString()}}`
+            }}
+          }}
+        }},
+        scales: {{
+          y: {{
+            ticks: {{ callback: (v) => "NT$" + Number(v).toLocaleString() }}
+          }}
+        }}
+      }};
+    }}
+
+    const chartAny = new Chart(document.getElementById("priceChart").getContext("2d"), {{
+      type: "line",
+      data: {{
+        labels: CHART_DATA.labels,
+        datasets: buildDatasets(CHART_DATA.any.overview, "__all__", "不限早餐（最低價）")
+      }},
+      options: createChartOptions()
+    }});
+
+    const chartBf = new Chart(document.getElementById("priceChartBf").getContext("2d"), {{
+      type: "line",
+      data: {{
+        labels: CHART_DATA.labels,
+        datasets: buildDatasets(CHART_DATA.bf.overview, "__all__", "含早餐方案")
+      }},
+      options: createChartOptions()
+    }});
+
+    function refreshCharts() {{
+      const rawAny = activeHotelKey === "__all__" ? CHART_DATA.any.overview : (CHART_DATA.any.byHotel[activeHotelKey] || []);
+      const rawBf = activeHotelKey === "__all__" ? CHART_DATA.bf.overview : (CHART_DATA.bf.byHotel[activeHotelKey] || []);
+      chartAny.data.datasets = buildDatasets(rawAny, activeHotelKey, "不限早餐（最低價）");
+      chartBf.data.datasets = buildDatasets(rawBf, activeHotelKey, "含早餐方案");
+      chartAny.update();
+      chartBf.update();
+    }}
+
+    const tabsEl = document.getElementById("chart-tabs");
+    const tabOptions = [{{ key: "__all__", label: "全部飯店（最低價）" }}].concat(
+      CHART_DATA.hotels.map((h) => ({{ key: h, label: h }}))
+    );
+    tabOptions.forEach((opt, i) => {{
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "chart-tab" + (i === 0 ? " active" : "");
+      btn.textContent = opt.label;
+      btn.addEventListener("click", () => {{
+        tabsEl.querySelectorAll(".chart-tab").forEach((b) => b.classList.remove("active"));
+        btn.classList.add("active");
+        activeHotelKey = opt.key;
+        refreshCharts();
+      }});
+      tabsEl.appendChild(btn);
+    }});
+
+    document.querySelectorAll(".plan-box[data-target-key]").forEach((box) => {{
+      const key = "target:" + box.dataset.targetKey;
+      const input = box.querySelector(".target-input");
       input.addEventListener("input", () => {{
         if (input.value === "") {{
           localStorage.removeItem(key);
@@ -559,6 +646,7 @@ def export_to_html(
           localStorage.setItem(key, input.value);
         }}
         updateTargetBox(box);
+        refreshCharts();
       }});
     }});
   </script>
