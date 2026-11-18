@@ -1,4 +1,12 @@
 ﻿hotel_name,platform,check_in,check_out,price,currency,room_type,url,scraped_at,error
+東京黎凡特東武酒店,Booking [不限早餐 | IP:US (98.89.53.239)],2027-01-17,2027-01-19,17198,TWD,Standard Twin Room - Non-Smoking - No Tower View + Standard Twin Room - Non-Smoking - No Tower View (2間組合),https://www.booking.com/hotel/jp/tobu-levant-tokyo.zh-tw.html?checkin=2027-01-17&checkout=2027-01-19&group_adults=5&no_rooms=2&group_children=0&selected_currency=TWD&lang=zh-tw,2026-11-18T17:34:52+08:00,
+東京黎凡特東武酒店,Agoda [不限早餐 | IP:US (98.89.53.239)],2027-01-17,2027-01-19,18760,TWD,標準房(兩床) - 禁菸,https://www.agoda.com/zh-tw/tobu-hotel-levant-tokyo/hotel/tokyo-jp.html?checkIn=2027-01-17&los=2&rooms=2&adults=5&children=0&currencyCode=TWD,2026-11-18T17:34:34+08:00,
+東京黎凡特東武酒店,Agoda [含早餐 | IP:US (98.89.53.239)],2027-01-17,2027-01-19,23273,TWD,標準房(兩床) - 禁菸,https://www.agoda.com/zh-tw/tobu-hotel-levant-tokyo/hotel/tokyo-jp.html?checkIn=2027-01-17&los=2&rooms=2&adults=5&children=0&currencyCode=TWD,2026-11-18T17:34:43+08:00,
+東京黎凡特東武酒店,Booking [含早餐 | IP:US (98.89.53.239)],2027-01-17,2027-01-19,25590,TWD,Economy Twin Room - Non-Smoking - No Tower View + Twin Room with Sofa Bed - Non-Smoking - No Tower View (2間組合),https://www.booking.com/hotel/jp/tobu-levant-tokyo.zh-tw.html?checkin=2027-01-17&checkout=2027-01-19&group_adults=5&no_rooms=2&group_children=0&selected_currency=TWD&lang=zh-tw,2026-11-18T17:35:00+08:00,
+淺草東武飯店,Booking [不限早餐 | IP:US (98.89.53.239)],2027-01-15,2027-01-17,32080,TWD,雙人間A + 凱蒂貓客房－現代和風－（四人房） (2間組合),https://www.booking.com/hotel/jp/asakusa-tobu.zh-tw.html?checkin=2027-01-15&checkout=2027-01-17&group_adults=5&no_rooms=2&group_children=0&selected_currency=TWD&lang=zh-tw,2026-11-18T17:33:49+08:00,
+淺草東武飯店,Booking [含早餐 | IP:US (98.89.53.239)],2027-01-15,2027-01-17,35366,TWD,雙人間A + 凱蒂貓客房－現代和風－（四人房） (2間組合),https://www.booking.com/hotel/jp/asakusa-tobu.zh-tw.html?checkin=2027-01-15&checkout=2027-01-17&group_adults=5&no_rooms=2&group_children=0&selected_currency=TWD&lang=zh-tw,2026-11-18T17:33:58+08:00,
+淺草東武飯店,Agoda [不限早餐 | IP:US (98.89.53.239)],2027-01-15,2027-01-17,75761,TWD,四人房 - 禁菸,https://www.agoda.com/zh-tw/asakusa-tobu-hotel/hotel/tokyo-jp.html?checkIn=2027-01-15&los=2&rooms=2&adults=5&children=0&currencyCode=TWD,2026-11-18T17:33:33+08:00,
+淺草東武飯店,Agoda [含早餐 | IP:US (98.89.53.239)],2027-01-15,2027-01-17,83831,TWD,四人房 - 禁菸,https://www.agoda.com/zh-tw/asakusa-tobu-hotel/hotel/tokyo-jp.html?checkIn=2027-01-15&los=2&rooms=2&adults=5&children=0&currencyCode=TWD,2026-11-18T17:33:43+08:00,
 淺草東武飯店,Booking [不限早餐 | IP:US (135.119.23.212)],2027-01-15,2027-01-17,,TWD,,,2026-11-18T17:04:55+08:00,Booking.com 未找到 淺草東武飯店 的可訂房型或含稅房價
 東京黎凡特東武酒店,Booking [不限早餐 | IP:US (135.119.23.212)],2027-01-17,2027-01-19,,TWD,,,2026-11-18T17:05:25+08:00,Booking.com 未找到 東京黎凡特東武酒店 的可訂房型或含稅房價
 淺草東武飯店,Booking [不限早餐 | IP:US (172.206.39.212)],2027-01-15,2027-01-17,,TWD,,,2026-11-18T17:07:53+08:00,Booking.com 未找到 淺草東武飯店 的可訂房型或含稅房價
@@ -11,7 +19,11 @@
 東京黎凡特東武酒店,Trip.com [TW站 | 不限早餐 | IP:US (135.119.23.212)],2027-01-17,2027-01-19,,TWD,,,2026-11-18T17:05:13+08:00,未在頁面中找到 東京黎凡特東武酒店 的 TWD 房價
 淺草東武飯店,Trip.com [TW站 | 不限早餐 | IP:US (172.206.39.212)],2027-01-15,2027-01-17,,TWD,,,2026-11-18T17:07:41+08:00,未在頁面中找到 淺草東武飯店 的 TWD 房價
 東京黎凡特東武酒店,Trip.com [TW站 | 不限早餐 | IP:US (172.206.39.212)],2027-01-17,2027-01-19,,TWD,,,2026-11-18T17:08:12+08:00,未在頁面中找到 東京黎凡特東武酒店 的 TWD 房價
+淺草東武飯店,Trip.com [TW站 | 不限早餐 | IP:US (98.89.53.239)],2027-01-15,2027-01-17,,TWD,,,2026-11-18T17:33:11+08:00,未在頁面中找到 淺草東武飯店 的 TWD 房價
+東京黎凡特東武酒店,Trip.com [TW站 | 不限早餐 | IP:US (98.89.53.239)],2027-01-17,2027-01-19,,TWD,,,2026-11-18T17:34:11+08:00,未在頁面中找到 東京黎凡特東武酒店 的 TWD 房價
 淺草東武飯店,Trip.com [TW站 | 含早餐 | IP:US (135.119.23.212)],2027-01-15,2027-01-17,,TWD,,,2026-11-18T17:04:50+08:00,未在頁面中找到 淺草東武飯店 的 TWD 房價
 東京黎凡特東武酒店,Trip.com [TW站 | 含早餐 | IP:US (135.119.23.212)],2027-01-17,2027-01-19,,TWD,,,2026-11-18T17:05:20+08:00,未在頁面中找到 東京黎凡特東武酒店 的 TWD 房價
 淺草東武飯店,Trip.com [TW站 | 含早餐 | IP:US (172.206.39.212)],2027-01-15,2027-01-17,,TWD,,,2026-11-18T17:07:48+08:00,未在頁面中找到 淺草東武飯店 的 TWD 房價
 東京黎凡特東武酒店,Trip.com [TW站 | 含早餐 | IP:US (172.206.39.212)],2027-01-17,2027-01-19,,TWD,,,2026-11-18T17:08:18+08:00,未在頁面中找到 東京黎凡特東武酒店 的 TWD 房價
+淺草東武飯店,Trip.com [TW站 | 含早餐 | IP:US (98.89.53.239)],2027-01-15,2027-01-17,,TWD,,,2026-11-18T17:33:24+08:00,未在頁面中找到 淺草東武飯店 的 TWD 房價
+東京黎凡特東武酒店,Trip.com [TW站 | 含早餐 | IP:US (98.89.53.239)],2027-01-17,2027-01-19,,TWD,,,2026-11-18T17:34:25+08:00,未在頁面中找到 東京黎凡特東武酒店 的 TWD 房價
