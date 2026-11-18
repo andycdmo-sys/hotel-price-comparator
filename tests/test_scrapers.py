@@ -1,10 +1,23 @@
 """爬蟲錯誤隔離單元測試。"""
 
-import asyncio
+from typing import Any, Coroutine, TypeVar
 
 from src.models import HotelPriceResult
 from src.scrapers.base import BaseHotelScraper, run_scrapers
 from src.scrapers.trip_com import TripComScraper
+
+_T = TypeVar("_T")
+
+
+def _run_sync(coro: Coroutine[Any, Any, _T]) -> _T:
+    """直接同步驅動無須事件迴圈 I/O 的協程，避免在沙盒中建立 socketpair。"""
+    try:
+        while True:
+            coro.send(None)
+    except StopIteration as stop:
+        return stop.value
+    finally:
+        coro.close()
 
 
 class _FailingScraper(BaseHotelScraper):
@@ -28,7 +41,7 @@ class _SuccessScraper(BaseHotelScraper):
 
 
 def test_run_scrapers_isolates_single_platform_failure() -> None:
-    results = asyncio.run(
+    results = _run_sync(
         run_scrapers(
             scrapers=[_FailingScraper(), _SuccessScraper()],
             context=None,  # type: ignore[arg-type]

@@ -22,7 +22,7 @@ trigger: always_on
 ## 3. 開發與驗證規範
 1. **Python 虛擬環境**：
    - 優先使用專案根目錄 `.venv` 內的 Python 執行測試與腳本（`.\.venv\Scripts\python.exe`）。
-   - 在 Windows 沙盒環境執行 `pytest` 或 Playwright 時，因沙盒網路隔離會阻擋 `asyncio` 建立本機 `socketpair`，執行前請以中文向使用者說明此技術理由後再於沙盒外執行。
+   - `pytest` 單元測試可直接於沙盒內執行（測試內不呼叫 `asyncio.run()`）；僅執行需要連網或實際啟動 Playwright 瀏覽器的命令時，因沙盒網路隔離與 `asyncio` 事件迴圈會建立本機 `socketpair`，執行前請以中文向使用者說明理由後再於沙盒外執行。
 2. **品質檢查**：
    - 調整 `src/` 程式碼或追蹤清單後，務必執行 `.\.venv\Scripts\python.exe -m pytest -v` 確認測試全數通過。
    - 若調整 `OKINAWA_WATCHLIST` 或匯出格式，需同步確認 `docs/index.html` 可正常產出。
