@@ -100,12 +100,17 @@ NON_ROOM_LINE_KEYWORDS = (
 )
 
 
+def _strip_hotel_suffix(name: str) -> str:
+    return re.sub(r"(?:大飯店|大酒店|飯店|酒店|渡假村|度假村|旅館)$", "", (name or "").strip()).strip()
+
+
 def _extract_hotel_price_and_room(
     lines: list[str],
     hotel_name: str,
+    allow_cta_fallback: bool = True,
 ) -> tuple[Optional[float], str]:
     """從頁面文字行中定位飯店卡片並擷取含稅房價與房型名稱。"""
-    short_name = re.sub(r"(?:大飯店|大酒店|飯店|酒店|渡假村|度假村|旅館)$", "", hotel_name).strip()
+    short_name = _strip_hotel_suffix(hotel_name)
     extra_tokens = [short_name] if len(short_name) >= 2 else []
     name_tokens = [tok.lower() for tok in (hotel_name, *extra_tokens, *HOTEL_NAME_KEYWORDS) if tok]
 
@@ -153,7 +158,7 @@ def _extract_hotel_price_and_room(
                     continue
                 if "(" in stripped and "-" in stripped:
                     continue
-                if any(k in low_line for k in ("總額", "連稅", "total", "incl", "合計", "税込")):
+                if any(k in low_line for k in ("總額", "總價", "連稅", "total", "incl", "合計", "税込")):
                     inline_match = PRICE_INLINE_RE.search(stripped)
                     if inline_match:
                         val = float(inline_match.group(1).replace(",", ""))
@@ -202,7 +207,7 @@ def _extract_hotel_price_and_room(
         return None, ""
 
     found_price, found_room = _scan_candidates(candidate_indices)
-    if found_price is not None:
+    if found_price is not None or not allow_cta_fallback:
         return found_price, found_room
 
     # 若日文/英文站將飯店名稱翻譯而無法比對原文，改用卡片 CTA 按鈕往回定位第一張目標飯店卡片
@@ -260,8 +265,16 @@ class TripComScraper(BaseHotelScraper):
         meal_label = "含早餐" if self.breakfast_only else "不限早餐"
         self.platform_name = f"Trip.com [{self.site_code.upper()}站 | {meal_label} | IP:{self.ip_info or 'LOCAL'}]"
 
-    def build_search_url(self, hotel_name: str, check_in: str, check_out: str) -> str:
-        encoded_word = quote(hotel_name)
+    def build_search_url(
+        self,
+        hotel_name: str,
+        check_in: str,
+        check_out: str,
+        rooms: Optional[int] = None,
+    ) -> str:
+        clean_word = (_strip_hotel_suffix(hotel_name) or hotel_name) if self.hotel_id else hotel_name
+        encoded_word = quote(clean_word)
+        target_rooms = rooms if rooms is not None else self.rooms
         location_params = ""
         if self.city_id:
             location_params += f"&cityId={self.city_id}"
@@ -278,7 +291,7 @@ class TripComScraper(BaseHotelScraper):
             f"&searchType=H&optionId={self.hotel_id}"
             f"&searchValue=31%7C{self.hotel_id}*31*{self.hotel_id}"
             f"&checkin={check_in}&checkout={check_out}"
-            f"&crn={self.rooms}&adult={self.adults}&children={self.children}"
+            f"&crn={target_rooms}&adult={self.adults}&children={self.children}"
         )
         if self.children > 0 and self.child_ages:
             url += f"&ages={quote(self.child_ages)}"
@@ -294,22 +307,33 @@ class TripComScraper(BaseHotelScraper):
 
         page = await context.new_page()
         found: dict[str, str] = {}
+        query_core = (_strip_hotel_suffix(hotel_name) or hotel_name).lower()
 
         async def _on_resp(resp: Response) -> None:
             if "getHotelKeywords" not in resp.url or resp.status != 200:
                 return
             try:
                 data = await resp.json()
-                kw_list = data.get("data", {}).get("mainKeywordList", {}).get("keywords", [])
-                if kw_list:
-                    first = kw_list[0].get("keyword", {})
-                    hotel_id = str(
-                        (first.get("hotelInfo") or {}).get("hotelId")
-                        or (first.get("keywordContentInfo") or {}).get("keywordId")
-                        or ""
-                    ).strip()
-                    if hotel_id:
-                        found["hotel_id"] = hotel_id
+                kw_list = data.get("data", {}).get("mainKeywordList", {}).get("keywords", []) or []
+                matched_id = ""
+                fallback_hotel_id = ""
+                for entry in kw_list:
+                    kw = entry.get("keyword") or {}
+                    hotel_info = kw.get("hotelInfo") or {}
+                    kw_info = kw.get("keywordContentInfo") or {}
+                    hid = str(hotel_info.get("hotelId") or "").strip()
+                    if not hid:
+                        continue
+                    if not fallback_hotel_id:
+                        fallback_hotel_id = hid
+                    cand_title = str(kw_info.get("keyword") or "").strip()
+                    cand_core = (_strip_hotel_suffix(cand_title) or cand_title).lower()
+                    if query_core and cand_core and (query_core in cand_core or cand_core in query_core):
+                        matched_id = hid
+                        break
+                resolved_id = matched_id or fallback_hotel_id
+                if resolved_id:
+                    found["hotel_id"] = resolved_id
             except Exception:  # noqa: BLE001
                 pass
 
@@ -348,35 +372,50 @@ class TripComScraper(BaseHotelScraper):
             self.province_id = ""
             self.country_id = ""
 
-        target_url = self.build_search_url(hotel_name=hotel_name, check_in=check_in, check_out=check_out)
+        room_candidates = [self.rooms]
+        if self.adults >= 4 and self.rooms == 1:
+            r2 = max(1, (self.adults + 2) // 3)
+            r3 = max(1, (self.adults + 1) // 2)
+            room_candidates = [r2] if r3 == r2 else [r2, r3]
+
         page = await context.new_page()
         try:
-            await page.goto(target_url, wait_until="domcontentloaded")
-            await page.wait_for_timeout(6000)
+            for target_rooms in room_candidates:
+                target_url = self.build_search_url(
+                    hotel_name=hotel_name,
+                    check_in=check_in,
+                    check_out=check_out,
+                    rooms=target_rooms,
+                )
+                await page.goto(target_url, wait_until="domcontentloaded")
+                await page.wait_for_timeout(6000)
 
-            current_url = page.url.lower()
-            if "/account/signin" in current_url or "signin" in (await page.title()).lower():
-                raise RuntimeError("頁面跳轉至登入驗證，無法讀取房價")
+                current_url = page.url.lower()
+                if "/account/signin" in current_url or "signin" in (await page.title()).lower():
+                    raise RuntimeError("頁面跳轉至登入驗證，無法讀取房價")
 
-            body_text = await page.locator("body").inner_text()
-            if any(flag in body_text.lower() for flag in ("verify you are human", "captcha", "人機驗證")):
-                raise RuntimeError("觸發網站人機驗證 (CAPTCHA)，已停止該分站抓取")
+                body_text = await page.locator("body").inner_text()
+                if any(flag in body_text.lower() for flag in ("verify you are human", "captcha", "人機驗證")):
+                    raise RuntimeError("觸發網站人機驗證 (CAPTCHA)，已停止該分站抓取")
 
-            lines = [ln.strip() for ln in body_text.splitlines() if ln.strip()]
-            price, room_type = _extract_hotel_price_and_room(lines=lines, hotel_name=hotel_name)
+                lines = [ln.strip() for ln in body_text.splitlines() if ln.strip()]
+                price, room_type = _extract_hotel_price_and_room(
+                    lines=lines,
+                    hotel_name=hotel_name,
+                    allow_cta_fallback=(self.site_code != "tw"),
+                )
+                if price is not None:
+                    return HotelPriceResult(
+                        hotel_name=hotel_name,
+                        platform=self.platform_name,
+                        check_in=check_in,
+                        check_out=check_out,
+                        price=price,
+                        currency=self.currency,
+                        room_type=room_type,
+                        url=page.url,
+                    )
 
-            if price is None:
-                raise RuntimeError(f"未在頁面中找到 {hotel_name} 的 {self.currency} 房價")
-
-            return HotelPriceResult(
-                hotel_name=hotel_name,
-                platform=self.platform_name,
-                check_in=check_in,
-                check_out=check_out,
-                price=price,
-                currency=self.currency,
-                room_type=room_type,
-                url=page.url,
-            )
+            raise RuntimeError(f"未在頁面中找到 {hotel_name} 的 {self.currency} 房價")
         finally:
             await page.close()

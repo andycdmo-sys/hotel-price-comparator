@@ -305,3 +305,106 @@ def test_agoda_currency_mismatch_and_low_twd_guard() -> None:
     price, room = extract_agoda_room_grid_price(valid_twd_grid, expected_currency="TWD")
     assert price == 3500.0
     assert room == "Deluxe Ocean"
+
+
+def test_booking_multi_room_group_combination() -> None:
+    from src.scrapers.booking import extract_booking_room_table_price
+
+    rows = [
+        {
+            "room": "三人房",
+            "occ": "最多人數: 3",
+            "price": "TWD 12,450",
+            "tax": "含稅費與其他費用",
+            "cond": "評價很好 的早餐 TWD 659",
+            "maxRooms": 1,
+        },
+        {
+            "room": "三人房",
+            "occ": "最多人數: 3",
+            "price": "TWD 14,558",
+            "tax": "含稅費與其他費用",
+            "cond": "含早餐－評價很好",
+            "maxRooms": 1,
+        },
+        {
+            "room": "經濟雙床房",
+            "occ": "最多人數: 2",
+            "price": "TWD 9,371",
+            "tax": "含稅費與其他費用",
+            "cond": "評價很好 的早餐 TWD 659",
+            "maxRooms": 5,
+        },
+        {
+            "room": "經濟雙床房",
+            "occ": "最多人數: 2",
+            "price": "TWD 10,777",
+            "tax": "含稅費與其他費用",
+            "cond": "含早餐－評價很好",
+            "maxRooms": 5,
+        },
+    ]
+
+    price_any, room_any = extract_booking_room_table_price(rows, adults=5, children=0, breakfast_only=False)
+    price_bf, room_bf = extract_booking_room_table_price(rows, adults=5, children=0, breakfast_only=True)
+    assert price_any == 21821.0
+    assert "三人房" in room_any and "經濟雙床房" in room_any and "2間組合" in room_any
+    assert price_bf == 25335.0
+    assert "2間組合" in room_bf
+
+    # 測試庫存上限 maxRooms=1 時不會重複挑選同一間房，改以 3 間組合 (3+2 與 2*3 驗證：此處 6 人需三間)
+    limited_rows = [
+        {"room": "單一四人房", "occ": "最多人數: 4", "price": "TWD 10,000", "tax": "", "cond": "", "maxRooms": 1},
+        {"room": "雙床房", "occ": "最多人數: 2", "price": "TWD 6,000", "tax": "", "cond": "", "maxRooms": 3},
+    ]
+    p_six, label_six = extract_booking_room_table_price(limited_rows, adults=6, children=0)
+    assert p_six == 16000.0
+    assert "2間組合" in label_six
+
+
+def test_agoda_multi_room_total_price_and_trip_total_label() -> None:
+    from src.scrapers.trip_com import _extract_hotel_price_and_room
+
+    multi_grid = {
+        "masterRooms": [
+            {
+                "name": "標準房(兩床)",
+                "rooms": [
+                    {
+                        "name": "標準房(兩床)",
+                        "currency": "TWD",
+                        "isFit": True,
+                        "availability": 2,
+                        "isBreakfastIncluded": False,
+                        "inclusivePrice": {"display": 4598.14},
+                        "totalPrice": {"display": 18392.56},
+                    }
+                ],
+            }
+        ]
+    }
+    price, _ = extract_agoda_room_grid_price(multi_grid, expected_currency="TWD")
+    assert price == 18393.0
+
+    lines_with_total = [
+        "找到1處住宿",
+        "淺草東武酒店",
+        "雙床房",
+        "TWD 7,200",
+        "總價：TWD 28,800",
+        "2間 × 2晚 含稅項及費用",
+        "查看空房情況",
+    ]
+    trip_price, trip_room = _extract_hotel_price_and_room(lines_with_total, "淺草東武飯店", allow_cta_fallback=False)
+    assert trip_price == 28800.0
+    assert trip_room == "雙床房"
+
+    wrong_hotel_lines = [
+        "找到1處住宿",
+        "都市賓館（青島五四廣場萬象城店）",
+        "大床房",
+        "總價：TWD 3,486",
+        "查看空房情況",
+    ]
+    miss_price, _ = _extract_hotel_price_and_room(wrong_hotel_lines, "淺草東武飯店", allow_cta_fallback=False)
+    assert miss_price is None

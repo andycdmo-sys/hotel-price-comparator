@@ -1,6 +1,8 @@
 """Booking.com 含稅總價飯店爬蟲模組。"""
 
 import re
+from collections import Counter
+from itertools import combinations_with_replacement
 from typing import Any, Optional
 from urllib.parse import quote, urlparse
 
@@ -82,37 +84,57 @@ def _parse_total_price_with_tax(price_text: str, tax_text: str) -> Optional[floa
     return float(round(base_price))
 
 
-def _row_fits_guests(row: dict[str, Any], adults: int, children: int) -> bool:
+def _extract_row_capacity(row: dict[str, Any]) -> tuple[int, int, int]:
+    """解析 Booking.com 單列房型的 `(最多成人數, 最多兒童數, 總人數上限)`；無法辨識時回傳 `(0, 0, 0)`。"""
     occ_text = str(row.get("occ") or "").replace("\xa0", " ").strip()
     if not occ_text:
         adult_icons = int(row.get("occAdultsIcons") or 0)
         child_icons = int(row.get("occChildrenIcons") or 0)
         if adult_icons > 0:
-            if adults > adult_icons:
-                return False
-            remaining = adult_icons - adults
-            return children <= (child_icons + remaining)
-        return True
+            return adult_icons, child_icons, adult_icons + child_icons
+        return 0, 0, 0
 
     strict_m = re.search(r"限\s*(\d+)\s*人入住", occ_text)
-    if strict_m and (adults + children) > int(strict_m.group(1)):
-        return False
-
     total_m = re.search(r"最多(?:人數|可住)[：:]?\s*(\d+)", occ_text)
-    if total_m and (adults + children) > int(total_m.group(1)):
-        return False
-
     adult_m = re.search(r"(?:最多成人人數|Max(?:imum)?\s*adults?)[：:]?\s*(\d+)", occ_text, re.IGNORECASE)
     child_m = re.search(r"(?:最多兒童人數|Max(?:imum)?\s*children)[：:]?\s*(\d+)", occ_text, re.IGNORECASE)
+
     if adult_m is not None:
         max_adults = int(adult_m.group(1))
-        if adults > max_adults:
-            return False
         max_children = int(child_m.group(1)) if child_m is not None else 0
-        remaining_adult_slots = max_adults - adults
-        return children <= (max_children + remaining_adult_slots)
+        max_total = max_adults + max_children
+        if total_m:
+            max_total = min(max_total, int(total_m.group(1)))
+        if strict_m:
+            max_total = min(max_total, int(strict_m.group(1)))
+            max_adults = min(max_adults, max_total)
+        return max_adults, max_children, max_total
 
-    return True
+    if strict_m or total_m:
+        cap = int(strict_m.group(1)) if strict_m else int(total_m.group(1))
+        if strict_m and total_m:
+            cap = min(int(strict_m.group(1)), int(total_m.group(1)))
+        return cap, cap, cap
+
+    adult_icons = int(row.get("occAdultsIcons") or 0)
+    child_icons = int(row.get("occChildrenIcons") or 0)
+    if adult_icons > 0:
+        return adult_icons, child_icons, adult_icons + child_icons
+    return 0, 0, 0
+
+
+def _capacity_fits(max_adults: int, max_children: int, max_total: int, adults: int, children: int) -> bool:
+    if max_total <= 0:
+        return True
+    if adults > max_adults or (adults + children) > max_total:
+        return False
+    remaining_adult_slots = max_adults - adults
+    return children <= (max_children + remaining_adult_slots)
+
+
+def _row_fits_guests(row: dict[str, Any], adults: int, children: int) -> bool:
+    max_adults, max_children, max_total = _extract_row_capacity(row)
+    return _capacity_fits(max_adults, max_children, max_total, adults, children)
 
 
 def _is_row_breakfast_included(cond_text: str) -> bool:
@@ -126,13 +148,12 @@ def extract_booking_room_table_price(
     children: int = 0,
     breakfast_only: bool = False,
 ) -> tuple[Optional[float], str]:
-    """從 Booking.com 飯店頁面 `#hprt-table` 列資料擷取符合人數與早餐條件的最低含稅總價。"""
+    """從 Booking.com 飯店頁面 `#hprt-table` 列資料擷取最低含稅總價（單房不足時自動試算 2～3 間多房組合）。"""
     best_price: Optional[float] = None
     best_room = ""
 
+    valid_rates: list[dict[str, Any]] = []
     for row in rows_data:
-        if not _row_fits_guests(row, adults=adults, children=children):
-            continue
         cond_text = str(row.get("cond") or "")
         if breakfast_only and not _is_row_breakfast_included(cond_text):
             continue
@@ -144,13 +165,68 @@ def extract_booking_room_table_price(
         if total_price is None or total_price <= 0:
             continue
 
-        if best_price is None or total_price < best_price:
-            best_price = total_price
-            best_room = str(row.get("room") or "").strip()
+        raw_max_rooms = row.get("maxRooms")
+        max_rooms = int(raw_max_rooms) if raw_max_rooms is not None else 1
+        if max_rooms <= 0:
+            continue
 
-    if best_price is None:
+        room_name = str(row.get("room") or "").strip() or "標準房型"
+        max_adults, max_children, max_total = _extract_row_capacity(row)
+        if _capacity_fits(max_adults, max_children, max_total, adults, children):
+            if best_price is None or total_price < best_price:
+                best_price = total_price
+                best_room = room_name
+
+        if max_total > 0:
+            valid_rates.append(
+                {
+                    "room": room_name,
+                    "price": total_price,
+                    "max_adults": max_adults,
+                    "max_children": max_children,
+                    "max_total": max_total,
+                    "max_rooms": max_rooms,
+                }
+            )
+
+    if best_price is not None:
+        return best_price, best_room
+
+    if not valid_rates or (adults + children) <= 1:
         return None, ""
-    return best_price, best_room
+
+    # 依 `(房型名稱, 可住人數)` 取最低價方案，避免重複列組合爆炸，並記錄各房型實體庫存上限
+    dedup_map: dict[tuple[str, int], dict[str, Any]] = {}
+    room_inventory: dict[str, int] = {}
+    for rate in valid_rates:
+        r_name = rate["room"]
+        room_inventory[r_name] = max(room_inventory.get(r_name, 0), rate["max_rooms"])
+        key = (r_name, rate["max_total"])
+        if key not in dedup_map or rate["price"] < dedup_map[key]["price"]:
+            dedup_map[key] = rate
+
+    options = sorted(dedup_map.values(), key=lambda x: x["price"])[:12]
+    combo_best_price: Optional[float] = None
+    combo_best_label = ""
+    for room_count in (2, 3):
+        for combo in combinations_with_replacement(options, room_count):
+            counts = Counter(item["room"] for item in combo)
+            if any(cnt > room_inventory.get(r_name, 1) for r_name, cnt in counts.items()):
+                continue
+            sum_adults = sum(item["max_adults"] for item in combo)
+            sum_children = sum(item["max_children"] for item in combo)
+            sum_total = sum(item["max_total"] for item in combo)
+            if not _capacity_fits(sum_adults, sum_children, sum_total, adults, children):
+                continue
+
+            combo_price = float(round(sum(item["price"] for item in combo)))
+            if combo_best_price is None or combo_price < combo_best_price:
+                combo_best_price = combo_price
+                combo_best_label = " + ".join(item["room"] for item in combo) + f" ({room_count}間組合)"
+
+    if combo_best_price is None:
+        return None, ""
+    return combo_best_price, combo_best_label
 
 
 def extract_booking_price_from_cards(
@@ -235,9 +311,10 @@ class BookingScraper(BaseHotelScraper):
         self.platform_name = f"Booking [{meal_label} | IP:{self.ip_info or 'LOCAL'}]"
 
     def _guest_query_params(self, check_in: str, check_out: str) -> str:
+        effective_rooms = max(self.rooms, (self.adults + 2) // 3) if (self.adults >= 4 and self.rooms == 1) else self.rooms
         params = (
             f"checkin={check_in}&checkout={check_out}"
-            f"&group_adults={self.adults}&no_rooms={self.rooms}&group_children={self.children}"
+            f"&group_adults={self.adults}&no_rooms={effective_rooms}&group_children={self.children}"
         )
         if self.children > 0:
             ages = [a.strip() for a in self.child_ages.split(",") if a.strip()]
@@ -293,6 +370,8 @@ class BookingScraper(BaseHotelScraper):
                     const adultIconsEl = occEl ? occEl.querySelectorAll('.c-occupancy-icons__adults i') : [];
                     const adultIcons = adultIconsEl.length || (occEl ? occEl.querySelectorAll('.bicon-occupancy').length : 0);
                     const childIcons = occEl ? occEl.querySelectorAll('.c-occupancy-icons__children i').length : 0;
+                    const sel = tr.querySelector('select.hprt-nos-select');
+                    const maxRooms = sel ? Math.max(0, ...Array.from(sel.options).map((o) => Number(o.value) || 0)) : 1;
                     return {
                         room: curRoom,
                         occ: occEl ? occEl.textContent.replace(/\\s+/g, ' ').trim() : '',
@@ -301,6 +380,7 @@ class BookingScraper(BaseHotelScraper):
                         price: priceEl ? priceEl.innerText.trim() : '',
                         tax: taxEl ? taxEl.innerText.trim() : '',
                         cond: condEl ? condEl.innerText.replace(/\\s+/g, ' ').trim() : '',
+                        maxRooms,
                     };
                 });
             }"""
