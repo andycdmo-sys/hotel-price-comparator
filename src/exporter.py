@@ -96,6 +96,23 @@ def export_to_csv(
     return output_path
 
 
+def prune_csv_by_profile(csv_path: Path, profile: UserProfile) -> list[HotelPriceResult]:
+    """依使用者目前追蹤的飯店清單清理歷史 CSV，移除已刪除飯店或日期的舊紀錄。"""
+    if not profile.hotels:
+        if csv_path.exists():
+            csv_path.unlink()
+        return []
+    if not csv_path.exists():
+        return []
+
+    active_keys = {(h.name, h.check_in, h.check_out) for h in profile.hotels}
+    records = _load_existing_csv(csv_path)
+    kept = [r for r in records if (r.hotel_name, r.check_in, r.check_out) in active_keys]
+    if len(kept) != len(records):
+        export_to_csv(kept, csv_path, append=False)
+    return kept
+
+
 def _normalize_series_label(platform: str) -> str:
     """移除變動的 IP 資訊（例如 `| IP:US (...)`），讓不同次抓價的同分站方案能連成同一條折線。"""
     return re.sub(r"\s*\|\s*IP:[^\]]+", "", platform).strip()
@@ -337,6 +354,9 @@ def export_user_dashboard_json(
 ) -> Path:
     """產出單一使用者的專屬看板 JSON (`docs/data/<user_id>.json`)。"""
     records = _load_existing_csv(csv_path) if csv_path.exists() else []
+    if profile is not None:
+        active_keys = {(h.name, h.check_in, h.check_out) for h in profile.hotels}
+        records = [r for r in records if (r.hotel_name, r.check_in, r.check_out) in active_keys]
     json_path.parent.mkdir(parents=True, exist_ok=True)
     targets = profile_to_target_prices(profile) if profile is not None else DEFAULT_TARGET_PRICES
 
@@ -676,6 +696,11 @@ def export_to_html(
       color: #ffffff;
       border-color: var(--primary);
     }}
+    .bar-btn.danger {{
+      color: #dc2626;
+      border-color: #fecaca;
+      background: #fef2f2;
+    }}
     .gate-card, .manage-card {{
       background: var(--card);
       border: 1px solid var(--border);
@@ -902,6 +927,7 @@ def export_to_html(
       <button type="button" id="btn-add-hotel" class="bar-btn">➕ 新增一間飯店</button>
       <button type="button" id="btn-save-profile" class="bar-btn primary">💾 儲存我的清單</button>
       <button type="button" id="btn-copy-profile" class="bar-btn">📋 複製設定檔 JSON</button>
+      <button type="button" id="btn-clear-profile" class="bar-btn danger">🗑️ 清空此代號所有資料</button>
       <button type="button" id="btn-collapse-manage" class="bar-btn" style="margin-left:auto;">🔼 收回面板</button>
     </div>
     <div id="manage-status" class="manage-status"></div>
@@ -1391,28 +1417,72 @@ def export_to_html(
 
     document.getElementById("btn-add-hotel").addEventListener("click", () => addHotelRow({{}}));
 
-    document.getElementById("btn-save-profile").addEventListener("click", async () => {{
+    async function syncProfileToCloud(profileObj, isClearing = false) {{
       const statusEl = document.getElementById("manage-status");
-      const profileObj = collectProfileFromForm();
-      localStorage.setItem(`profile_draft:${{activeUserId}}`, JSON.stringify(profileObj));
-      const syncUrl = localStorage.getItem("hpc_cloud_sync_url") || CLOUD_SYNC_URL;
-      if (syncUrl) {{
-        statusEl.textContent = "正在上傳設定至 GitHub 並啟動雲端抓價...";
-        try {{
-          const resp = await fetch(syncUrl, {{
-            method: "POST",
-            headers: {{ "Content-Type": "text/plain;charset=utf-8" }},
-            body: JSON.stringify(profileObj),
-          }});
-          const resData = await resp.json().catch(() => ({{}}));
-          if (!resp.ok || resData.ok === false) throw new Error(resData.error || "SYNC_FAIL");
-          statusEl.textContent = "✅ 已儲存至 GitHub 並啟動雲端抓價！請約 1～2 分鐘後重新整理網頁查看價格。";
-        }} catch (err) {{
-          statusEl.textContent = "⚠️ 已暫存於本機瀏覽器，但雲端同步失敗（" + (err && err.message ? err.message : "請改用複製 JSON 提交") + "）。";
-        }}
+      const clearing = isClearing || !profileObj.hotels || profileObj.hotels.length === 0;
+      if (clearing) {{
+        localStorage.removeItem(`profile_draft:${{activeUserId}}`);
+        Object.keys(localStorage).forEach((k) => {{
+          if (k.startsWith(`target:${{activeUserId}}:`)) {{
+            localStorage.removeItem(k);
+          }}
+        }});
+        document.getElementById("cards-container").innerHTML = '<div class="empty-state">已清空「' + activeUserId + '」的所有飯店資料。</div>';
+        activeChartData = {{ labels: [], hotels: [], any: {{ overview: [], byHotel: {{}} }}, bf: {{ overview: [], byHotel: {{}} }} }};
+        renderChartTabs();
+        refreshCharts();
       }} else {{
-        statusEl.textContent = "✅ 已暫存於本機瀏覽器！（尚未設定雲端轉發網址，如需加入每日排程請點「📋 複製設定檔 JSON」傳給管理員，或填入免費 Google 轉發器即可一鍵同步。）";
+        localStorage.setItem(`profile_draft:${{activeUserId}}`, JSON.stringify(profileObj));
       }}
+
+      const syncUrl = localStorage.getItem("hpc_cloud_sync_url") || CLOUD_SYNC_URL;
+      if (!syncUrl) {{
+        statusEl.textContent = clearing
+          ? "✅ 已清空此代號於本機瀏覽器的所有資料！"
+          : "✅ 已暫存於本機瀏覽器！（尚未設定雲端轉發網址，如需加入每日排程請點「📋 複製設定檔 JSON」傳給管理員，或填入免費 Google 轉發器即可一鍵同步。）";
+        return;
+      }}
+
+      statusEl.textContent = clearing ? "正在清除 GitHub 雲端設定與歷史資料..." : "正在上傳設定至 GitHub 並啟動雲端抓價...";
+      try {{
+        const resp = await fetch(syncUrl, {{
+          method: "POST",
+          headers: {{ "Content-Type": "text/plain;charset=utf-8" }},
+          body: JSON.stringify(profileObj),
+        }});
+        const resData = await resp.json().catch(() => ({{}}));
+        if (!resp.ok || resData.ok === false) throw new Error(resData.error || "SYNC_FAIL");
+        statusEl.textContent = clearing
+          ? "✅ 已清空此代號於本機與 GitHub 雲端的所有資料！（約 1～2 分鐘後生效）"
+          : "✅ 已儲存至 GitHub 並啟動雲端抓價！請約 1～2 分鐘後重新整理網頁查看價格。";
+      }} catch (err) {{
+        statusEl.textContent = clearing
+          ? "⚠️ 已清空本機畫面與暫存，但雲端清除失敗（" + (err && err.message ? err.message : "請稍後再試") + "）。"
+          : "⚠️ 已暫存於本機瀏覽器，但雲端同步失敗（" + (err && err.message ? err.message : "請改用複製 JSON 提交") + "）。";
+      }}
+    }}
+
+    document.getElementById("btn-save-profile").addEventListener("click", async () => {{
+      const profileObj = collectProfileFromForm();
+      await syncProfileToCloud(profileObj, false);
+    }});
+
+    document.getElementById("btn-clear-profile").addEventListener("click", async () => {{
+      if (!activeUserId) return;
+      if (!window.confirm(`確定要徹底清空「${{activeUserId}}」的所有飯店設定與雲端歷史價格嗎？`)) return;
+      const emptyProfile = {{
+        user_id: activeUserId,
+        title: `${{activeUserId}} 的飯店比價看板`,
+        adults: 2,
+        children: 0,
+        child_ages: "",
+        currency: "TWD",
+        sites: ["tw", "jp"],
+        platforms: ["trip", "agoda"],
+        hotels: [],
+      }};
+      renderManageForm(emptyProfile);
+      await syncProfileToCloud(emptyProfile, true);
     }});
 
     document.getElementById("btn-copy-profile").addEventListener("click", async () => {{

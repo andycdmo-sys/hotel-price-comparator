@@ -8,7 +8,12 @@ from pathlib import Path
 
 from src.browser import open_incognito_context
 from src.config import load_config
-from src.exporter import export_to_csv, export_to_html, export_user_dashboard_json
+from src.exporter import (
+    export_to_csv,
+    export_to_html,
+    export_user_dashboard_json,
+    prune_csv_by_profile,
+)
 from src.ip_checker import detect_current_ip_info
 from src.models import HotelPriceResult
 from src.profiles import UserProfile, load_all_profiles, load_profile, profile_to_target_prices
@@ -140,6 +145,17 @@ async def _run_profile_batch(
     ip_info: str,
     breakfast_options: list[bool],
 ) -> Path:
+    csv_path = PROJECT_ROOT / "output" / f"history_{profile.user_id}.csv"
+    json_path = PROJECT_ROOT / "docs" / "data" / f"{profile.user_id}.json"
+    profile_path = PROJECT_ROOT / "profiles" / f"{profile.user_id}.json"
+
+    if not profile.hotels:
+        profile_path.unlink(missing_ok=True)
+        csv_path.unlink(missing_ok=True)
+        json_path.unlink(missing_ok=True)
+        print(f"[{profile.user_id}] 飯店清單為空，已清除設定檔與歷史比價資料。")
+        return csv_path
+
     profile_results: list[HotelPriceResult] = []
     for hotel in profile.hotels:
         scrapers = []
@@ -194,15 +210,15 @@ async def _run_profile_batch(
                 room_info = f" ({item.room_type})" if item.room_type else ""
                 print(f"  - [{item.platform}] {item.currency} {item.price:,.0f}{room_info}")
 
-    csv_path = PROJECT_ROOT / "output" / f"history_{profile.user_id}.csv"
+    prune_csv_by_profile(csv_path, profile)
     export_to_csv(profile_results, csv_path, append=True)
 
-    json_path = PROJECT_ROOT / "docs" / "data" / f"{profile.user_id}.json"
     export_user_dashboard_json(csv_path, json_path, profile=profile)
     print(f"[{profile.user_id}] 已更新 {csv_path} 與 {json_path}")
 
     if profile.user_id == "Andy1025":
         legacy_csv = PROJECT_ROOT / "output" / "okinawa_2027_history.csv"
+        prune_csv_by_profile(legacy_csv, profile)
         export_to_csv(profile_results, legacy_csv, append=True)
         export_to_html(
             legacy_csv,

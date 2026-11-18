@@ -62,7 +62,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add profiles/*.json output/history_*.csv output/okinawa_2027_history.csv docs/index.html docs/data/*.json
+          git add -A profiles/ output/ docs/
           if ! git diff --cached --quiet; then
             git commit -m "chore: update hotel prices ($(date +'%Y-%m-%d %H:%M'))"
             git pull --rebase origin main

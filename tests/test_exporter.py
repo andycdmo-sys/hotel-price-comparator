@@ -443,3 +443,65 @@ def test_save_profile_from_json_str_and_hotel_id_url(tmp_path: Path) -> None:
     assert loaded.user_id == "Guest2027"
     assert loaded.hotels[0].trip_hotel_id == "704038"
     assert loaded.hotels[0].agoda_path == "/zh-tw/hotel-yugaf-inn-okinawa/hotel/okinawa-main-island-jp.html"
+
+
+def test_prune_csv_and_dashboard_clear_button(tmp_path: Path) -> None:
+    import json
+    from src.exporter import export_user_dashboard_json, prune_csv_by_profile
+    from src.profiles import HotelWatchItem, UserProfile
+
+    csv_file = tmp_path / "history_DemoUser.csv"
+    json_out = tmp_path / "data" / "DemoUser.json"
+    html_out = tmp_path / "index.html"
+
+    export_to_csv(
+        [
+            HotelPriceResult(
+                hotel_name="保留飯店",
+                platform="Agoda [不限早餐 | IP:TW]",
+                check_in="2026-11-30",
+                check_out="2026-12-01",
+                price=4500,
+                scraped_at="2026-11-18T14:00:00+08:00",
+            ),
+            HotelPriceResult(
+                hotel_name="已移除飯店",
+                platform="Trip.com [TW站 | 不限早餐 | IP:TW]",
+                check_in="2026-12-05",
+                check_out="2026-12-06",
+                price=3200,
+                scraped_at="2026-11-18T14:00:00+08:00",
+            ),
+        ],
+        csv_file,
+    )
+
+    profile = UserProfile(
+        user_id="DemoUser",
+        hotels=[
+            HotelWatchItem(
+                name="保留飯店",
+                check_in="2026-11-30",
+                check_out="2026-12-01",
+            )
+        ],
+    )
+
+    export_user_dashboard_json(csv_file, json_out, profile=profile)
+    dashboard = json.loads(json_out.read_text(encoding="utf-8"))
+    assert "保留飯店" in dashboard["cards_html"]
+    assert "已移除飯店" not in dashboard["cards_html"]
+    assert dashboard["chart_payload"]["hotels"] == ["保留飯店"]
+
+    kept = prune_csv_by_profile(csv_file, profile)
+    assert len(kept) == 1
+    assert kept[0].hotel_name == "保留飯店"
+
+    empty_profile = UserProfile(user_id="DemoUser", hotels=[])
+    assert prune_csv_by_profile(csv_file, empty_profile) == []
+    assert not csv_file.exists()
+
+    export_to_html(csv_file, html_out)
+    html_content = html_out.read_text(encoding="utf-8")
+    assert 'id="btn-clear-profile"' in html_content
+    assert "🗑️ 清空此代號所有資料" in html_content
