@@ -1,0 +1,27 @@
+{
+  "user_id": "AndyTest",
+  "title": "AndyTest 的飯店比價看板",
+  "adults": 2,
+  "children": 0,
+  "child_ages": "",
+  "currency": "TWD",
+  "sites": [
+    "tw",
+    "jp"
+  ],
+  "platforms": [
+    "trip",
+    "agoda"
+  ],
+  "hotels": [
+    {
+      "name": "礁溪老爺酒店",
+      "check_in": "2026-11-30",
+      "check_out": "2026-12-01",
+      "trip_hotel_id": "",
+      "agoda_path": "",
+      "target_any": null,
+      "target_bf": null
+    }
+  ]
+}
