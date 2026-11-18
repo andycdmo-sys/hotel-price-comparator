@@ -1,8 +1,8 @@
 {
   "user_id": "AndyTest",
   "title": "AndyTest 的飯店比價看板",
-  "subtitle": "條件：2 成人 ｜ 幣別：TWD 含稅 ｜ 最後更新：2026-11-18 15:26:16",
-  "updated_at": "2026-11-18 15:26:16",
+  "subtitle": "條件：2 成人 ｜ 幣別：TWD 含稅 ｜ 最後更新：2026-11-18 15:29:44",
+  "updated_at": "2026-11-18 15:29:44",
   "cards_html": "",
   "chart_payload": {
     "labels": [],
@@ -38,7 +38,7 @@
         "name": "礁溪老爺酒店",
         "check_in": "2026-11-30",
         "check_out": "2026-12-01",
-        "trip_hotel_id": "",
+        "trip_hotel_id": "1001027",
         "agoda_path": "",
         "target_any": null,
         "target_bf": null
