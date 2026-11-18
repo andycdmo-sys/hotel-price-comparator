@@ -154,3 +154,41 @@ def test_export_to_html_renders_target_prices(tmp_path: Path) -> None:
     assert 'data-target-key="沖繩餘家弗飯店||含早餐方案"' in content
     assert 'value="4193"' in content
     assert "target-input" in content
+
+
+def test_build_chart_payload_merges_different_ips_and_clusters_batches() -> None:
+    from src.exporter import _build_chart_payload
+
+    records = [
+        HotelPriceResult(
+            hotel_name="B/C 那霸飯店",
+            platform="Trip.com [TW站 | 不限早餐 | IP:TW (114.137.92.57)]",
+            check_in="2027-01-28",
+            check_out="2027-01-29",
+            price=2299,
+            scraped_at="2026-11-17T16:57:00+08:00",
+        ),
+        HotelPriceResult(
+            hotel_name="B/C 那霸飯店",
+            platform="Trip.com [TW站 | 不限早餐 | IP:US (3.41.210.133)]",
+            check_in="2027-01-28",
+            check_out="2027-01-29",
+            price=2250,
+            scraped_at="2026-11-17T20:49:00+08:00",
+        ),
+        HotelPriceResult(
+            hotel_name="艾斯汀納特飯店",
+            platform="Trip.com [TW站 | 不限早餐 | IP:US (3.41.210.133)]",
+            check_in="2027-01-29",
+            check_out="2027-01-30",
+            price=2126,
+            scraped_at="2026-11-17T20:50:00+08:00",
+        ),
+    ]
+
+    payload = _build_chart_payload(records)
+    assert payload["labels"] == ["11-17 16:57", "11-17 20:49"]
+    bc_series = payload["byHotel"]["B/C 那霸飯店"]
+    assert len(bc_series) == 1
+    assert bc_series[0]["label"] == "Trip.com [TW站 | 不限早餐]"
+    assert bc_series[0]["data"] == [2299, 2250]

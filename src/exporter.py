@@ -3,6 +3,7 @@
 import csv
 import html
 import json
+import re
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Iterable
@@ -94,11 +95,41 @@ def export_to_csv(
     return output_path
 
 
+def _normalize_series_label(platform: str) -> str:
+    """移除變動的 IP 資訊（例如 `| IP:US (...)`），讓不同次抓價的同分站方案能連成同一條折線。"""
+    return re.sub(r"\s*\|\s*IP:[^\]]+", "", platform).strip()
+
+
+def _cluster_batch_labels(timestamps: list[str], gap_minutes: int = 10) -> tuple[list[str], dict[str, str]]:
+    """將相隔在 `gap_minutes` 分鐘內的抓價時間合併為同一個批次標籤（MM-DD HH:MM）。"""
+    parsed: list[tuple[datetime, str]] = []
+    for raw in sorted(set(timestamps)):
+        try:
+            dt = datetime.fromisoformat(raw)
+            parsed.append((dt, raw))
+        except ValueError:
+            continue
+
+    batch_labels: list[str] = []
+    raw_to_label: dict[str, str] = {}
+    current_batch_dt: datetime | None = None
+    current_label = ""
+
+    for dt, raw in parsed:
+        if current_batch_dt is None or (dt - current_batch_dt).total_seconds() > gap_minutes * 60:
+            current_batch_dt = dt
+            current_label = dt.strftime("%m-%d %H:%M")
+            if current_label not in batch_labels:
+                batch_labels.append(current_label)
+        raw_to_label[raw] = current_label
+
+    return batch_labels, raw_to_label
+
+
 def _build_chart_payload(records: list[HotelPriceResult]) -> dict:
     """整理供前端折線圖使用的時間序列資料（分批時間為 X 軸）。"""
     valid = [r for r in records if r.price is not None and not r.error and r.scraped_at]
-    # 依抓取時間（精確到分鐘 YYYY-MM-DD HH:MM）作為時間標籤
-    labels = sorted({r.scraped_at[:16].replace("T", " ") for r in valid})
+    labels, raw_to_label = _cluster_batch_labels([r.scraped_at for r in valid])
     label_index = {lbl: idx for idx, lbl in enumerate(labels)}
 
     hotels = sorted({r.hotel_name for r in valid})
@@ -110,30 +141,36 @@ def _build_chart_payload(records: list[HotelPriceResult]) -> dict:
         for r in valid:
             if r.hotel_name != hotel or r.price is None:
                 continue
-            idx = label_index[r.scraped_at[:16].replace("T", " ")]
+            lbl = raw_to_label.get(r.scraped_at)
+            if lbl is None:
+                continue
+            idx = label_index[lbl]
             cur = series[idx]
             series[idx] = r.price if cur is None else min(cur, r.price)
         overview_datasets.append({"label": hotel, "data": series})
 
-    # 2) 各飯店細分分站與早餐方案
+    # 2) 各飯店細分分站與早餐方案（忽略每次變動的對外 IP，讓同一方案連成折線）
     by_hotel: dict[str, list[dict]] = {}
     for hotel in hotels:
         hotel_recs = [r for r in valid if r.hotel_name == hotel]
-        platforms = sorted({r.platform for r in hotel_recs})
+        series_names = sorted({_normalize_series_label(r.platform) for r in hotel_recs})
         datasets = []
-        for plat in platforms:
+        for s_name in series_names:
             series = [None] * len(labels)
             for r in hotel_recs:
-                if r.platform != plat or r.price is None:
+                if _normalize_series_label(r.platform) != s_name or r.price is None:
                     continue
-                idx = label_index[r.scraped_at[:16].replace("T", " ")]
+                lbl = raw_to_label.get(r.scraped_at)
+                if lbl is None:
+                    continue
+                idx = label_index[lbl]
                 cur = series[idx]
                 series[idx] = r.price if cur is None else min(cur, r.price)
-            datasets.append({"label": plat, "data": series})
+            datasets.append({"label": s_name, "data": series})
         by_hotel[hotel] = datasets
 
     return {
-        "labels": [lbl[5:] for lbl in labels],  # 顯示 MM-DD HH:MM
+        "labels": labels,
         "hotels": hotels,
         "overview": overview_datasets,
         "byHotel": by_hotel,
