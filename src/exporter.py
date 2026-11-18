@@ -142,6 +142,8 @@ def _short_platform_label(normalized_platform: str) -> str:
         return f"Trip.com ({inner})"
     if cleaned.startswith("Agoda [") and cleaned.endswith("]"):
         return "Agoda"
+    if cleaned.startswith("Booking [") and cleaned.endswith("]"):
+        return "Booking.com"
     return cleaned
 
 
@@ -1183,6 +1185,7 @@ def export_to_html(
     function parseBookingUrls(rawText) {{
       let trip_hotel_id = "";
       let agoda_path = "";
+      let booking_path = "";
       const detectedLabels = [];
       const tokens = String(rawText || "").split(/[\\s,]+/).map((t) => t.trim()).filter(Boolean);
       tokens.forEach((tok) => {{
@@ -1192,6 +1195,16 @@ def export_to_html(
           trip_hotel_id = m ? m[1] : (/^\\d+$/.test(tok) ? tok : trip_hotel_id);
           if (trip_hotel_id && !detectedLabels.includes("Trip.com")) {{
             detectedLabels.push("Trip.com");
+          }}
+        }} else if (low.includes("booking.com") || (tok.startsWith("/hotel/") && low.includes(".html"))) {{
+          try {{
+            const parsed = new URL(tok.startsWith("http") ? tok : "https://www.booking.com" + tok);
+            booking_path = parsed.pathname;
+          }} catch (_e) {{
+            booking_path = tok;
+          }}
+          if (booking_path && !detectedLabels.includes("Booking.com")) {{
+            detectedLabels.push("Booking.com");
           }}
         }} else if (low.includes("agoda.com") || (tok.startsWith("/") && low.includes(".html"))) {{
           try {{
@@ -1205,7 +1218,7 @@ def export_to_html(
           }}
         }}
       }});
-      return {{ trip_hotel_id, agoda_path, detectedLabels }};
+      return {{ trip_hotel_id, agoda_path, booking_path, detectedLabels }};
     }}
 
     function updateUrlDetectedLabel(urlRow) {{
@@ -1223,7 +1236,7 @@ def export_to_html(
         : '<button type="button" class="bar-btn btn-del-url">✕ 移除</button>';
       urlRow.innerHTML = `
         <div class="url-item-top">
-          <input class="field-input h-url" type="text" placeholder="貼上單一房價網網址（如 Trip.com 或 Agoda），系統自動判斷">
+          <input class="field-input h-url" type="text" placeholder="貼上單一房價網網址（如 Trip.com、Agoda 或 Booking.com），系統自動判斷">
           ${{actionBtnHtml}}
         </div>
         <div class="url-detected h-url-detected"></div>
@@ -1285,6 +1298,9 @@ def export_to_html(
         if (item.agoda_path) {{
           initialUrls.push(String(item.agoda_path).startsWith("http") ? String(item.agoda_path) : `https://www.agoda.com${{item.agoda_path}}`);
         }}
+        if (item.booking_path) {{
+          initialUrls.push(String(item.booking_path).startsWith("http") ? String(item.booking_path) : `https://www.booking.com${{item.booking_path}}`);
+        }}
       }}
       const urlsListEl = row.querySelector(".h-urls-list");
       if (initialUrls.length === 0) {{
@@ -1322,7 +1338,7 @@ def export_to_html(
         const urls = Array.from(row.querySelectorAll(".h-url"))
           .map((inp) => inp.value.trim())
           .filter(Boolean);
-        const {{ trip_hotel_id, agoda_path }} = parseBookingUrls(urls.join(" "));
+        const {{ trip_hotel_id, agoda_path, booking_path }} = parseBookingUrls(urls.join(" "));
         const tAny = row.querySelector(".h-tany").value.trim();
         const tBf = row.querySelector(".h-tbf").value.trim();
         hotels.push({{
@@ -1332,6 +1348,7 @@ def export_to_html(
           urls,
           trip_hotel_id,
           agoda_path,
+          booking_path,
           target_any: tAny ? Number(tAny) : null,
           target_bf: tBf ? Number(tBf) : null,
         }});
@@ -1345,7 +1362,7 @@ def export_to_html(
         child_ages: ageValues.join(","),
         currency: (document.getElementById("cfg-currency").value || "TWD").trim().toUpperCase(),
         sites: ["tw"],
-        platforms: ["trip", "agoda"],
+        platforms: ["trip", "agoda", "booking"],
         hotels,
       }};
     }}
@@ -1496,7 +1513,7 @@ def export_to_html(
         child_ages: "",
         currency: "TWD",
         sites: ["tw"],
-        platforms: ["trip", "agoda"],
+        platforms: ["trip", "agoda", "booking"],
         hotels: [],
       }};
       renderManageForm(emptyProfile);

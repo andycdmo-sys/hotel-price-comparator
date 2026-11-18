@@ -468,7 +468,8 @@
     ],
     "platforms": [
       "trip",
-      "agoda"
+      "agoda",
+      "booking"
     ],
     "hotels": [
       {
@@ -477,6 +478,7 @@
         "check_out": "2027-01-27",
         "trip_hotel_id": "704038",
         "agoda_path": "/zh-tw/hotel-yugaf-inn-okinawa/hotel/okinawa-main-island-jp.html",
+        "booking_path": "/hotel/jp/yugafu-inn-okinawa.zh-tw.html",
         "target_any": null,
         "target_bf": 4193
       },
@@ -486,6 +488,7 @@
         "check_out": "2027-01-28",
         "trip_hotel_id": "106709440",
         "agoda_path": "/zh-tw/ref-okinawa-arena-by-vessel-hotels/hotel/okinawa-main-island-jp.html",
+        "booking_path": "/hotel/jp/rehuchong-nawa-arinaby-betuseruhoteruzu.zh-tw.html",
         "target_any": null,
         "target_bf": null
       },
@@ -495,6 +498,7 @@
         "check_out": "2027-01-29",
         "trip_hotel_id": "120097372",
         "agoda_path": "/zh-tw/b-c-hotel/hotel/okinawa-main-island-jp.html",
+        "booking_path": "/hotel/jp/bbyc-naha-hotel-with-rental-car.zh-tw.html",
         "target_any": null,
         "target_bf": null
       },
@@ -504,6 +508,7 @@
         "check_out": "2027-01-30",
         "trip_hotel_id": "2845951",
         "agoda_path": "/zh-tw/estinate-hotel/hotel/okinawa-main-island-jp.html",
+        "booking_path": "/hotel/jp/estination.zh-tw.html",
         "target_any": null,
         "target_bf": null
       }

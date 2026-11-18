@@ -82,7 +82,8 @@
     ],
     "platforms": [
       "trip",
-      "agoda"
+      "agoda",
+      "booking"
     ],
     "hotels": [
       {
@@ -91,6 +92,7 @@
         "check_out": "2026-12-01",
         "trip_hotel_id": "1001027",
         "agoda_path": "",
+        "booking_path": "",
         "target_any": null,
         "target_bf": null
       }

@@ -20,7 +20,7 @@ def _extract_trip_hotel_id(raw_value: str) -> str:
     return m.group(1) if m else val
 
 
-def _extract_agoda_path(raw_value: str) -> str:
+def _extract_url_path(raw_value: str) -> str:
     val = raw_value.strip()
     if not val:
         return ""
@@ -34,10 +34,12 @@ def parse_hotel_urls(
     raw_url_field: str,
     trip_id: str = "",
     agoda_path: str = "",
-) -> tuple[str, str]:
-    """從單一網址輸入欄自動辨識 Trip.com ID 與 Agoda 頁面路徑（可同時包含多個以空白或逗號分隔的網址）。"""
+    booking_path: str = "",
+) -> tuple[str, str, str]:
+    """從單一網址輸入欄自動辨識 Trip.com ID、Agoda 路徑與 Booking.com 路徑（可同時包含多個以空白或逗號分隔的網址）。"""
     resolved_trip = _extract_trip_hotel_id(trip_id)
-    resolved_agoda = _extract_agoda_path(agoda_path)
+    resolved_agoda = _extract_url_path(agoda_path)
+    resolved_booking = _extract_url_path(booking_path)
 
     tokens = [tok.strip() for tok in re.split(r"[\s,]+", raw_url_field or "") if tok.strip()]
     for tok in tokens:
@@ -46,12 +48,16 @@ def parse_hotel_urls(
             extracted = _extract_trip_hotel_id(tok)
             if extracted:
                 resolved_trip = extracted
-        elif "agoda.com" in low or (tok.startswith("/") and ".html" in low):
-            extracted_path = _extract_agoda_path(tok)
+        elif "agoda.com" in low or (tok.startswith("/") and ".html" in low and not low.startswith("/hotel/")):
+            extracted_path = _extract_url_path(tok)
             if extracted_path:
                 resolved_agoda = extracted_path
+        elif "booking.com" in low or (tok.startswith("/hotel/") and ".html" in low):
+            extracted_path = _extract_url_path(tok)
+            if extracted_path:
+                resolved_booking = extracted_path
 
-    return resolved_trip, resolved_agoda
+    return resolved_trip, resolved_agoda, resolved_booking
 
 
 @dataclass
@@ -63,6 +69,7 @@ class HotelWatchItem:
     check_out: str
     trip_hotel_id: str = ""
     agoda_path: str = ""
+    booking_path: str = ""
     target_any: Optional[int] = None
     target_bf: Optional[int] = None
 
@@ -78,7 +85,7 @@ class UserProfile:
     child_ages: str = ""
     currency: str = "TWD"
     sites: list[str] = field(default_factory=lambda: ["tw"])
-    platforms: list[str] = field(default_factory=lambda: ["trip", "agoda"])
+    platforms: list[str] = field(default_factory=lambda: ["trip", "agoda", "booking"])
     hotels: list[HotelWatchItem] = field(default_factory=list)
 
     def to_dict(self) -> dict[str, Any]:
@@ -120,10 +127,11 @@ def parse_profile_dict(raw: dict[str, Any], fallback_user_id: str = "") -> UserP
             raw_url_str = " ".join(str(u).strip() for u in raw_urls if str(u).strip())
         else:
             raw_url_str = str(item.get("url") or raw_urls or "")
-        parsed_trip, parsed_agoda = parse_hotel_urls(
+        parsed_trip, parsed_agoda, parsed_booking = parse_hotel_urls(
             raw_url_str,
             trip_id=str(item.get("trip_hotel_id") or ""),
             agoda_path=str(item.get("agoda_path") or ""),
+            booking_path=str(item.get("booking_path") or ""),
         )
         hotels.append(
             HotelWatchItem(
@@ -132,13 +140,14 @@ def parse_profile_dict(raw: dict[str, Any], fallback_user_id: str = "") -> UserP
                 check_out=check_out,
                 trip_hotel_id=parsed_trip,
                 agoda_path=parsed_agoda,
+                booking_path=parsed_booking,
                 target_any=_optional_int(item.get("target_any")),
                 target_bf=_optional_int(item.get("target_bf")),
             )
         )
 
     sites = [str(s).strip().lower() for s in (raw.get("sites") or ["tw"]) if str(s).strip()]
-    platforms = [str(p).strip().lower() for p in (raw.get("platforms") or ["trip", "agoda"]) if str(p).strip()]
+    platforms = [str(p).strip().lower() for p in (raw.get("platforms") or ["trip", "agoda", "booking"]) if str(p).strip()]
 
     return UserProfile(
         user_id=user_id,
@@ -148,7 +157,7 @@ def parse_profile_dict(raw: dict[str, Any], fallback_user_id: str = "") -> UserP
         child_ages=str(raw.get("child_ages") or "").strip(),
         currency=str(raw.get("currency") or "TWD").strip().upper() or "TWD",
         sites=sites or ["tw"],
-        platforms=platforms or ["trip", "agoda"],
+        platforms=platforms or ["trip", "agoda", "booking"],
         hotels=hotels,
     )
 

@@ -157,3 +157,84 @@ def test_trip_com_custom_hotel_clears_okinawa_params_and_extracts_translated_tit
     price, room = _extract_hotel_price_and_room(jp_lines, "礁溪老爺酒店")
     assert price == 9850.0
     assert "ツイン" in room or "洋室" in room
+
+
+def test_booking_scraper_table_occupancy_tax_and_search_cards() -> None:
+    from src.scrapers.booking import (
+        BookingScraper,
+        extract_booking_price_from_cards,
+        extract_booking_room_table_price,
+    )
+
+    rows = [
+        {
+            "room": "雙床房",
+            "occ": "最多成人人數： 2",
+            "price": "TWD 3,533",
+            "tax": "含稅費與其他費用",
+            "cond": "含早餐－評價非常好",
+        },
+        {
+            "room": "標準雙人房",
+            "occ": "+ 最多成人人數： 1 最多兒童人數： 1 限 1 人入住",
+            "price": "TWD 1,766",
+            "tax": "含稅費與其他費用",
+            "cond": "包括自助早餐",
+        },
+        {
+            "room": "海景豪華房",
+            "occ": "+ 最多成人人數： 2 最多兒童人數： 1",
+            "price": "TWD 3,000",
+            "tax": "+ TWD 500 稅費及其他費用",
+            "cond": "評價非常好 的早餐 TWD 454",
+        },
+        {
+            "room": "海景豪華房",
+            "occ": "+ 最多成人人數： 2 最多兒童人數： 1",
+            "price": "TWD 4,600",
+            "tax": "含稅費與其他費用",
+            "cond": "包含早餐和晚餐",
+        },
+    ]
+
+    price_any, room_any = extract_booking_room_table_price(rows, adults=2, children=1, breakfast_only=False)
+    price_bf, room_bf = extract_booking_room_table_price(rows, adults=2, children=1, breakfast_only=True)
+    assert price_any == 3500.0
+    assert room_any == "海景豪華房"
+    assert price_bf == 4600.0
+    assert room_bf == "海景豪華房"
+
+    cards = [
+        {
+            "title": "開羅尼羅河酒店集團",
+            "prices": ["TWD 1,200"],
+            "tax": "含稅費與其他費用",
+            "units": "雙人房",
+            "href": "https://www.booking.com/hotel/eg/cairo.zh-tw.html",
+        },
+        {
+            "title": "沖繩餘家弗酒店",
+            "prices": ["TWD 3,400"],
+            "tax": "+ TWD 410 稅費及其他費用",
+            "units": "推薦給您的團體\nDeluxe Ocean\n包括早餐",
+            "href": "https://www.booking.com/hotel/jp/yugafu-inn-okinawa.zh-tw.html?aid=123",
+        },
+    ]
+    c_price, c_room, c_path = extract_booking_price_from_cards(cards, "沖繩餘家弗飯店", breakfast_only=True)
+    assert c_price == 3810.0
+    assert c_room == "Deluxe Ocean"
+    assert c_path == "/hotel/jp/yugafu-inn-okinawa.zh-tw.html"
+
+    scraper = BookingScraper(
+        hotel_path="",
+        adults=2,
+        children=1,
+        child_ages="11",
+        currency="TWD",
+        breakfast_only=True,
+        ip_info="TW",
+    )
+    search_url = scraper.build_search_url("沖繩餘家弗飯店", "2027-01-26", "2027-01-27")
+    assert "group_adults=2&no_rooms=1&group_children=1&age=11" in search_url
+    assert "nflt=mealplan%3D1" in search_url
+    assert scraper.platform_name == "Booking [含早餐 | IP:TW]"

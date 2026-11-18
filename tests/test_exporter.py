@@ -505,3 +505,54 @@ def test_prune_csv_and_dashboard_clear_button(tmp_path: Path) -> None:
     html_content = html_out.read_text(encoding="utf-8")
     assert 'id="btn-clear-profile"' in html_content
     assert "🗑️ 清空此代號所有資料" in html_content
+
+
+def test_booking_url_detection_and_short_label(tmp_path: Path) -> None:
+    import json
+    from src.profiles import load_profile, save_profile_from_json_str
+
+    raw_json = json.dumps(
+        {
+            "user_id": "BookingGuest",
+            "hotels": [
+                {
+                    "name": "沖繩餘家弗飯店",
+                    "check_in": "2027-01-26",
+                    "check_out": "2027-01-27",
+                    "urls": [
+                        "https://tw.trip.com/hotels/list?optionId=704038",
+                        "https://www.agoda.com/zh-tw/hotel-yugaf-inn-okinawa/hotel/okinawa-main-island-jp.html",
+                        "https://www.booking.com/hotel/jp/yugafu-inn-okinawa.zh-tw.html?checkin=2027-01-26",
+                    ],
+                }
+            ],
+        },
+        ensure_ascii=False,
+    )
+    saved_path = save_profile_from_json_str(raw_json, tmp_path, expected_user_id="BookingGuest")
+    loaded = load_profile(saved_path)
+    assert loaded.platforms == ["trip", "agoda", "booking"]
+    assert loaded.hotels[0].trip_hotel_id == "704038"
+    assert loaded.hotels[0].agoda_path == "/zh-tw/hotel-yugaf-inn-okinawa/hotel/okinawa-main-island-jp.html"
+    assert loaded.hotels[0].booking_path == "/hotel/jp/yugafu-inn-okinawa.zh-tw.html"
+
+    csv_file = tmp_path / "history.csv"
+    html_out = tmp_path / "index.html"
+    export_to_csv(
+        [
+            HotelPriceResult(
+                hotel_name="沖繩餘家弗飯店",
+                platform="Booking [不限早餐 | IP:TW]",
+                check_in="2027-01-26",
+                check_out="2027-01-27",
+                price=3810,
+                url="https://www.booking.com/hotel/jp/yugafu-inn-okinawa.zh-tw.html",
+                scraped_at="2026-11-18T16:15:00+08:00",
+            )
+        ],
+        csv_file,
+    )
+    export_to_html(csv_file, html_out)
+    html_content = html_out.read_text(encoding="utf-8")
+    assert "🏆 Booking.com 最低" in html_content
+    assert 'detectedLabels.push("Booking.com")' in html_content

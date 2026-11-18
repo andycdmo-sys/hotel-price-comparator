@@ -10,7 +10,8 @@
   ],
   "platforms": [
     "trip",
-    "agoda"
+    "agoda",
+    "booking"
   ],
   "hotels": [
     {

@@ -17,7 +17,7 @@ from src.exporter import (
 from src.ip_checker import detect_current_ip_info
 from src.models import HotelPriceResult
 from src.profiles import UserProfile, load_all_profiles, load_profile, profile_to_target_prices
-from src.scrapers import AgodaScraper, DemoHotelScraper, TripComScraper, run_scrapers
+from src.scrapers import AgodaScraper, BookingScraper, DemoHotelScraper, TripComScraper, run_scrapers
 
 PROJECT_ROOT = Path(__file__).resolve().parent
 
@@ -33,6 +33,13 @@ AGODA_HOTEL_PATHS: dict[str, str] = {
     "REF沖繩體育館by Vessel酒店集團": "/zh-tw/ref-okinawa-arena-by-vessel-hotels/hotel/okinawa-main-island-jp.html",
     "B/C 那霸飯店": "/zh-tw/b-c-hotel/hotel/okinawa-main-island-jp.html",
     "艾斯汀納特飯店": "/zh-tw/estinate-hotel/hotel/okinawa-main-island-jp.html",
+}
+
+BOOKING_HOTEL_PATHS: dict[str, str] = {
+    "沖繩餘家弗飯店": "/hotel/jp/yugafu-inn-okinawa.zh-tw.html",
+    "REF沖繩體育館by Vessel酒店集團": "/hotel/jp/rehuchong-nawa-arinaby-betuseruhoteruzu.zh-tw.html",
+    "B/C 那霸飯店": "/hotel/jp/bbyc-naha-hotel-with-rental-car.zh-tw.html",
+    "艾斯汀納特飯店": "/hotel/jp/estination.zh-tw.html",
 }
 
 
@@ -67,9 +74,14 @@ def build_parser() -> argparse.ArgumentParser:
         help="單一飯店查詢時的 Agoda 頁面路徑（例如 /zh-tw/hotel-yugaf-inn-okinawa/hotel/okinawa-main-island-jp.html）",
     )
     parser.add_argument(
+        "--booking-path",
+        default="",
+        help="單一飯店查詢時的 Booking.com 頁面路徑（例如 /hotel/jp/yugafu-inn-okinawa.zh-tw.html）",
+    )
+    parser.add_argument(
         "--platforms",
-        default="trip,agoda",
-        help="要抓取的訂房平台，以逗號分隔（支援 trip,agoda）",
+        default="trip,agoda,booking",
+        help="要抓取的訂房平台，以逗號分隔（支援 trip,agoda,booking）",
     )
     parser.add_argument("--check-in", default="2027-01-26", help="入住日期 (YYYY-MM-DD)")
     parser.add_argument("--check-out", default="2027-01-27", help="退房日期 (YYYY-MM-DD)")
@@ -139,6 +151,70 @@ def _resolve_breakfast_options(args: argparse.Namespace) -> list[bool]:
     return [False]
 
 
+def _build_hotel_scrapers(
+    *,
+    hotel_name: str,
+    trip_hotel_id: str,
+    agoda_path: str,
+    booking_path: str,
+    platforms: set[str] | list[str],
+    sites: list[str],
+    adults: int,
+    children: int,
+    child_ages: str,
+    currency: str,
+    ip_info: str,
+    breakfast_options: list[bool],
+):
+    scrapers = []
+    if "trip" in platforms:
+        scrapers.extend(
+            TripComScraper(
+                site_code=code,
+                hotel_id=trip_hotel_id,
+                adults=adults,
+                children=children,
+                child_ages=child_ages,
+                currency=currency,
+                breakfast_only=bf_only,
+                ip_info=ip_info,
+            )
+            for code in sites
+            for bf_only in breakfast_options
+        )
+
+    resolved_agoda = agoda_path or AGODA_HOTEL_PATHS.get(hotel_name, "")
+    if "agoda" in platforms and resolved_agoda:
+        scrapers.extend(
+            AgodaScraper(
+                hotel_path=resolved_agoda,
+                adults=adults,
+                children=children,
+                child_ages=child_ages,
+                currency=currency,
+                breakfast_only=bf_only,
+                ip_info=ip_info,
+            )
+            for bf_only in breakfast_options
+        )
+
+    resolved_booking = booking_path or BOOKING_HOTEL_PATHS.get(hotel_name, "")
+    if "booking" in platforms:
+        scrapers.extend(
+            BookingScraper(
+                hotel_path=resolved_booking,
+                adults=adults,
+                children=children,
+                child_ages=child_ages,
+                currency=currency,
+                breakfast_only=bf_only,
+                ip_info=ip_info,
+            )
+            for bf_only in breakfast_options
+        )
+    return scrapers
+
+
 async def _run_profile_batch(
     profile: UserProfile,
     context,
@@ -158,37 +234,20 @@ async def _run_profile_batch(
 
     profile_results: list[HotelPriceResult] = []
     for hotel in profile.hotels:
-        scrapers = []
-        if "trip" in profile.platforms:
-            scrapers.extend(
-                TripComScraper(
-                    site_code=code,
-                    hotel_id=hotel.trip_hotel_id,
-                    adults=profile.adults,
-                    children=profile.children,
-                    child_ages=profile.child_ages,
-                    currency=profile.currency,
-                    breakfast_only=bf_only,
-                    ip_info=ip_info,
-                )
-                for code in profile.sites
-                for bf_only in breakfast_options
-            )
-
-        agoda_path = hotel.agoda_path or AGODA_HOTEL_PATHS.get(hotel.name, "")
-        if "agoda" in profile.platforms and agoda_path:
-            scrapers.extend(
-                AgodaScraper(
-                    hotel_path=agoda_path,
-                    adults=profile.adults,
-                    children=profile.children,
-                    child_ages=profile.child_ages,
-                    currency=profile.currency,
-                    breakfast_only=bf_only,
-                    ip_info=ip_info,
-                )
-                for bf_only in breakfast_options
-            )
+        scrapers = _build_hotel_scrapers(
+            hotel_name=hotel.name,
+            trip_hotel_id=hotel.trip_hotel_id,
+            agoda_path=hotel.agoda_path,
+            booking_path=hotel.booking_path,
+            platforms=profile.platforms,
+            sites=profile.sites,
+            adults=profile.adults,
+            children=profile.children,
+            child_ages=profile.child_ages,
+            currency=profile.currency,
+            ip_info=ip_info,
+            breakfast_options=breakfast_options,
+        )
 
         if not scrapers:
             continue
@@ -292,37 +351,22 @@ async def run_cli(args: argparse.Namespace) -> Path:
 
         async with open_incognito_context(config) as context:
             for hotel_name, hotel_id, check_in, check_out in targets:
-                scrapers = []
-                if "trip" in enabled_platforms:
-                    scrapers.extend(
-                        TripComScraper(
-                            site_code=code,
-                            hotel_id=hotel_id,
-                            adults=args.adults,
-                            children=args.children,
-                            child_ages=args.child_ages,
-                            currency=config.default_currency,
-                            breakfast_only=bf_only,
-                            ip_info=ip_info,
-                        )
-                        for code in site_codes
-                        for bf_only in breakfast_options
-                    )
-
-                agoda_path = (args.agoda_path if not args.watchlist and args.agoda_path else "") or AGODA_HOTEL_PATHS.get(hotel_name, "")
-                if "agoda" in enabled_platforms and agoda_path:
-                    scrapers.extend(
-                        AgodaScraper(
-                            hotel_path=agoda_path,
-                            adults=args.adults,
-                            children=args.children,
-                            child_ages=args.child_ages,
-                            currency=config.default_currency,
-                            breakfast_only=bf_only,
-                            ip_info=ip_info,
-                        )
-                        for bf_only in breakfast_options
-                    )
+                agoda_path = args.agoda_path if not args.watchlist and args.agoda_path else ""
+                booking_path = args.booking_path if not args.watchlist and args.booking_path else ""
+                scrapers = _build_hotel_scrapers(
+                    hotel_name=hotel_name,
+                    trip_hotel_id=hotel_id,
+                    agoda_path=agoda_path,
+                    booking_path=booking_path,
+                    platforms=enabled_platforms,
+                    sites=site_codes,
+                    adults=args.adults,
+                    children=args.children,
+                    child_ages=args.child_ages,
+                    currency=config.default_currency,
+                    ip_info=ip_info,
+                    breakfast_options=breakfast_options,
+                )
                 batch = await run_scrapers(
                     scrapers=scrapers,
                     context=context,
