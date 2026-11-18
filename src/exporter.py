@@ -758,16 +758,30 @@ def export_to_html(
       margin-bottom: 8px;
     }}
     .hotel-row-line3 {{
-      display: flex;
-      align-items: flex-end;
-      gap: 10px;
+      margin-bottom: 8px;
     }}
-    .hotel-row-line3 > div {{
+    .h-urls-list {{
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }}
+    .url-item-row {{
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }}
+    .url-item-input-wrap {{
       flex: 1;
       min-width: 0;
     }}
+    .hotel-row-footer {{
+      display: flex;
+      justify-content: flex-end;
+    }}
     .url-detected {{
-      margin-left: 6px;
+      display: inline-block;
+      margin-top: 3px;
+      font-size: 0.72rem;
       color: var(--accent);
       font-weight: 700;
     }}
@@ -778,9 +792,8 @@ def export_to_html(
       .hotel-row-line1, .hotel-row-line2 {{
         grid-template-columns: 1fr;
       }}
-      .hotel-row-line3 {{
-        flex-direction: column;
-        align-items: stretch;
+      .url-item-row {{
+        flex-wrap: wrap;
       }}
     }}
     .manage-status {{
@@ -1130,11 +1143,38 @@ def export_to_html(
       return {{ trip_hotel_id, agoda_path, detectedLabels }};
     }}
 
-    function updateUrlDetectedLabel(row) {{
-      const input = row.querySelector(".h-url");
-      const badge = row.querySelector(".h-url-detected");
+    function updateUrlDetectedLabel(urlRow) {{
+      const input = urlRow.querySelector(".h-url");
+      const badge = urlRow.querySelector(".h-url-detected");
       const {{ detectedLabels }} = parseBookingUrls(input.value);
-      badge.textContent = detectedLabels.length > 0 ? `✅ 已自動辨識：${{detectedLabels.join(" + ")}}` : "";
+      badge.textContent = detectedLabels.length > 0 ? `✅ 已自動辨識：${{detectedLabels[0]}}` : "";
+    }}
+
+    function createUrlLine(urlsListEl, initialValue = "", isFirst = false) {{
+      const urlRow = document.createElement("div");
+      urlRow.className = "url-item-row";
+      const actionBtnHtml = isFirst
+        ? '<button type="button" class="bar-btn btn-add-url">➕ 新增房價網</button>'
+        : '<button type="button" class="bar-btn btn-del-url">✕ 移除</button>';
+      urlRow.innerHTML = `
+        <div class="url-item-input-wrap">
+          <input class="field-input h-url" type="text" placeholder="貼上單一房價網網址（如 Trip.com 或 Agoda），系統自動判斷">
+          <div class="url-detected h-url-detected"></div>
+        </div>
+        ${{actionBtnHtml}}
+      `;
+      const inputEl = urlRow.querySelector(".h-url");
+      inputEl.value = initialValue;
+      updateUrlDetectedLabel(urlRow);
+      inputEl.addEventListener("input", () => updateUrlDetectedLabel(urlRow));
+      if (isFirst) {{
+        urlRow.querySelector(".btn-add-url").addEventListener("click", () => {{
+          createUrlLine(urlsListEl, "", false);
+        }});
+      }} else {{
+        urlRow.querySelector(".btn-del-url").addEventListener("click", () => urlRow.remove());
+      }}
+      urlsListEl.appendChild(urlRow);
     }}
 
     function addHotelRow(item = {{}}) {{
@@ -1152,11 +1192,11 @@ def export_to_html(
           <div><label class="field-label">含早目標價</label><input class="field-input h-tbf" type="number" min="0" placeholder="選填"></div>
         </div>
         <div class="hotel-row-line3">
-          <div>
-            <label class="field-label">房價網網址（選填，貼上 Trip.com 或 Agoda 網址自動判斷）<span class="url-detected h-url-detected"></span></label>
-            <input class="field-input h-url" type="text" placeholder="貼上 Trip.com 或 Agoda 網址（多個請以空白分隔）">
-          </div>
-          <button type="button" class="bar-btn btn-del-hotel">🗑️ 刪除</button>
+          <label class="field-label">房價網網址（一行一個，選填，系統自動判斷平台）</label>
+          <div class="h-urls-list"></div>
+        </div>
+        <div class="hotel-row-footer">
+          <button type="button" class="bar-btn btn-del-hotel">🗑️ 刪除整間飯店</button>
         </div>
       `;
       row.querySelector(".h-name").value = item.name || "";
@@ -1165,8 +1205,14 @@ def export_to_html(
       row.querySelector(".h-tany").value = item.target_any ?? "";
       row.querySelector(".h-tbf").value = item.target_bf ?? "";
       const initialUrls = [];
-      if (item.url) {{
-        initialUrls.push(item.url);
+      if (Array.isArray(item.urls) && item.urls.length > 0) {{
+        item.urls.forEach((u) => {{
+          if (String(u || "").trim()) initialUrls.push(String(u).trim());
+        }});
+      }} else if (item.url) {{
+        String(item.url).split(/[\\s,]+/).forEach((u) => {{
+          if (u.trim()) initialUrls.push(u.trim());
+        }});
       }} else {{
         if (item.trip_hotel_id) {{
           initialUrls.push(/^\\d+$/.test(String(item.trip_hotel_id)) ? `https://tw.trip.com/hotels/list?optionId=${{item.trip_hotel_id}}` : String(item.trip_hotel_id));
@@ -1175,9 +1221,12 @@ def export_to_html(
           initialUrls.push(String(item.agoda_path).startsWith("http") ? String(item.agoda_path) : `https://www.agoda.com${{item.agoda_path}}`);
         }}
       }}
-      row.querySelector(".h-url").value = initialUrls.join(" ");
-      updateUrlDetectedLabel(row);
-      row.querySelector(".h-url").addEventListener("input", () => updateUrlDetectedLabel(row));
+      const urlsListEl = row.querySelector(".h-urls-list");
+      if (initialUrls.length === 0) {{
+        createUrlLine(urlsListEl, "", true);
+      }} else {{
+        initialUrls.forEach((u, idx) => createUrlLine(urlsListEl, u, idx === 0));
+      }}
       row.querySelector(".btn-del-hotel").addEventListener("click", () => row.remove());
       listEl.appendChild(row);
     }}
@@ -1205,15 +1254,17 @@ def export_to_html(
         const check_in = row.querySelector(".h-in").value.trim();
         const check_out = row.querySelector(".h-out").value.trim();
         if (!name || !check_in || !check_out) return;
-        const rawUrl = row.querySelector(".h-url").value.trim();
-        const {{ trip_hotel_id, agoda_path }} = parseBookingUrls(rawUrl);
+        const urls = Array.from(row.querySelectorAll(".h-url"))
+          .map((inp) => inp.value.trim())
+          .filter(Boolean);
+        const {{ trip_hotel_id, agoda_path }} = parseBookingUrls(urls.join(" "));
         const tAny = row.querySelector(".h-tany").value.trim();
         const tBf = row.querySelector(".h-tbf").value.trim();
         hotels.push({{
           name,
           check_in,
           check_out,
-          url: rawUrl,
+          urls,
           trip_hotel_id,
           agoda_path,
           target_any: tAny ? Number(tAny) : null,

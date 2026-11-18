@@ -375,7 +375,10 @@ def test_manage_panel_dropdowns_single_url_and_no_overlap(tmp_path: Path) -> Non
                         "name": "沖繩餘家弗飯店",
                         "check_in": "2027-01-26",
                         "check_out": "2027-01-27",
-                        "url": "https://tw.trip.com/hotels/list?optionId=704038 https://www.agoda.com/zh-tw/hotel-yugaf-inn-okinawa/hotel/okinawa-main-island-jp.html",
+                        "urls": [
+                            "https://tw.trip.com/hotels/list?optionId=704038",
+                            "https://www.agoda.com/zh-tw/hotel-yugaf-inn-okinawa/hotel/okinawa-main-island-jp.html",
+                        ],
                     }
                 ],
             },
@@ -398,5 +401,8 @@ def test_manage_panel_dropdowns_single_url_and_no_overlap(tmp_path: Path) -> Non
     assert '<select id="cfg-children"' in content
     assert 'id="cfg-ages-wrap"' in content
     assert "class=\"field-input h-url\"" in content
+    assert "url-item-row" in content
+    assert "btn-add-url" in content
+    assert "➕ 新增房價網" in content
     assert "width: 100%;" in content
     assert "hotel-row-line3" in content

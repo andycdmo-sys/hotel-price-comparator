@@ -116,8 +116,13 @@ def load_profile(path: Path) -> UserProfile:
         check_out = str(item.get("check_out") or "").strip()
         if not name or not check_in or not check_out:
             continue
+        raw_urls = item.get("urls")
+        if isinstance(raw_urls, list):
+            raw_url_str = " ".join(str(u).strip() for u in raw_urls if str(u).strip())
+        else:
+            raw_url_str = str(item.get("url") or raw_urls or "")
         parsed_trip, parsed_agoda = parse_hotel_urls(
-            str(item.get("url") or item.get("urls") or ""),
+            raw_url_str,
             trip_id=str(item.get("trip_hotel_id") or ""),
             agoda_path=str(item.get("agoda_path") or ""),
         )
