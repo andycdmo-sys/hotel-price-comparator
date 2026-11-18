@@ -3,7 +3,7 @@
   "title": "AndyTest 的飯店比價看板",
   "subtitle": "條件：2 成人 ｜ 幣別：TWD 含稅 ｜ 最後更新：2026-11-18 15:29:44",
   "updated_at": "2026-11-18 15:29:44",
-  "cards_html": "",
+  "cards_html": "<section class=\"hotel-card\"><div class=\"date-pill\">2026-11-30 ～ 2026-12-01</div><h2 class=\"hotel-name\">礁溪老爺酒店</h2><div class=\"plans-grid\"><div class=\"plan-box\"><div class=\"plan-title\">不限早餐（最低價）</div><div class=\"price-na\">無此方案</div></div><div class=\"plan-box\"><div class=\"plan-title\">含早餐方案</div><div class=\"price-na\">無此方案</div></div></div></section>",
   "chart_payload": {
     "labels": [],
     "hotels": [],

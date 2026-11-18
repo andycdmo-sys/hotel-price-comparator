@@ -10,6 +10,7 @@ from src.models import HotelPriceResult
 from src.scrapers.base import BaseHotelScraper
 
 _RESOLVED_HOTEL_CACHE: dict[str, str] = {}
+OKINAWA_DEFAULT_IDS = {"704038", "106709440", "120097372", "2845951"}
 
 SITE_MAP: dict[str, tuple[str, str]] = {
     "tw": ("tw.trip.com", "zh-TW"),
@@ -104,7 +105,9 @@ def _extract_hotel_price_and_room(
     hotel_name: str,
 ) -> tuple[Optional[float], str]:
     """從頁面文字行中定位飯店卡片並擷取含稅房價與房型名稱。"""
-    name_tokens = [tok.lower() for tok in (hotel_name, *HOTEL_NAME_KEYWORDS) if tok]
+    short_name = re.sub(r"(?:大飯店|大酒店|飯店|酒店|渡假村|度假村|旅館)$", "", hotel_name).strip()
+    extra_tokens = [short_name] if len(short_name) >= 2 else []
+    name_tokens = [tok.lower() for tok in (hotel_name, *extra_tokens, *HOTEL_NAME_KEYWORDS) if tok]
 
     # 優先尋找卡片列表區（通常在「找到X處/間住宿 / X軒のホテルがあります / X properties found」之後）
     list_start_idx = 0
@@ -119,84 +122,99 @@ def _extract_hotel_price_and_room(
         if any(tok in low for tok in name_tokens):
             candidate_indices.append(idx)
 
-    # 若列表標記之後沒找到，退回全文搜尋（仍靠卡片 CTA 與價格 > 0 過濾）
+    # 若列表標記之後沒找到，退回全文搜尋飯店名稱
     if not candidate_indices and list_start_idx > 0:
-        candidate_indices.append(list_start_idx)
         for idx, line in enumerate(lines):
             low = line.lower()
             if any(tok in low for tok in name_tokens):
                 candidate_indices.append(idx)
 
-    for start_idx in candidate_indices:
-        window = lines[start_idx : start_idx + 30]
-        window_joined = "\n".join(window).lower()
-        if not any(cta in window_joined for cta in CTA_KEYWORDS) and not any(
-            tax in window_joined for tax in TAX_INCLUDED_KEYWORDS
-        ):
-            continue
-
-        # 同時收集獨立價格行與「總額/連稅」內嵌價格行（排除篩選條 `(TWD0 - TWD10,000+)` 與折扣券行）
-        price_positions: list[tuple[int, float, bool]] = []
-        for offset, line in enumerate(window):
-            stripped = line.strip()
-            low_line = stripped.lower()
-            if any(skip in low_line for skip in ("折扣", "discount", "off", "coupon", "優惠", "高達", "最高", "クーポン")):
-                continue
-            match = PRICE_LINE_RE.match(stripped)
-            if match:
-                val = float(match.group(1).replace(",", ""))
-                if val > 0:
-                    price_positions.append((offset, val, False))
-                continue
-            if "(" in stripped and "-" in stripped:
-                continue
-            if any(k in low_line for k in ("總額", "連稅", "total", "incl")):
-                inline_match = PRICE_INLINE_RE.search(stripped)
-                if inline_match:
-                    val = float(inline_match.group(1).replace(",", ""))
-                    if val > 0:
-                        price_positions.append((offset, val, True))
-
-        if not price_positions:
-            continue
-
-        # 優先取明確標示為含稅總額（總額/連稅）的價格；否則取相鄰價格區塊的最後一個價格
-        explicit_totals = [item for item in price_positions if item[2]]
-        if explicit_totals:
-            price_offset, final_price, _ = explicit_totals[-1]
-        else:
-            price_offset, final_price, _ = price_positions[-1]
-            for pos_idx in range(len(price_positions) - 1):
-                curr_off, _, _ = price_positions[pos_idx]
-                next_off, next_val, _ = price_positions[pos_idx + 1]
-                if next_off - curr_off <= 2:
-                    price_offset, final_price = next_off, next_val
-
-        # 在價格之前的幾行中尋找房型名稱
-        room_type = ""
-        search_start = max(1, price_offset - 10)
-        candidates_room = window[search_start:price_offset]
-        for line in candidates_room:
-            low = line.lower()
-            if any(hint in low for hint in ROOM_HINT_KEYWORDS) and not any(
-                skip in low for skip in NON_ROOM_LINE_KEYWORDS
+    def _scan_candidates(indices: list[int]) -> tuple[Optional[float], str]:
+        for start_idx in indices:
+            window = lines[start_idx : start_idx + 40]
+            window_joined = "\n".join(window).lower()
+            if not any(cta in window_joined for cta in CTA_KEYWORDS) and not any(
+                tax in window_joined for tax in TAX_INCLUDED_KEYWORDS
             ):
-                room_type = line
-                break
+                continue
 
-        if not room_type:
-            for line in reversed(candidates_room):
+            # 同時收集獨立價格行與「總額/連稅」內嵌價格行（排除篩選條 `(TWD0 - TWD10,000+)` 與折扣券行）
+            price_positions: list[tuple[int, float, bool]] = []
+            for offset, line in enumerate(window):
+                stripped = line.strip()
+                low_line = stripped.lower()
+                if any(skip in low_line for skip in ("折扣", "discount", "off", "coupon", "優惠", "高達", "最高", "クーポン")):
+                    continue
+                match = PRICE_LINE_RE.match(stripped)
+                if match:
+                    val = float(match.group(1).replace(",", ""))
+                    if val > 0:
+                        price_positions.append((offset, val, False))
+                    continue
+                if "(" in stripped and "-" in stripped:
+                    continue
+                if any(k in low_line for k in ("總額", "連稅", "total", "incl", "合計", "税込")):
+                    inline_match = PRICE_INLINE_RE.search(stripped)
+                    if inline_match:
+                        val = float(inline_match.group(1).replace(",", ""))
+                        if val > 0:
+                            price_positions.append((offset, val, True))
+
+            if not price_positions:
+                continue
+
+            # 優先取明確標示為含稅總額（總額/連稅）的價格；否則取相鄰價格區塊的最後一個價格
+            explicit_totals = [item for item in price_positions if item[2]]
+            if explicit_totals:
+                price_offset, final_price, _ = explicit_totals[-1]
+            else:
+                price_offset, final_price, _ = price_positions[-1]
+                for pos_idx in range(len(price_positions) - 1):
+                    curr_off, _, _ = price_positions[pos_idx]
+                    next_off, next_val, _ = price_positions[pos_idx + 1]
+                    if next_off - curr_off <= 2:
+                        price_offset, final_price = next_off, next_val
+
+            # 在價格之前的幾行中尋找房型名稱
+            room_type = ""
+            search_start = max(1, price_offset - 10)
+            candidates_room = window[search_start:price_offset]
+            for line in candidates_room:
                 low = line.lower()
-                if re.fullmatch(r"x\d+|\d+(?:\.\d+)?", line.strip(), re.IGNORECASE):
-                    continue
-                if any(skip in low for skip in NON_ROOM_LINE_KEYWORDS):
-                    continue
-                room_type = line
-                break
+                if any(hint in low for hint in ROOM_HINT_KEYWORDS) and not any(
+                    skip in low for skip in NON_ROOM_LINE_KEYWORDS
+                ):
+                    room_type = line
+                    break
 
-        return final_price, room_type
+            if not room_type:
+                for line in reversed(candidates_room):
+                    low = line.lower()
+                    if re.fullmatch(r"x\d+|\d+(?:\.\d+)?", line.strip(), re.IGNORECASE):
+                        continue
+                    if any(skip in low for skip in NON_ROOM_LINE_KEYWORDS):
+                        continue
+                    room_type = line
+                    break
 
-    return None, ""
+            return final_price, room_type
+
+        return None, ""
+
+    found_price, found_room = _scan_candidates(candidate_indices)
+    if found_price is not None:
+        return found_price, found_room
+
+    # 若日文/英文站將飯店名稱翻譯而無法比對原文，改用卡片 CTA 按鈕往回定位第一張目標飯店卡片
+    cta_starts: list[int] = []
+    for idx in range(list_start_idx, len(lines)):
+        low = lines[idx].lower()
+        if any(cta in low for cta in CTA_KEYWORDS):
+            start = max(list_start_idx, idx - 25)
+            if start not in cta_starts:
+                cta_starts.append(start)
+
+    return _scan_candidates(cta_starts)
 
 
 class TripComScraper(BaseHotelScraper):
@@ -225,6 +243,10 @@ class TripComScraper(BaseHotelScraper):
         self.site_code = code
         self.subdomain, self.locale = SITE_MAP[code]
         self.hotel_id = hotel_id.strip()
+        if self.hotel_id and self.hotel_id not in OKINAWA_DEFAULT_IDS and city_id.strip() == "35747":
+            city_id = ""
+            province_id = ""
+            country_id = ""
         self.city_id = city_id.strip()
         self.province_id = province_id.strip()
         self.country_id = country_id.strip()
@@ -319,11 +341,12 @@ class TripComScraper(BaseHotelScraper):
             self.hotel_id = await self._lookup_hotel_id(context, hotel_name)
             if not self.hotel_id:
                 raise RuntimeError(f"無法在 Trip.com 自動搜尋到 {hotel_name} 的飯店 ID，請貼上飯店網址")
-            # 非預設沖繩測試飯店時清除預設名護市地區參數，避免錯配
-            if self.hotel_id not in {"704038", "106709440", "120097372", "2845951"}:
-                self.city_id = ""
-                self.province_id = ""
-                self.country_id = ""
+
+        # 非預設沖繩測試飯店時清除預設名護市地區參數，避免錯配
+        if self.hotel_id not in OKINAWA_DEFAULT_IDS:
+            self.city_id = ""
+            self.province_id = ""
+            self.country_id = ""
 
         target_url = self.build_search_url(hotel_name=hotel_name, check_in=check_in, check_out=check_out)
         page = await context.new_page()

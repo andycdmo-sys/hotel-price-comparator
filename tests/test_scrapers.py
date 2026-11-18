@@ -135,3 +135,25 @@ def test_extract_agoda_room_grid_price_filters_fit_and_breakfast() -> None:
     assert "checkIn=2027-01-26&los=1" in url
     assert "adults=2&children=1&childages=11" in url
     assert "Agoda [含早餐 | IP:TW]" == scraper.platform_name
+
+
+def test_trip_com_custom_hotel_clears_okinawa_params_and_extracts_translated_title() -> None:
+    from src.scrapers.trip_com import _extract_hotel_price_and_room
+
+    scraper = TripComScraper(site_code="tw", hotel_id="1001027", adults=2, children=0, currency="TWD")
+    search_url = scraper.build_search_url("礁溪老爺酒店", "2026-11-30", "2026-12-01")
+    assert "optionId=1001027" in search_url
+    assert "cityId=" not in search_url
+    assert "countryId=" not in search_url
+
+    jp_lines = [
+        "5軒のホテルがあります",
+        "ホテルロイヤル礁渓",
+        "9.2 素晴らしい",
+        "洋室ツインルーム",
+        "TWD 9,850",
+        "空室を確認",
+    ]
+    price, room = _extract_hotel_price_and_room(jp_lines, "礁溪老爺酒店")
+    assert price == 9850.0
+    assert "ツイン" in room or "洋室" in room

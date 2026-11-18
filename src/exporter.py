@@ -243,10 +243,12 @@ def _build_cards_html(
     """依入住日期與飯店分組整理飯店卡片 HTML 片段。"""
     grouped: dict[tuple[str, str, str], list[HotelPriceResult]] = {}
     for rec in records:
-        if rec.price is None or rec.error:
+        if not (rec.check_in and rec.check_out and rec.hotel_name):
             continue
         key = (rec.check_in, rec.check_out, rec.hotel_name)
-        grouped.setdefault(key, []).append(rec)
+        bucket = grouped.setdefault(key, [])
+        if rec.price is not None and not rec.error:
+            bucket.append(rec)
 
     cards_html: list[str] = []
     for (check_in, check_out, hotel_name), items in sorted(grouped.items()):
