@@ -8,9 +8,10 @@ from pathlib import Path
 
 from src.browser import open_incognito_context
 from src.config import load_config
-from src.exporter import export_to_csv, export_to_html
+from src.exporter import export_to_csv, export_to_html, export_user_dashboard_json
 from src.ip_checker import detect_current_ip_info
 from src.models import HotelPriceResult
+from src.profiles import UserProfile, load_all_profiles, load_profile, profile_to_target_prices
 from src.scrapers import AgodaScraper, DemoHotelScraper, TripComScraper, run_scrapers
 
 PROJECT_ROOT = Path(__file__).resolve().parent
@@ -42,6 +43,16 @@ def build_parser() -> argparse.ArgumentParser:
         "--watchlist",
         action="store_true",
         help="一次批次抓取預設的 4 間沖繩飯店追蹤清單 (2027-01-26 ~ 2027-01-30)",
+    )
+    parser.add_argument(
+        "--profile",
+        default="",
+        help="指定單一使用者代號（讀取 profiles/<user_id>.json）",
+    )
+    parser.add_argument(
+        "--all-profiles",
+        action="store_true",
+        help="掃描並執行 profiles/*.json 中的所有使用者追蹤清單",
     )
     parser.add_argument("--hotel", default="沖繩餘家弗飯店", help="欲查詢的飯店名稱")
     parser.add_argument("--hotel-id", default="704038", help="Trip.com 飯店 optionId")
@@ -123,11 +134,114 @@ def _resolve_breakfast_options(args: argparse.Namespace) -> list[bool]:
     return [False]
 
 
+async def _run_profile_batch(
+    profile: UserProfile,
+    context,
+    ip_info: str,
+    breakfast_options: list[bool],
+) -> Path:
+    profile_results: list[HotelPriceResult] = []
+    for hotel in profile.hotels:
+        scrapers = []
+        if "trip" in profile.platforms and hotel.trip_hotel_id:
+            scrapers.extend(
+                TripComScraper(
+                    site_code=code,
+                    hotel_id=hotel.trip_hotel_id,
+                    adults=profile.adults,
+                    children=profile.children,
+                    child_ages=profile.child_ages,
+                    currency=profile.currency,
+                    breakfast_only=bf_only,
+                    ip_info=ip_info,
+                )
+                for code in profile.sites
+                for bf_only in breakfast_options
+            )
+
+        agoda_path = hotel.agoda_path or AGODA_HOTEL_PATHS.get(hotel.name, "")
+        if "agoda" in profile.platforms and agoda_path:
+            scrapers.extend(
+                AgodaScraper(
+                    hotel_path=agoda_path,
+                    adults=profile.adults,
+                    children=profile.children,
+                    child_ages=profile.child_ages,
+                    currency=profile.currency,
+                    breakfast_only=bf_only,
+                    ip_info=ip_info,
+                )
+                for bf_only in breakfast_options
+            )
+
+        if not scrapers:
+            continue
+
+        batch = await run_scrapers(
+            scrapers=scrapers,
+            context=context,
+            hotel_name=hotel.name,
+            check_in=hotel.check_in,
+            check_out=hotel.check_out,
+            currency=profile.currency,
+        )
+        profile_results.extend(batch)
+        print(f"[{profile.user_id}] 比價完成：{hotel.name} ({hotel.check_in} ~ {hotel.check_out})")
+        for item in sorted(batch, key=lambda r: (r.price is None, r.price or 0)):
+            if item.error:
+                print(f"  - [{item.platform}] 查詢失敗：{item.error}")
+            else:
+                room_info = f" ({item.room_type})" if item.room_type else ""
+                print(f"  - [{item.platform}] {item.currency} {item.price:,.0f}{room_info}")
+
+    csv_path = PROJECT_ROOT / "output" / f"history_{profile.user_id}.csv"
+    export_to_csv(profile_results, csv_path, append=True)
+
+    json_path = PROJECT_ROOT / "docs" / "data" / f"{profile.user_id}.json"
+    export_user_dashboard_json(csv_path, json_path, profile=profile)
+    print(f"[{profile.user_id}] 已更新 {csv_path} 與 {json_path}")
+
+    if profile.user_id == "Andy1025":
+        legacy_csv = PROJECT_ROOT / "output" / "okinawa_2027_history.csv"
+        export_to_csv(profile_results, legacy_csv, append=True)
+        export_to_html(
+            legacy_csv,
+            PROJECT_ROOT / "docs" / "index.html",
+            target_prices=profile_to_target_prices(profile),
+        )
+
+    return csv_path
+
+
 async def run_cli(args: argparse.Namespace) -> Path:
     env_file = PROJECT_ROOT / ".env"
     config = load_config(env_path=env_file if env_file.exists() else None)
     if args.headless is not None:
         config = replace(config, headless=args.headless)
+
+    if args.all_profiles or args.profile:
+        profiles_dir = PROJECT_ROOT / "profiles"
+        if args.all_profiles:
+            profiles = load_all_profiles(profiles_dir)
+        else:
+            profiles = [load_profile(profiles_dir / f"{args.profile.strip()}.json")]
+
+        if not profiles:
+            raise RuntimeError("profiles/ 目錄中找不到任何使用者設定檔")
+
+        ip_info = detect_current_ip_info()
+        print(f"目前對外 IP / 國家：{ip_info}")
+        breakfast_options = _resolve_breakfast_options(args)
+        last_csv = PROJECT_ROOT / "output" / f"history_{profiles[0].user_id}.csv"
+        async with open_incognito_context(config) as context:
+            for prof in profiles:
+                last_csv = await _run_profile_batch(
+                    profile=prof,
+                    context=context,
+                    ip_info=ip_info,
+                    breakfast_options=breakfast_options,
+                )
+        return last_csv
 
     if args.watchlist:
         targets = OKINAWA_WATCHLIST

@@ -30,17 +30,17 @@ jobs:
       - name: 安裝 Playwright Chromium 瀏覽器
         run: playwright install --with-deps chromium
 
-      - name: 執行 4 間沖繩飯店比價並更新 CSV 與手機版網頁
+      - name: 執行所有使用者追蹤清單比價並更新 CSV 與手機版網頁
         env:
           TZ: Asia/Taipei
         run: |
-          python main.py --watchlist --sites tw,jp --append --output output/okinawa_2027_history.csv
+          python main.py --all-profiles
 
       - name: 提交並推送最新比價結果與網頁看板
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add output/okinawa_2027_history.csv docs/index.html
+          git add output/history_*.csv output/okinawa_2027_history.csv docs/index.html docs/data/*.json
           if ! git diff --cached --quiet; then
             git commit -m "chore: update Okinawa hotel prices ($(date +'%Y-%m-%d %H:%M'))"
             git pull --rebase origin main

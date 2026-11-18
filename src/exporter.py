@@ -6,9 +6,10 @@ import json
 import re
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Iterable
+from typing import Iterable, Optional
 
 from src.models import HotelPriceResult
+from src.profiles import UserProfile, profile_to_target_prices
 
 DEFAULT_TARGET_PRICES: dict[tuple[str, str], int] = {
     ("沖繩餘家弗飯店", "含早餐方案"): 4193,
@@ -211,17 +212,18 @@ def _build_chart_payload(records: list[HotelPriceResult]) -> dict:
     }
 
 
-def export_to_html(
-    csv_path: Path,
-    html_path: Path,
-    target_prices: dict[tuple[str, str], int] | None = None,
-) -> Path:
-    """根據歷史 CSV 產出適合手機瀏覽的響應式比價看板網頁 (`docs/index.html`)。"""
-    records = _load_existing_csv(csv_path) if csv_path.exists() else []
-    html_path.parent.mkdir(parents=True, exist_ok=True)
-    targets = DEFAULT_TARGET_PRICES if target_prices is None else target_prices
+def _latest_updated_str(records: list[HotelPriceResult]) -> str:
+    return (
+        max((r.scraped_at for r in records), default="")[:19].replace("T", " ")
+        or datetime.now(timezone.utc).astimezone().strftime("%Y-%m-%d %H:%M:%S")
+    )
 
-    # 依入住日期與飯店分組整理最新價格與歷史最低價
+
+def _build_cards_html(
+    records: list[HotelPriceResult],
+    targets: dict[tuple[str, str], int],
+) -> list[str]:
+    """依入住日期與飯店分組整理飯店卡片 HTML 片段。"""
     grouped: dict[tuple[str, str, str], list[HotelPriceResult]] = {}
     for rec in records:
         if rec.price is None or rec.error:
@@ -325,13 +327,64 @@ def export_to_html(
             f"</section>"
         )
 
+    return cards_html
+
+
+def export_user_dashboard_json(
+    csv_path: Path,
+    json_path: Path,
+    profile: Optional[UserProfile] = None,
+) -> Path:
+    """產出單一使用者的專屬看板 JSON (`docs/data/<user_id>.json`)。"""
+    records = _load_existing_csv(csv_path) if csv_path.exists() else []
+    json_path.parent.mkdir(parents=True, exist_ok=True)
+    targets = profile_to_target_prices(profile) if profile is not None else DEFAULT_TARGET_PRICES
+
+    cards_html = "".join(_build_cards_html(records, targets))
+    chart_payload = _build_chart_payload(records)
+    updated_str = _latest_updated_str(records)
+
+    if profile is not None:
+        guest_str = f"{profile.adults} 成人" + (
+            f" + {profile.children} 兒童 ({profile.child_ages}歲)"
+            if profile.children > 0 and profile.child_ages
+            else (f" + {profile.children} 兒童" if profile.children > 0 else "")
+        )
+        subtitle = f"條件：{guest_str} ｜ 幣別：{profile.currency} 含稅 ｜ 最後更新：{updated_str}"
+        title = profile.title or f"{profile.user_id} 的飯店比價看板"
+        user_id = profile.user_id
+    else:
+        subtitle = f"條件：2 成人 + 1 兒童 (11歲) ｜ 幣別：TWD 含稅 ｜ 最後更新：{updated_str}"
+        title = "沖繩飯店每日比價看板"
+        user_id = ""
+
+    payload = {
+        "user_id": user_id,
+        "title": title,
+        "subtitle": subtitle,
+        "updated_at": updated_str,
+        "cards_html": cards_html,
+        "chart_payload": chart_payload,
+        "profile": profile.to_dict() if profile is not None else None,
+    }
+    json_path.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
+    return json_path
+
+
+def export_to_html(
+    csv_path: Path,
+    html_path: Path,
+    target_prices: dict[tuple[str, str], int] | None = None,
+) -> Path:
+    """根據歷史 CSV 產出適合手機瀏覽的響應式比價看板網頁 (`docs/index.html`)。"""
+    records = _load_existing_csv(csv_path) if csv_path.exists() else []
+    html_path.parent.mkdir(parents=True, exist_ok=True)
+    targets = DEFAULT_TARGET_PRICES if target_prices is None else target_prices
+
+    cards_html = _build_cards_html(records, targets)
     chart_payload = _build_chart_payload(records)
     chart_json = json.dumps(chart_payload, ensure_ascii=False).replace("</", "<\\/")
-
-    updated_str = (
-        max((r.scraped_at for r in records), default="")[:19].replace("T", " ")
-        or datetime.now(timezone.utc).astimezone().strftime("%Y-%m-%d %H:%M:%S")
-    )
+    updated_str = _latest_updated_str(records)
 
     page_html = f"""<!DOCTYPE html>
 <html lang="zh-Hant">
@@ -586,31 +639,178 @@ def export_to_html(
       height: 280px;
       width: 100%;
     }}
+    .user-bar {{
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 10px 14px;
+      margin-bottom: 14px;
+    }}
+    .user-badge {{
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--text);
+    }}
+    .bar-actions {{
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }}
+    .bar-btn {{
+      border: 1px solid var(--border);
+      background: #f8fafc;
+      color: var(--text);
+      border-radius: 8px;
+      padding: 6px 10px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+    }}
+    .bar-btn.primary {{
+      background: var(--primary);
+      color: #ffffff;
+      border-color: var(--primary);
+    }}
+    .gate-card, .manage-card {{
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 18px;
+      margin-bottom: 14px;
+      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
+    }}
+    .gate-row {{
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }}
+    .gate-input, .field-input {{
+      flex: 1;
+      min-width: 140px;
+      padding: 8px 10px;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      font-size: 0.9rem;
+    }}
+    .manage-grid {{
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 8px;
+      margin-bottom: 12px;
+    }}
+    .field-label {{
+      display: block;
+      font-size: 0.74rem;
+      font-weight: 600;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }}
+    .hotel-edit-row {{
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px;
+      margin-bottom: 8px;
+    }}
+    .hotel-edit-grid {{
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(135px, 1fr));
+      gap: 6px;
+    }}
+    .manage-status {{
+      font-size: 0.8rem;
+      margin-top: 8px;
+      color: var(--accent);
+      font-weight: 600;
+    }}
+    .empty-state {{
+      background: var(--card);
+      border: 1px dashed #cbd5e1;
+      border-radius: 14px;
+      padding: 20px;
+      text-align: center;
+      color: var(--muted);
+      margin-bottom: 14px;
+    }}
+    .hidden {{
+      display: none !important;
+    }}
   </style>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
 </head>
 <body>
-  <header>
-    <h1>🏨 沖繩飯店每日比價看板</h1>
-    <div class="sub-info">條件：2 成人 + 1 兒童 (11歲) ｜ 幣別：TWD 含稅 ｜ 最後更新：{html.escape(updated_str)}</div>
-  </header>
-  {"".join(cards_html)}
-  <div class="history-wrap">
-    <h2 style="font-size:1rem;margin:0 0 10px 0;">📈 房價趨勢折線圖</h2>
-    <div id="chart-tabs" class="chart-tabs"></div>
-    <h3 class="chart-subtitle">🛏️ 不限早餐（最低價）</h3>
-    <div class="chart-container">
-      <canvas id="priceChart"></canvas>
+  <div class="user-bar">
+    <span id="current-user-badge" class="user-badge">🔑 尚未輸入專屬代號</span>
+    <div class="bar-actions">
+      <button type="button" id="btn-toggle-manage" class="bar-btn hidden">⚙️ 管理我的飯店</button>
+      <button type="button" id="btn-switch-user" class="bar-btn">🔑 切換代號</button>
     </div>
-    <h3 class="chart-subtitle">🍴 含早餐方案</h3>
-    <div class="chart-container">
-      <canvas id="priceChartBf"></canvas>
+  </div>
+
+  <section id="passcode-gate" class="gate-card hidden">
+    <h2 style="font-size:1.1rem;margin:0 0 6px 0;">🔑 專屬飯店比價看板入口</h2>
+    <div class="sub-info">每位使用者輸入自己的專屬代號後，只會載入您自己的飯店清單與價格紀錄（支援英數字、底線 _、連字號 -）。</div>
+    <div class="gate-row">
+      <input id="passcode-input" class="gate-input" type="text" placeholder="請輸入您的代號（例如 Andy1025）或建立新代號">
+      <button type="button" id="btn-enter-user" class="bar-btn primary">進入我的看板</button>
+    </div>
+    <div id="gate-error" class="sub-info" style="color:#dc2626;margin-top:8px;"></div>
+  </section>
+
+  <section id="manage-panel" class="manage-card hidden">
+    <h2 style="font-size:1.05rem;margin:0 0 10px 0;">⚙️ 管理我的飯店與追蹤條件</h2>
+    <div class="manage-grid">
+      <div><label class="field-label">成人人數</label><input id="cfg-adults" class="field-input" type="number" min="1" value="2"></div>
+      <div><label class="field-label">兒童人數</label><input id="cfg-children" class="field-input" type="number" min="0" value="0"></div>
+      <div><label class="field-label">兒童年齡（逗號分隔）</label><input id="cfg-ages" class="field-input" type="text" placeholder="如 11"></div>
+      <div><label class="field-label">幣別</label><input id="cfg-currency" class="field-input" type="text" value="TWD"></div>
+    </div>
+    <div id="manage-hotels-list"></div>
+    <div class="bar-actions" style="margin-top:10px;">
+      <button type="button" id="btn-add-hotel" class="bar-btn">➕ 新增一間飯店</button>
+      <button type="button" id="btn-save-profile" class="bar-btn primary">💾 儲存我的清單</button>
+      <button type="button" id="btn-copy-profile" class="bar-btn">📋 複製設定檔 JSON</button>
+    </div>
+    <div id="manage-status" class="manage-status"></div>
+  </section>
+
+  <div id="dashboard-content">
+    <header>
+      <h1 id="page-title">🏨 沖繩飯店每日比價看板</h1>
+      <div id="page-subtitle" class="sub-info">條件：2 成人 + 1 兒童 (11歲) ｜ 幣別：TWD 含稅 ｜ 最後更新：{html.escape(updated_str)}</div>
+    </header>
+    <div id="cards-container">{"".join(cards_html)}</div>
+    <div class="history-wrap">
+      <h2 style="font-size:1rem;margin:0 0 10px 0;">📈 房價趨勢折線圖</h2>
+      <div id="chart-tabs" class="chart-tabs"></div>
+      <h3 class="chart-subtitle">🛏️ 不限早餐（最低價）</h3>
+      <div class="chart-container">
+        <canvas id="priceChart"></canvas>
+      </div>
+      <h3 class="chart-subtitle">🍴 含早餐方案</h3>
+      <div class="chart-container">
+        <canvas id="priceChartBf"></canvas>
+      </div>
     </div>
   </div>
   <script>
     const CHART_DATA = {chart_json};
+    const CLOUD_SYNC_URL = "";
     const PALETTE = ["#2563eb", "#059669", "#d97706", "#7c3aed", "#0891b2", "#db2777"];
+    let activeChartData = CHART_DATA;
     let activeHotelKey = "__all__";
+    let activeUserId = "";
+    let activeProfile = null;
+
+    function targetStorageKey(key) {{
+      return activeUserId ? `target:${{activeUserId}}:${{key}}` : `target:${{key}}`;
+    }}
 
     function updateTargetBox(box) {{
       const input = box.querySelector(".target-input");
@@ -633,15 +833,27 @@ def export_to_html(
       }}
     }}
 
-    document.querySelectorAll(".plan-box[data-target-key]").forEach((box) => {{
-      const key = "target:" + box.dataset.targetKey;
-      const input = box.querySelector(".target-input");
-      const saved = localStorage.getItem(key);
-      if (saved !== null) {{
-        input.value = saved;
-      }}
-      updateTargetBox(box);
-    }});
+    function bindTargetBoxes() {{
+      document.querySelectorAll(".plan-box[data-target-key]").forEach((box) => {{
+        const key = targetStorageKey(box.dataset.targetKey);
+        const legacyKey = "target:" + box.dataset.targetKey;
+        const input = box.querySelector(".target-input");
+        const saved = localStorage.getItem(key) ?? localStorage.getItem(legacyKey);
+        if (saved !== null) {{
+          input.value = saved;
+        }}
+        updateTargetBox(box);
+        input.addEventListener("input", () => {{
+          if (input.value === "") {{
+            localStorage.removeItem(key);
+          }} else {{
+            localStorage.setItem(key, input.value);
+          }}
+          updateTargetBox(box);
+          refreshCharts();
+        }});
+      }});
+    }}
 
     function getTargetPrice(hotelName, planTitle) {{
       const expectedKey = `${{hotelName}}||${{planTitle}}`;
@@ -678,7 +890,7 @@ def export_to_html(
         if (targetVal !== null) {{
           datasets.push({{
             label: `🎯 目標價 (TWD ${{targetVal.toLocaleString()}})`,
-            data: CHART_DATA.labels.map(() => targetVal),
+            data: activeChartData.labels.map(() => targetVal),
             borderColor: "#dc2626",
             backgroundColor: "#dc262622",
             borderWidth: 2,
@@ -714,11 +926,13 @@ def export_to_html(
       }};
     }}
 
+    bindTargetBoxes();
+
     const chartAny = new Chart(document.getElementById("priceChart").getContext("2d"), {{
       type: "line",
       data: {{
-        labels: CHART_DATA.labels,
-        datasets: buildDatasets(CHART_DATA.any.overview, "__all__", "不限早餐（最低價）")
+        labels: activeChartData.labels,
+        datasets: buildDatasets(activeChartData.any.overview, "__all__", "不限早餐（最低價）")
       }},
       options: createChartOptions()
     }});
@@ -726,52 +940,237 @@ def export_to_html(
     const chartBf = new Chart(document.getElementById("priceChartBf").getContext("2d"), {{
       type: "line",
       data: {{
-        labels: CHART_DATA.labels,
-        datasets: buildDatasets(CHART_DATA.bf.overview, "__all__", "含早餐方案")
+        labels: activeChartData.labels,
+        datasets: buildDatasets(activeChartData.bf.overview, "__all__", "含早餐方案")
       }},
       options: createChartOptions()
     }});
 
     function refreshCharts() {{
-      const rawAny = activeHotelKey === "__all__" ? CHART_DATA.any.overview : (CHART_DATA.any.byHotel[activeHotelKey] || []);
-      const rawBf = activeHotelKey === "__all__" ? CHART_DATA.bf.overview : (CHART_DATA.bf.byHotel[activeHotelKey] || []);
+      const rawAny = activeHotelKey === "__all__" ? activeChartData.any.overview : (activeChartData.any.byHotel[activeHotelKey] || []);
+      const rawBf = activeHotelKey === "__all__" ? activeChartData.bf.overview : (activeChartData.bf.byHotel[activeHotelKey] || []);
+      chartAny.data.labels = activeChartData.labels;
+      chartBf.data.labels = activeChartData.labels;
       chartAny.data.datasets = buildDatasets(rawAny, activeHotelKey, "不限早餐（最低價）");
       chartBf.data.datasets = buildDatasets(rawBf, activeHotelKey, "含早餐方案");
       chartAny.update();
       chartBf.update();
     }}
 
-    const tabsEl = document.getElementById("chart-tabs");
-    const tabOptions = [{{ key: "__all__", label: "全部飯店（最低價）" }}].concat(
-      CHART_DATA.hotels.map((h) => ({{ key: h, label: h }}))
-    );
-    tabOptions.forEach((opt, i) => {{
-      const btn = document.createElement("button");
-      btn.type = "button";
-      btn.className = "chart-tab" + (i === 0 ? " active" : "");
-      btn.textContent = opt.label;
-      btn.addEventListener("click", () => {{
-        tabsEl.querySelectorAll(".chart-tab").forEach((b) => b.classList.remove("active"));
-        btn.classList.add("active");
-        activeHotelKey = opt.key;
-        refreshCharts();
+    function renderChartTabs() {{
+      const tabsEl = document.getElementById("chart-tabs");
+      tabsEl.innerHTML = "";
+      activeHotelKey = "__all__";
+      const tabOptions = [{{ key: "__all__", label: "全部飯店（最低價）" }}].concat(
+        (activeChartData.hotels || []).map((h) => ({{ key: h, label: h }}))
+      );
+      tabOptions.forEach((opt, i) => {{
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "chart-tab" + (i === 0 ? " active" : "");
+        btn.textContent = opt.label;
+        btn.addEventListener("click", () => {{
+          tabsEl.querySelectorAll(".chart-tab").forEach((b) => b.classList.remove("active"));
+          btn.classList.add("active");
+          activeHotelKey = opt.key;
+          refreshCharts();
+        }});
+        tabsEl.appendChild(btn);
       }});
-      tabsEl.appendChild(btn);
+    }}
+
+    function addHotelRow(item = {{}}) {{
+      const listEl = document.getElementById("manage-hotels-list");
+      const row = document.createElement("div");
+      row.className = "hotel-edit-row";
+      row.innerHTML = `
+        <div class="hotel-edit-grid">
+          <div><label class="field-label">飯店名稱</label><input class="field-input h-name" type="text" placeholder="如 沖繩餘家弗飯店"></div>
+          <div><label class="field-label">入住日期</label><input class="field-input h-in" type="date"></div>
+          <div><label class="field-label">退房日期</label><input class="field-input h-out" type="date"></div>
+          <div><label class="field-label">Trip.com ID / 網址（選填）</label><input class="field-input h-trip" type="text" placeholder="如 704038 或貼上網址"></div>
+          <div><label class="field-label">Agoda 路徑 / 網址（選填）</label><input class="field-input h-agoda" type="text" placeholder="/zh-tw/.../hotel/...html"></div>
+          <div><label class="field-label">不含早目標價</label><input class="field-input h-tany" type="number" min="0" placeholder="選填"></div>
+          <div><label class="field-label">含早目標價</label><input class="field-input h-tbf" type="number" min="0" placeholder="選填"></div>
+          <div style="display:flex;align-items:flex-end;"><button type="button" class="bar-btn btn-del-hotel">🗑️ 刪除</button></div>
+        </div>
+      `;
+      row.querySelector(".h-name").value = item.name || "";
+      row.querySelector(".h-in").value = item.check_in || "";
+      row.querySelector(".h-out").value = item.check_out || "";
+      row.querySelector(".h-trip").value = item.trip_hotel_id || "";
+      row.querySelector(".h-agoda").value = item.agoda_path || "";
+      row.querySelector(".h-tany").value = item.target_any ?? "";
+      row.querySelector(".h-tbf").value = item.target_bf ?? "";
+      row.querySelector(".btn-del-hotel").addEventListener("click", () => row.remove());
+      listEl.appendChild(row);
+    }}
+
+    function renderManageForm(profileObj) {{
+      document.getElementById("cfg-adults").value = profileObj?.adults ?? 2;
+      document.getElementById("cfg-children").value = profileObj?.children ?? 0;
+      document.getElementById("cfg-ages").value = profileObj?.child_ages || "";
+      document.getElementById("cfg-currency").value = profileObj?.currency || "TWD";
+      const listEl = document.getElementById("manage-hotels-list");
+      listEl.innerHTML = "";
+      const hotels = profileObj?.hotels || [];
+      if (hotels.length === 0) {{
+        addHotelRow({{}});
+      }} else {{
+        hotels.forEach((h) => addHotelRow(h));
+      }}
+    }}
+
+    function collectProfileFromForm() {{
+      const hotels = [];
+      document.querySelectorAll("#manage-hotels-list .hotel-edit-row").forEach((row) => {{
+        const name = row.querySelector(".h-name").value.trim();
+        const check_in = row.querySelector(".h-in").value.trim();
+        const check_out = row.querySelector(".h-out").value.trim();
+        if (!name || !check_in || !check_out) return;
+        const rawTrip = row.querySelector(".h-trip").value.trim();
+        const rawAgoda = row.querySelector(".h-agoda").value.trim();
+        const tAny = row.querySelector(".h-tany").value.trim();
+        const tBf = row.querySelector(".h-tbf").value.trim();
+        hotels.push({{
+          name,
+          check_in,
+          check_out,
+          trip_hotel_id: rawTrip,
+          agoda_path: rawAgoda,
+          target_any: tAny ? Number(tAny) : null,
+          target_bf: tBf ? Number(tBf) : null,
+        }});
+      }});
+      return {{
+        user_id: activeUserId,
+        title: `${{activeUserId}} 的飯店比價看板`,
+        adults: Number(document.getElementById("cfg-adults").value || 2),
+        children: Number(document.getElementById("cfg-children").value || 0),
+        child_ages: document.getElementById("cfg-ages").value.trim(),
+        currency: (document.getElementById("cfg-currency").value || "TWD").trim().toUpperCase(),
+        sites: ["tw", "jp"],
+        platforms: ["trip", "agoda"],
+        hotels,
+      }};
+    }}
+
+    async function loadUserDashboard(userId) {{
+      activeUserId = userId;
+      localStorage.setItem("hpc_active_user", userId);
+      const nextUrl = new URL(window.location.href);
+      nextUrl.searchParams.set("user", userId);
+      window.history.replaceState({{}}, "", nextUrl.toString());
+
+      document.getElementById("passcode-gate").classList.add("hidden");
+      document.getElementById("dashboard-content").classList.remove("hidden");
+      document.getElementById("btn-toggle-manage").classList.remove("hidden");
+      document.getElementById("current-user-badge").textContent = `👤 目前看板：${{userId}}`;
+
+      const draftRaw = localStorage.getItem(`profile_draft:${{userId}}`);
+      const draftProfile = draftRaw ? JSON.parse(draftRaw) : null;
+
+      try {{
+        const resp = await fetch(`data/${{encodeURIComponent(userId)}}.json?t=${{Date.now()}}`);
+        if (!resp.ok) throw new Error("NOT_FOUND");
+        const data = await resp.json();
+        document.getElementById("page-title").textContent = "🏨 " + (data.title || `${{userId}} 的飯店比價看板`);
+        document.getElementById("page-subtitle").textContent = data.subtitle || "";
+        document.getElementById("cards-container").innerHTML = data.cards_html || '<div class="empty-state">尚無房價資料，請點擊上方「⚙️ 管理我的飯店」新增飯店。</div>';
+        activeChartData = data.chart_payload || {{ labels: [], hotels: [], any: {{ overview: [], byHotel: {{}} }}, bf: {{ overview: [], byHotel: {{}} }} }};
+        activeProfile = draftProfile || data.profile || {{ user_id: userId, hotels: [] }};
+        bindTargetBoxes();
+        renderChartTabs();
+        refreshCharts();
+        renderManageForm(activeProfile);
+      }} catch (_err) {{
+        document.getElementById("page-title").textContent = `🏨 ${{userId}} 的飯店比價看板`;
+        document.getElementById("page-subtitle").textContent = "尚無雲端抓價紀錄（請在下方新增飯店並送出，待雲端排程抓價後即會顯示）";
+        document.getElementById("cards-container").innerHTML = '<div class="empty-state">目前還沒有「' + userId + '」的抓價紀錄。<br>請在上方設定您的飯店、日期與人數並儲存清單！</div>';
+        activeChartData = {{ labels: [], hotels: [], any: {{ overview: [], byHotel: {{}} }}, bf: {{ overview: [], byHotel: {{}} }} }};
+        activeProfile = draftProfile || {{ user_id: userId, adults: 2, children: 0, child_ages: "", currency: "TWD", hotels: [] }};
+        renderChartTabs();
+        refreshCharts();
+        renderManageForm(activeProfile);
+        document.getElementById("manage-panel").classList.remove("hidden");
+      }}
+    }}
+
+    function showPasscodeGate() {{
+      document.getElementById("passcode-gate").classList.remove("hidden");
+      document.getElementById("dashboard-content").classList.add("hidden");
+      document.getElementById("manage-panel").classList.add("hidden");
+      document.getElementById("btn-toggle-manage").classList.add("hidden");
+      document.getElementById("current-user-badge").textContent = "🔑 尚未輸入專屬代號";
+    }}
+
+    document.getElementById("btn-enter-user").addEventListener("click", () => {{
+      const raw = document.getElementById("passcode-input").value.trim();
+      const errEl = document.getElementById("gate-error");
+      if (!/^[A-Za-z0-9_-]{{2,32}}$/.test(raw)) {{
+        errEl.textContent = "代號格式不符：請輸入 2～32 碼英數字、底線 _ 或連字號 -。";
+        return;
+      }}
+      errEl.textContent = "";
+      loadUserDashboard(raw);
     }});
 
-    document.querySelectorAll(".plan-box[data-target-key]").forEach((box) => {{
-      const key = "target:" + box.dataset.targetKey;
-      const input = box.querySelector(".target-input");
-      input.addEventListener("input", () => {{
-        if (input.value === "") {{
-          localStorage.removeItem(key);
-        }} else {{
-          localStorage.setItem(key, input.value);
-        }}
-        updateTargetBox(box);
-        refreshCharts();
-      }});
+    document.getElementById("btn-switch-user").addEventListener("click", () => {{
+      localStorage.removeItem("hpc_active_user");
+      const nextUrl = new URL(window.location.href);
+      nextUrl.searchParams.delete("user");
+      window.history.replaceState({{}}, "", nextUrl.toString());
+      showPasscodeGate();
     }});
+
+    document.getElementById("btn-toggle-manage").addEventListener("click", () => {{
+      document.getElementById("manage-panel").classList.toggle("hidden");
+    }});
+
+    document.getElementById("btn-add-hotel").addEventListener("click", () => addHotelRow({{}}));
+
+    document.getElementById("btn-save-profile").addEventListener("click", async () => {{
+      const statusEl = document.getElementById("manage-status");
+      const profileObj = collectProfileFromForm();
+      localStorage.setItem(`profile_draft:${{activeUserId}}`, JSON.stringify(profileObj));
+      if (CLOUD_SYNC_URL) {{
+        statusEl.textContent = "正在同步至雲端排程...";
+        try {{
+          const resp = await fetch(CLOUD_SYNC_URL, {{
+            method: "POST",
+            headers: {{ "Content-Type": "application/json" }},
+            body: JSON.stringify(profileObj),
+          }});
+          if (!resp.ok) throw new Error("SYNC_FAIL");
+          statusEl.textContent = "✅ 已儲存並觸發雲端抓價，請約 1～2 分鐘後重新整理網頁查看！";
+        }} catch (_e) {{
+          statusEl.textContent = "⚠️ 已暫存於本機瀏覽器，但雲端同步失敗（請改用複製 JSON 提交）。";
+        }}
+      }} else {{
+        statusEl.textContent = "✅ 已暫存於本機瀏覽器！（尚未設定雲端轉發網址，如需加入每日排程請點「📋 複製設定檔 JSON」傳給管理員，或稍後串接免費 Google 轉發器即可一鍵同步。）";
+      }}
+    }});
+
+    document.getElementById("btn-copy-profile").addEventListener("click", async () => {{
+      const profileObj = collectProfileFromForm();
+      const text = JSON.stringify(profileObj, null, 2);
+      const statusEl = document.getElementById("manage-status");
+      try {{
+        await navigator.clipboard.writeText(text);
+        statusEl.textContent = "📋 已複製您的設定檔 JSON（對應檔案：profiles/" + activeUserId + ".json）！";
+      }} catch (_e) {{
+        statusEl.textContent = "請手動複製以下設定：\n" + text;
+      }}
+    }});
+
+    renderChartTabs();
+    const urlParams = new URLSearchParams(window.location.search);
+    const initialUser = (urlParams.get("user") || localStorage.getItem("hpc_active_user") || "").trim();
+    if (/^[A-Za-z0-9_-]{{2,32}}$/.test(initialUser)) {{
+      loadUserDashboard(initialUser);
+    }} else if (window.location.protocol.startsWith("http")) {{
+      showPasscodeGate();
+    }}
   </script>
 </body>
 </html>

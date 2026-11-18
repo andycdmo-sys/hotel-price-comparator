@@ -288,3 +288,69 @@ def test_export_to_html_renders_winner_and_collapses_extra_otas(tmp_path: Path) 
     assert 'data-current-price="3500"' in content
     assert "展開其他 1 家報價" in content
     assert "jp.trip.com" not in content
+
+
+def test_profile_loading_and_user_dashboard_json_export(tmp_path: Path) -> None:
+    import json
+    from src.exporter import export_user_dashboard_json
+    from src.profiles import load_profile
+
+    profile_file = tmp_path / "Andy1025.json"
+    profile_file.write_text(
+        json.dumps(
+            {
+                "user_id": "Andy1025",
+                "title": "Andy1025 的沖繩飯店比價看板",
+                "adults": 2,
+                "children": 1,
+                "child_ages": "11",
+                "currency": "TWD",
+                "hotels": [
+                    {
+                        "name": "沖繩餘家弗飯店",
+                        "check_in": "2027-01-26",
+                        "check_out": "2027-01-27",
+                        "trip_hotel_id": "https://tw.trip.com/hotels/list?optionId=704038",
+                        "agoda_path": "https://www.agoda.com/zh-tw/hotel-yugaf-inn-okinawa/hotel/okinawa-main-island-jp.html?checkIn=2027-01-26",
+                        "target_bf": 4193,
+                    }
+                ],
+            },
+            ensure_ascii=False,
+        ),
+        encoding="utf-8",
+    )
+
+    profile = load_profile(profile_file)
+    assert profile.user_id == "Andy1025"
+    assert profile.hotels[0].trip_hotel_id == "704038"
+    assert profile.hotels[0].agoda_path == "/zh-tw/hotel-yugaf-inn-okinawa/hotel/okinawa-main-island-jp.html"
+
+    csv_file = tmp_path / "history_Andy1025.csv"
+    json_out = tmp_path / "data" / "Andy1025.json"
+    html_out = tmp_path / "index.html"
+
+    export_to_csv(
+        [
+            HotelPriceResult(
+                hotel_name="沖繩餘家弗飯店",
+                platform="Agoda [含早餐 | IP:TW]",
+                check_in="2027-01-26",
+                check_out="2027-01-27",
+                price=4380,
+                scraped_at="2026-11-18T13:30:00+08:00",
+            )
+        ],
+        csv_file,
+    )
+    export_user_dashboard_json(csv_file, json_out, profile=profile)
+    export_to_html(csv_file, html_out)
+
+    dashboard_data = json.loads(json_out.read_text(encoding="utf-8"))
+    assert dashboard_data["user_id"] == "Andy1025"
+    assert 'value="4193"' in dashboard_data["cards_html"]
+    assert "chart_payload" in dashboard_data
+
+    html_content = html_out.read_text(encoding="utf-8")
+    assert 'id="passcode-gate"' in html_content
+    assert 'id="manage-panel"' in html_content

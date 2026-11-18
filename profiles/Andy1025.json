@@ -1,0 +1,48 @@
+{
+  "user_id": "Andy1025",
+  "title": "Andy1025 的沖繩飯店比價看板",
+  "adults": 2,
+  "children": 1,
+  "child_ages": "11",
+  "currency": "TWD",
+  "sites": ["tw", "jp"],
+  "platforms": ["trip", "agoda"],
+  "hotels": [
+    {
+      "name": "沖繩餘家弗飯店",
+      "check_in": "2027-01-26",
+      "check_out": "2027-01-27",
+      "trip_hotel_id": "704038",
+      "agoda_path": "/zh-tw/hotel-yugaf-inn-okinawa/hotel/okinawa-main-island-jp.html",
+      "target_any": null,
+      "target_bf": 4193
+    },
+    {
+      "name": "REF沖繩體育館by Vessel酒店集團",
+      "check_in": "2027-01-27",
+      "check_out": "2027-01-28",
+      "trip_hotel_id": "106709440",
+      "agoda_path": "/zh-tw/ref-okinawa-arena-by-vessel-hotels/hotel/okinawa-main-island-jp.html",
+      "target_any": null,
+      "target_bf": null
+    },
+    {
+      "name": "B/C 那霸飯店",
+      "check_in": "2027-01-28",
+      "check_out": "2027-01-29",
+      "trip_hotel_id": "120097372",
+      "agoda_path": "/zh-tw/b-c-hotel/hotel/okinawa-main-island-jp.html",
+      "target_any": null,
+      "target_bf": null
+    },
+    {
+      "name": "艾斯汀納特飯店",
+      "check_in": "2027-01-29",
+      "check_out": "2027-01-30",
+      "trip_hotel_id": "2845951",
+      "agoda_path": "/zh-tw/estinate-hotel/hotel/okinawa-main-island-jp.html",
+      "target_any": null,
+      "target_bf": null
+    }
+  ]
+}

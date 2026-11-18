@@ -251,31 +251,178 @@
       height: 280px;
       width: 100%;
     }
+    .user-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 10px 14px;
+      margin-bottom: 14px;
+    }
+    .user-badge {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .bar-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .bar-btn {
+      border: 1px solid var(--border);
+      background: #f8fafc;
+      color: var(--text);
+      border-radius: 8px;
+      padding: 6px 10px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .bar-btn.primary {
+      background: var(--primary);
+      color: #ffffff;
+      border-color: var(--primary);
+    }
+    .gate-card, .manage-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 18px;
+      margin-bottom: 14px;
+      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
+    }
+    .gate-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+    .gate-input, .field-input {
+      flex: 1;
+      min-width: 140px;
+      padding: 8px 10px;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      font-size: 0.9rem;
+    }
+    .manage-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .field-label {
+      display: block;
+      font-size: 0.74rem;
+      font-weight: 600;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+    .hotel-edit-row {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px;
+      margin-bottom: 8px;
+    }
+    .hotel-edit-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(135px, 1fr));
+      gap: 6px;
+    }
+    .manage-status {
+      font-size: 0.8rem;
+      margin-top: 8px;
+      color: var(--accent);
+      font-weight: 600;
+    }
+    .empty-state {
+      background: var(--card);
+      border: 1px dashed #cbd5e1;
+      border-radius: 14px;
+      padding: 20px;
+      text-align: center;
+      color: var(--muted);
+      margin-bottom: 14px;
+    }
+    .hidden {
+      display: none !important;
+    }
   </style>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
 </head>
 <body>
-  <header>
-    <h1>🏨 沖繩飯店每日比價看板</h1>
-    <div class="sub-info">條件：2 成人 + 1 兒童 (11歲) ｜ 幣別：TWD 含稅 ｜ 最後更新：2026-11-18 13:18:11</div>
-  </header>
-  <section class="hotel-card"><div class="date-pill">2027-01-26 ～ 2027-01-27</div><h2 class="hotel-name">沖繩餘家弗飯店</h2><div class="plans-grid"><div class="plan-box" data-target-key="沖繩餘家弗飯店||不限早餐（最低價）" data-current-price="3500"><div class="plan-title">不限早餐（最低價）</div><div class="winner-row"><span class="winner-plat">🏆 Agoda 最低</span></div><div class="price-main">TWD 3,500</div><div class="room-sub">Deluxe Ocean for 3 people, Non Smoking</div><div class="meta-sub">歷史最低：TWD 3,500 <span class="badge low">★ 目前即歷史最低</span></div><div class="ota-list"><div class="ota-row is-best"><span class="ota-name">Agoda</span><span class="ota-price">TWD 3,500</span><a class="ota-link" href="https://www.agoda.com/zh-tw/hotel-yugaf-inn-okinawa/hotel/okinawa-main-island-jp.html?checkIn=2027-01-26&amp;los=1&amp;rooms=1&amp;adults=2&amp;children=1&amp;childages=11&amp;currencyCode=TWD" target="_blank" rel="noopener">前往</a></div><div class="ota-row"><span class="ota-name">Trip.com (TW站)</span><span class="ota-price">TWD 3,650</span><a class="ota-link" href="https://tw.trip.com/hotels/list?flexType=1&amp;cityId=35747&amp;provinceId=11059&amp;districtId=0&amp;countryId=78&amp;searchWord=%E6%B2%96%E7%B9%A9%E9%A4%98%E5%AE%B6%E5%BC%97%E9%A3%AF%E5%BA%97&amp;searchType=H&amp;optionId=704038&amp;searchValue=31%7C704038*31*704038&amp;checkin=2027-01-26&amp;checkout=2027-01-27&amp;crn=1&amp;adult=2&amp;children=1&amp;ages=11&amp;curr=TWD&amp;locale=zh-TW" target="_blank" rel="noopener">前往</a></div><div class="ota-row"><span class="ota-name">Trip.com (JP站)</span><span class="ota-price">TWD 3,757</span><a class="ota-link" href="https://tw.trip.com/hotels/list?flexType=1&amp;cityId=35747&amp;provinceId=11059&amp;districtId=0&amp;countryId=78&amp;searchWord=%E6%B2%96%E7%B9%A9%E9%A4%98%E5%AE%B6%E5%BC%97%E9%A3%AF%E5%BA%97&amp;searchType=H&amp;optionId=704038&amp;searchValue=31%7C704038*31*704038&amp;checkin=2027-01-26&amp;checkout=2027-01-27&amp;crn=1&amp;adult=2&amp;children=1&amp;ages=11&amp;curr=TWD&amp;locale=zh-TW" target="_blank" rel="noopener">前往</a></div></div><div class="target-row"><span class="target-label">🎯 目標價</span><input type="number" class="target-input" min="0" step="1" placeholder="未設定" value=""><span class="target-status"></span></div></div><div class="plan-box" data-target-key="沖繩餘家弗飯店||含早餐方案" data-current-price="4615"><div class="plan-title">含早餐方案</div><div class="winner-row"><span class="winner-plat">🏆 Agoda 最低</span></div><div class="price-main">TWD 4,615</div><div class="room-sub">Deluxe Ocean for 3 people, Non Smoking</div><div class="meta-sub">歷史最低：TWD 4,615 <span class="badge low">★ 目前即歷史最低</span></div><div class="ota-list"><div class="ota-row is-best"><span class="ota-name">Agoda</span><span class="ota-price">TWD 4,615</span><a class="ota-link" href="https://www.agoda.com/zh-tw/hotel-yugaf-inn-okinawa/hotel/okinawa-main-island-jp.html?checkIn=2027-01-26&amp;los=1&amp;rooms=1&amp;adults=2&amp;children=1&amp;childages=11&amp;currencyCode=TWD" target="_blank" rel="noopener">前往</a></div><div class="ota-row"><span class="ota-name">Trip.com (TW站)</span><span class="ota-price">TWD 4,824</span><a class="ota-link" href="https://tw.trip.com/hotels/list?flexType=1&amp;cityId=35747&amp;provinceId=11059&amp;districtId=0&amp;countryId=78&amp;searchWord=%E6%B2%96%E7%B9%A9%E9%A4%98%E5%AE%B6%E5%BC%97%E9%A3%AF%E5%BA%97&amp;searchType=H&amp;optionId=704038&amp;searchValue=31%7C704038*31*704038&amp;checkin=2027-01-26&amp;checkout=2027-01-27&amp;crn=1&amp;adult=2&amp;children=1&amp;ages=11&amp;listFilters=5~1*5*1&amp;curr=TWD&amp;locale=zh-TW" target="_blank" rel="noopener">前往</a></div><div class="ota-row"><span class="ota-name">Trip.com (JP站)</span><span class="ota-price">TWD 4,854</span><a class="ota-link" href="https://tw.trip.com/hotels/list?flexType=1&amp;cityId=35747&amp;provinceId=11059&amp;districtId=0&amp;countryId=78&amp;searchWord=%E6%B2%96%E7%B9%A9%E9%A4%98%E5%AE%B6%E5%BC%97%E9%A3%AF%E5%BA%97&amp;searchType=H&amp;optionId=704038&amp;searchValue=31%7C704038*31*704038&amp;checkin=2027-01-26&amp;checkout=2027-01-27&amp;crn=1&amp;adult=2&amp;children=1&amp;ages=11&amp;listFilters=5~1*5*1&amp;curr=TWD&amp;locale=zh-TW" target="_blank" rel="noopener">前往</a></div></div><div class="target-row"><span class="target-label">🎯 目標價</span><input type="number" class="target-input" min="0" step="1" placeholder="未設定" value="4193"><span class="target-status"></span></div></div></div></section><section class="hotel-card"><div class="date-pill">2027-01-27 ～ 2027-01-28</div><h2 class="hotel-name">REF沖繩體育館by Vessel酒店集團</h2><div class="plans-grid"><div class="plan-box" data-target-key="REF沖繩體育館by Vessel酒店集團||不限早餐（最低價）" data-current-price="3245"><div class="plan-title">不限早餐（最低價）</div><div class="winner-row"><span class="winner-plat">🏆 Trip.com (JP站) 最低</span></div><div class="price-main">TWD 3,245</div><div class="room-sub">スタンダードルーム(シャワー付)(禁煙)</div><div class="meta-sub">歷史最低：TWD 3,245 <span class="badge low">★ 目前即歷史最低</span></div><div class="ota-list"><div class="ota-row is-best"><span class="ota-name">Trip.com (JP站)</span><span class="ota-price">TWD 3,245</span><a class="ota-link" href="https://tw.trip.com/hotels/list?flexType=1&amp;cityId=35747&amp;provinceId=11059&amp;districtId=0&amp;countryId=78&amp;searchWord=REF%E6%B2%96%E7%B9%A9%E9%AB%94%E8%82%B2%E9%A4%A8by%20Vessel%E9%85%92%E5%BA%97%E9%9B%86%E5%9C%98&amp;searchType=H&amp;optionId=106709440&amp;searchValue=31%7C106709440*31*106709440&amp;checkin=2027-01-27&amp;checkout=2027-01-28&amp;crn=1&amp;adult=2&amp;children=1&amp;ages=11&amp;curr=TWD&amp;locale=zh-TW" target="_blank" rel="noopener">前往</a></div><div class="ota-row"><span class="ota-name">Trip.com (TW站)</span><span class="ota-price">TWD 3,317</span><a class="ota-link" href="https://tw.trip.com/hotels/list?flexType=1&amp;cityId=35747&amp;provinceId=11059&amp;districtId=0&amp;countryId=78&amp;searchWord=REF%E6%B2%96%E7%B9%A9%E9%AB%94%E8%82%B2%E9%A4%A8by%20Vessel%E9%85%92%E5%BA%97%E9%9B%86%E5%9C%98&amp;searchType=H&amp;optionId=106709440&amp;searchValue=31%7C106709440*31*106709440&amp;checkin=2027-01-27&amp;checkout=2027-01-28&amp;crn=1&amp;adult=2&amp;children=1&amp;ages=11&amp;curr=TWD&amp;locale=zh-TW" target="_blank" rel="noopener">前往</a></div><div class="ota-row"><span class="ota-name">Agoda</span><span class="ota-price">TWD 5,471</span><a class="ota-link" href="https://www.agoda.com/zh-tw/ref-okinawa-arena-by-vessel-hotels/hotel/okinawa-main-island-jp.html?checkIn=2027-01-27&amp;los=1&amp;rooms=1&amp;adults=2&amp;children=1&amp;childages=11&amp;currencyCode=TWD" target="_blank" rel="noopener">前往</a></div></div><div class="target-row"><span class="target-label">🎯 目標價</span><input type="number" class="target-input" min="0" step="1" placeholder="未設定" value=""><span class="target-status"></span></div></div><div class="plan-box" data-target-key="REF沖繩體育館by Vessel酒店集團||含早餐方案" data-current-price="3894"><div class="plan-title">含早餐方案</div><div class="winner-row"><span class="winner-plat">🏆 Trip.com (JP站) 最低</span></div><div class="price-main">TWD 3,894</div><div class="room-sub">スタンダードルーム(シャワー付)(禁煙)</div><div class="meta-sub">歷史最低：TWD 3,894 <span class="badge low">★ 目前即歷史最低</span></div><div class="ota-list"><div class="ota-row is-best"><span class="ota-name">Trip.com (JP站)</span><span class="ota-price">TWD 3,894</span><a class="ota-link" href="https://tw.trip.com/hotels/list?flexType=1&amp;cityId=35747&amp;provinceId=11059&amp;districtId=0&amp;countryId=78&amp;searchWord=REF%E6%B2%96%E7%B9%A9%E9%AB%94%E8%82%B2%E9%A4%A8by%20Vessel%E9%85%92%E5%BA%97%E9%9B%86%E5%9C%98&amp;searchType=H&amp;optionId=106709440&amp;searchValue=31%7C106709440*31*106709440&amp;checkin=2027-01-27&amp;checkout=2027-01-28&amp;crn=1&amp;adult=2&amp;children=1&amp;ages=11&amp;listFilters=5~1*5*1&amp;curr=TWD&amp;locale=zh-TW" target="_blank" rel="noopener">前往</a></div><div class="ota-row"><span class="ota-name">Trip.com (TW站)</span><span class="ota-price">TWD 3,980</span><a class="ota-link" href="https://tw.trip.com/hotels/list?flexType=1&amp;cityId=35747&amp;provinceId=11059&amp;districtId=0&amp;countryId=78&amp;searchWord=REF%E6%B2%96%E7%B9%A9%E9%AB%94%E8%82%B2%E9%A4%A8by%20Vessel%E9%85%92%E5%BA%97%E9%9B%86%E5%9C%98&amp;searchType=H&amp;optionId=106709440&amp;searchValue=31%7C106709440*31*106709440&amp;checkin=2027-01-27&amp;checkout=2027-01-28&amp;crn=1&amp;adult=2&amp;children=1&amp;ages=11&amp;listFilters=5~1*5*1&amp;curr=TWD&amp;locale=zh-TW" target="_blank" rel="noopener">前往</a></div><div class="ota-row"><span class="ota-name">Agoda</span><span class="ota-price">TWD 6,491</span><a class="ota-link" href="https://www.agoda.com/zh-tw/ref-okinawa-arena-by-vessel-hotels/hotel/okinawa-main-island-jp.html?checkIn=2027-01-27&amp;los=1&amp;rooms=1&amp;adults=2&amp;children=1&amp;childages=11&amp;currencyCode=TWD" target="_blank" rel="noopener">前往</a></div></div><div class="target-row"><span class="target-label">🎯 目標價</span><input type="number" class="target-input" min="0" step="1" placeholder="未設定" value=""><span class="target-status"></span></div></div></div></section><section class="hotel-card"><div class="date-pill">2027-01-28 ～ 2027-01-29</div><h2 class="hotel-name">B/C 那霸飯店</h2><div class="plans-grid"><div class="plan-box" data-target-key="B/C 那霸飯店||不限早餐（最低價）" data-current-price="2243"><div class="plan-title">不限早餐（最低價）</div><div class="winner-row"><span class="winner-plat">🏆 Trip.com (JP站) 最低</span></div><div class="price-main">TWD 2,243</div><div class="room-sub">TWD 3,858</div><div class="meta-sub">歷史最低：TWD 2,243 <span class="badge low">★ 目前即歷史最低</span></div><div class="ota-list"><div class="ota-row is-best"><span class="ota-name">Trip.com (JP站)</span><span class="ota-price">TWD 2,243</span><a class="ota-link" href="https://tw.trip.com/hotels/list?flexType=1&amp;cityId=35747&amp;provinceId=11059&amp;districtId=0&amp;countryId=78&amp;searchWord=B/C%20%E9%82%A3%E9%9C%B8%E9%A3%AF%E5%BA%97&amp;searchType=H&amp;optionId=120097372&amp;searchValue=31%7C120097372*31*120097372&amp;checkin=2027-01-28&amp;checkout=2027-01-29&amp;crn=1&amp;adult=2&amp;children=1&amp;ages=11&amp;curr=TWD&amp;locale=zh-TW" target="_blank" rel="noopener">前往</a></div><div class="ota-row"><span class="ota-name">Trip.com (TW站)</span><span class="ota-price">TWD 2,291</span><a class="ota-link" href="https://tw.trip.com/hotels/list?flexType=1&amp;cityId=35747&amp;provinceId=11059&amp;districtId=0&amp;countryId=78&amp;searchWord=B/C%20%E9%82%A3%E9%9C%B8%E9%A3%AF%E5%BA%97&amp;searchType=H&amp;optionId=120097372&amp;searchValue=31%7C120097372*31*120097372&amp;checkin=2027-01-28&amp;checkout=2027-01-29&amp;crn=1&amp;adult=2&amp;children=1&amp;ages=11&amp;curr=TWD&amp;locale=zh-TW" target="_blank" rel="noopener">前往</a></div><div class="ota-row"><span class="ota-name">Agoda</span><span class="ota-price">TWD 3,707</span><a class="ota-link" href="https://www.agoda.com/zh-tw/b-c-hotel/hotel/okinawa-main-island-jp.html?checkIn=2027-01-28&amp;los=1&amp;rooms=1&amp;adults=2&amp;children=1&amp;childages=11&amp;currencyCode=TWD" target="_blank" rel="noopener">前往</a></div></div><div class="target-row"><span class="target-label">🎯 目標價</span><input type="number" class="target-input" min="0" step="1" placeholder="未設定" value=""><span class="target-status"></span></div></div><div class="plan-box" data-target-key="B/C 那霸飯店||含早餐方案" data-current-price="2243"><div class="plan-title">含早餐方案</div><div class="winner-row"><span class="winner-plat">🏆 Trip.com (JP站) 最低</span></div><div class="price-main">TWD 2,243</div><div class="room-sub">TWD 3,858</div><div class="meta-sub">歷史最低：TWD 2,243 <span class="badge low">★ 目前即歷史最低</span></div><div class="ota-list"><div class="ota-row is-best"><span class="ota-name">Trip.com (JP站)</span><span class="ota-price">TWD 2,243</span><a class="ota-link" href="https://tw.trip.com/hotels/list?flexType=1&amp;cityId=35747&amp;provinceId=11059&amp;districtId=0&amp;countryId=78&amp;searchWord=B/C%20%E9%82%A3%E9%9C%B8%E9%A3%AF%E5%BA%97&amp;searchType=H&amp;optionId=120097372&amp;searchValue=31%7C120097372*31*120097372&amp;checkin=2027-01-28&amp;checkout=2027-01-29&amp;crn=1&amp;adult=2&amp;children=1&amp;ages=11&amp;listFilters=5~1*5*1&amp;curr=TWD&amp;locale=zh-TW" target="_blank" rel="noopener">前往</a></div><div class="ota-row"><span class="ota-name">Trip.com (TW站)</span><span class="ota-price">TWD 2,291</span><a class="ota-link" href="https://tw.trip.com/hotels/list?flexType=1&amp;cityId=35747&amp;provinceId=11059&amp;districtId=0&amp;countryId=78&amp;searchWord=B/C%20%E9%82%A3%E9%9C%B8%E9%A3%AF%E5%BA%97&amp;searchType=H&amp;optionId=120097372&amp;searchValue=31%7C120097372*31*120097372&amp;checkin=2027-01-28&amp;checkout=2027-01-29&amp;crn=1&amp;adult=2&amp;children=1&amp;ages=11&amp;listFilters=5~1*5*1&amp;curr=TWD&amp;locale=zh-TW" target="_blank" rel="noopener">前往</a></div><div class="ota-row"><span class="ota-name">Agoda</span><span class="ota-price">TWD 3,707</span><a class="ota-link" href="https://www.agoda.com/zh-tw/b-c-hotel/hotel/okinawa-main-island-jp.html?checkIn=2027-01-28&amp;los=1&amp;rooms=1&amp;adults=2&amp;children=1&amp;childages=11&amp;currencyCode=TWD" target="_blank" rel="noopener">前往</a></div></div><div class="target-row"><span class="target-label">🎯 目標價</span><input type="number" class="target-input" min="0" step="1" placeholder="未設定" value=""><span class="target-status"></span></div></div></div></section><section class="hotel-card"><div class="date-pill">2027-01-29 ～ 2027-01-30</div><h2 class="hotel-name">艾斯汀納特飯店</h2><div class="plans-grid"><div class="plan-box" data-target-key="艾斯汀納特飯店||不限早餐（最低價）" data-current-price="2073"><div class="plan-title">不限早餐（最低價）</div><div class="winner-row"><span class="winner-plat">🏆 Trip.com (JP站) 最低</span></div><div class="price-main">TWD 2,073</div><div class="room-sub">スタンダードダブルルーム</div><div class="meta-sub">歷史最低：TWD 2,073 <span class="badge low">★ 目前即歷史最低</span></div><div class="ota-list"><div class="ota-row is-best"><span class="ota-name">Trip.com (JP站)</span><span class="ota-price">TWD 2,073</span><a class="ota-link" href="https://tw.trip.com/hotels/list?flexType=1&amp;cityId=35747&amp;provinceId=11059&amp;districtId=0&amp;countryId=78&amp;searchWord=%E8%89%BE%E6%96%AF%E6%B1%80%E7%B4%8D%E7%89%B9%E9%A3%AF%E5%BA%97&amp;searchType=H&amp;optionId=2845951&amp;searchValue=31%7C2845951*31*2845951&amp;checkin=2027-01-29&amp;checkout=2027-01-30&amp;crn=1&amp;adult=2&amp;children=1&amp;ages=11&amp;curr=TWD&amp;locale=zh-TW" target="_blank" rel="noopener">前往</a></div><div class="ota-row"><span class="ota-name">Trip.com (TW站)</span><span class="ota-price">TWD 2,118</span><a class="ota-link" href="https://tw.trip.com/hotels/list?flexType=1&amp;cityId=35747&amp;provinceId=11059&amp;districtId=0&amp;countryId=78&amp;searchWord=%E8%89%BE%E6%96%AF%E6%B1%80%E7%B4%8D%E7%89%B9%E9%A3%AF%E5%BA%97&amp;searchType=H&amp;optionId=2845951&amp;searchValue=31%7C2845951*31*2845951&amp;checkin=2027-01-29&amp;checkout=2027-01-30&amp;crn=1&amp;adult=2&amp;children=1&amp;ages=11&amp;curr=TWD&amp;locale=zh-TW" target="_blank" rel="noopener">前往</a></div><div class="ota-row"><span class="ota-name">Agoda</span><span class="ota-price">TWD 2,565</span><a class="ota-link" href="https://www.agoda.com/zh-tw/estinate-hotel/hotel/okinawa-main-island-jp.html?checkIn=2027-01-29&amp;los=1&amp;rooms=1&amp;adults=2&amp;children=1&amp;childages=11&amp;currencyCode=TWD" target="_blank" rel="noopener">前往</a></div></div><div class="target-row"><span class="target-label">🎯 目標價</span><input type="number" class="target-input" min="0" step="1" placeholder="未設定" value=""><span class="target-status"></span></div></div><div class="plan-box" data-target-key="艾斯汀納特飯店||含早餐方案" data-current-price="2371"><div class="plan-title">含早餐方案</div><div class="winner-row"><span class="winner-plat">🏆 Trip.com (JP站) 最低</span></div><div class="price-main">TWD 2,371</div><div class="room-sub">スタンダードダブルルーム</div><div class="meta-sub">歷史最低：TWD 2,371 <span class="badge low">★ 目前即歷史最低</span></div><div class="ota-list"><div class="ota-row is-best"><span class="ota-name">Trip.com (JP站)</span><span class="ota-price">TWD 2,371</span><a class="ota-link" href="https://tw.trip.com/hotels/list?flexType=1&amp;cityId=35747&amp;provinceId=11059&amp;districtId=0&amp;countryId=78&amp;searchWord=%E8%89%BE%E6%96%AF%E6%B1%80%E7%B4%8D%E7%89%B9%E9%A3%AF%E5%BA%97&amp;searchType=H&amp;optionId=2845951&amp;searchValue=31%7C2845951*31*2845951&amp;checkin=2027-01-29&amp;checkout=2027-01-30&amp;crn=1&amp;adult=2&amp;children=1&amp;ages=11&amp;listFilters=5~1*5*1&amp;curr=TWD&amp;locale=zh-TW" target="_blank" rel="noopener">前往</a></div><div class="ota-row"><span class="ota-name">Trip.com (TW站)</span><span class="ota-price">TWD 2,420</span><a class="ota-link" href="https://tw.trip.com/hotels/list?flexType=1&amp;cityId=35747&amp;provinceId=11059&amp;districtId=0&amp;countryId=78&amp;searchWord=%E8%89%BE%E6%96%AF%E6%B1%80%E7%B4%8D%E7%89%B9%E9%A3%AF%E5%BA%97&amp;searchType=H&amp;optionId=2845951&amp;searchValue=31%7C2845951*31*2845951&amp;checkin=2027-01-29&amp;checkout=2027-01-30&amp;crn=1&amp;adult=2&amp;children=1&amp;ages=11&amp;listFilters=5~1*5*1&amp;curr=TWD&amp;locale=zh-TW" target="_blank" rel="noopener">前往</a></div><div class="ota-row"><span class="ota-name">Agoda</span><span class="ota-price">TWD 2,804</span><a class="ota-link" href="https://www.agoda.com/zh-tw/estinate-hotel/hotel/okinawa-main-island-jp.html?checkIn=2027-01-29&amp;los=1&amp;rooms=1&amp;adults=2&amp;children=1&amp;childages=11&amp;currencyCode=TWD" target="_blank" rel="noopener">前往</a></div></div><div class="target-row"><span class="target-label">🎯 目標價</span><input type="number" class="target-input" min="0" step="1" placeholder="未設定" value=""><span class="target-status"></span></div></div></div></section>
-  <div class="history-wrap">
-    <h2 style="font-size:1rem;margin:0 0 10px 0;">📈 房價趨勢折線圖</h2>
-    <div id="chart-tabs" class="chart-tabs"></div>
-    <h3 class="chart-subtitle">🛏️ 不限早餐（最低價）</h3>
-    <div class="chart-container">
-      <canvas id="priceChart"></canvas>
+  <div class="user-bar">
+    <span id="current-user-badge" class="user-badge">🔑 尚未輸入專屬代號</span>
+    <div class="bar-actions">
+      <button type="button" id="btn-toggle-manage" class="bar-btn hidden">⚙️ 管理我的飯店</button>
+      <button type="button" id="btn-switch-user" class="bar-btn">🔑 切換代號</button>
     </div>
-    <h3 class="chart-subtitle">🍴 含早餐方案</h3>
-    <div class="chart-container">
-      <canvas id="priceChartBf"></canvas>
+  </div>
+
+  <section id="passcode-gate" class="gate-card hidden">
+    <h2 style="font-size:1.1rem;margin:0 0 6px 0;">🔑 專屬飯店比價看板入口</h2>
+    <div class="sub-info">每位使用者輸入自己的專屬代號後，只會載入您自己的飯店清單與價格紀錄（支援英數字、底線 _、連字號 -）。</div>
+    <div class="gate-row">
+      <input id="passcode-input" class="gate-input" type="text" placeholder="請輸入您的代號（例如 Andy1025）或建立新代號">
+      <button type="button" id="btn-enter-user" class="bar-btn primary">進入我的看板</button>
+    </div>
+    <div id="gate-error" class="sub-info" style="color:#dc2626;margin-top:8px;"></div>
+  </section>
+
+  <section id="manage-panel" class="manage-card hidden">
+    <h2 style="font-size:1.05rem;margin:0 0 10px 0;">⚙️ 管理我的飯店與追蹤條件</h2>
+    <div class="manage-grid">
+      <div><label class="field-label">成人人數</label><input id="cfg-adults" class="field-input" type="number" min="1" value="2"></div>
+      <div><label class="field-label">兒童人數</label><input id="cfg-children" class="field-input" type="number" min="0" value="0"></div>
+      <div><label class="field-label">兒童年齡（逗號分隔）</label><input id="cfg-ages" class="field-input" type="text" placeholder="如 11"></div>
+      <div><label class="field-label">幣別</label><input id="cfg-currency" class="field-input" type="text" value="TWD"></div>
+    </div>
+    <div id="manage-hotels-list"></div>
+    <div class="bar-actions" style="margin-top:10px;">
+      <button type="button" id="btn-add-hotel" class="bar-btn">➕ 新增一間飯店</button>
+      <button type="button" id="btn-save-profile" class="bar-btn primary">💾 儲存我的清單</button>
+      <button type="button" id="btn-copy-profile" class="bar-btn">📋 複製設定檔 JSON</button>
+    </div>
+    <div id="manage-status" class="manage-status"></div>
+  </section>
+
+  <div id="dashboard-content">
+    <header>
+      <h1 id="page-title">🏨 沖繩飯店每日比價看板</h1>
+      <div id="page-subtitle" class="sub-info">條件：2 成人 + 1 兒童 (11歲) ｜ 幣別：TWD 含稅 ｜ 最後更新：2026-11-18 13:18:11</div>
+    </header>
+    <div id="cards-container"><section class="hotel-card"><div class="date-pill">2027-01-26 ～ 2027-01-27</div><h2 class="hotel-name">沖繩餘家弗飯店</h2><div class="plans-grid"><div class="plan-box" data-target-key="沖繩餘家弗飯店||不限早餐（最低價）" data-current-price="3500"><div class="plan-title">不限早餐（最低價）</div><div class="winner-row"><span class="winner-plat">🏆 Agoda 最低</span></div><div class="price-main">TWD 3,500</div><div class="room-sub">Deluxe Ocean for 3 people, Non Smoking</div><div class="meta-sub">歷史最低：TWD 3,500 <span class="badge low">★ 目前即歷史最低</span></div><div class="ota-list"><div class="ota-row is-best"><span class="ota-name">Agoda</span><span class="ota-price">TWD 3,500</span><a class="ota-link" href="https://www.agoda.com/zh-tw/hotel-yugaf-inn-okinawa/hotel/okinawa-main-island-jp.html?checkIn=2027-01-26&amp;los=1&amp;rooms=1&amp;adults=2&amp;children=1&amp;childages=11&amp;currencyCode=TWD" target="_blank" rel="noopener">前往</a></div><div class="ota-row"><span class="ota-name">Trip.com (TW站)</span><span class="ota-price">TWD 3,650</span><a class="ota-link" href="https://tw.trip.com/hotels/list?flexType=1&amp;cityId=35747&amp;provinceId=11059&amp;districtId=0&amp;countryId=78&amp;searchWord=%E6%B2%96%E7%B9%A9%E9%A4%98%E5%AE%B6%E5%BC%97%E9%A3%AF%E5%BA%97&amp;searchType=H&amp;optionId=704038&amp;searchValue=31%7C704038*31*704038&amp;checkin=2027-01-26&amp;checkout=2027-01-27&amp;crn=1&amp;adult=2&amp;children=1&amp;ages=11&amp;curr=TWD&amp;locale=zh-TW" target="_blank" rel="noopener">前往</a></div><div class="ota-row"><span class="ota-name">Trip.com (JP站)</span><span class="ota-price">TWD 3,757</span><a class="ota-link" href="https://tw.trip.com/hotels/list?flexType=1&amp;cityId=35747&amp;provinceId=11059&amp;districtId=0&amp;countryId=78&amp;searchWord=%E6%B2%96%E7%B9%A9%E9%A4%98%E5%AE%B6%E5%BC%97%E9%A3%AF%E5%BA%97&amp;searchType=H&amp;optionId=704038&amp;searchValue=31%7C704038*31*704038&amp;checkin=2027-01-26&amp;checkout=2027-01-27&amp;crn=1&amp;adult=2&amp;children=1&amp;ages=11&amp;curr=TWD&amp;locale=zh-TW" target="_blank" rel="noopener">前往</a></div></div><div class="target-row"><span class="target-label">🎯 目標價</span><input type="number" class="target-input" min="0" step="1" placeholder="未設定" value=""><span class="target-status"></span></div></div><div class="plan-box" data-target-key="沖繩餘家弗飯店||含早餐方案" data-current-price="4615"><div class="plan-title">含早餐方案</div><div class="winner-row"><span class="winner-plat">🏆 Agoda 最低</span></div><div class="price-main">TWD 4,615</div><div class="room-sub">Deluxe Ocean for 3 people, Non Smoking</div><div class="meta-sub">歷史最低：TWD 4,615 <span class="badge low">★ 目前即歷史最低</span></div><div class="ota-list"><div class="ota-row is-best"><span class="ota-name">Agoda</span><span class="ota-price">TWD 4,615</span><a class="ota-link" href="https://www.agoda.com/zh-tw/hotel-yugaf-inn-okinawa/hotel/okinawa-main-island-jp.html?checkIn=2027-01-26&amp;los=1&amp;rooms=1&amp;adults=2&amp;children=1&amp;childages=11&amp;currencyCode=TWD" target="_blank" rel="noopener">前往</a></div><div class="ota-row"><span class="ota-name">Trip.com (TW站)</span><span class="ota-price">TWD 4,824</span><a class="ota-link" href="https://tw.trip.com/hotels/list?flexType=1&amp;cityId=35747&amp;provinceId=11059&amp;districtId=0&amp;countryId=78&amp;searchWord=%E6%B2%96%E7%B9%A9%E9%A4%98%E5%AE%B6%E5%BC%97%E9%A3%AF%E5%BA%97&amp;searchType=H&amp;optionId=704038&amp;searchValue=31%7C704038*31*704038&amp;checkin=2027-01-26&amp;checkout=2027-01-27&amp;crn=1&amp;adult=2&amp;children=1&amp;ages=11&amp;listFilters=5~1*5*1&amp;curr=TWD&amp;locale=zh-TW" target="_blank" rel="noopener">前往</a></div><div class="ota-row"><span class="ota-name">Trip.com (JP站)</span><span class="ota-price">TWD 4,854</span><a class="ota-link" href="https://tw.trip.com/hotels/list?flexType=1&amp;cityId=35747&amp;provinceId=11059&amp;districtId=0&amp;countryId=78&amp;searchWord=%E6%B2%96%E7%B9%A9%E9%A4%98%E5%AE%B6%E5%BC%97%E9%A3%AF%E5%BA%97&amp;searchType=H&amp;optionId=704038&amp;searchValue=31%7C704038*31*704038&amp;checkin=2027-01-26&amp;checkout=2027-01-27&amp;crn=1&amp;adult=2&amp;children=1&amp;ages=11&amp;listFilters=5~1*5*1&amp;curr=TWD&amp;locale=zh-TW" target="_blank" rel="noopener">前往</a></div></div><div class="target-row"><span class="target-label">🎯 目標價</span><input type="number" class="target-input" min="0" step="1" placeholder="未設定" value="4193"><span class="target-status"></span></div></div></div></section><section class="hotel-card"><div class="date-pill">2027-01-27 ～ 2027-01-28</div><h2 class="hotel-name">REF沖繩體育館by Vessel酒店集團</h2><div class="plans-grid"><div class="plan-box" data-target-key="REF沖繩體育館by Vessel酒店集團||不限早餐（最低價）" data-current-price="3245"><div class="plan-title">不限早餐（最低價）</div><div class="winner-row"><span class="winner-plat">🏆 Trip.com (JP站) 最低</span></div><div class="price-main">TWD 3,245</div><div class="room-sub">スタンダードルーム(シャワー付)(禁煙)</div><div class="meta-sub">歷史最低：TWD 3,245 <span class="badge low">★ 目前即歷史最低</span></div><div class="ota-list"><div class="ota-row is-best"><span class="ota-name">Trip.com (JP站)</span><span class="ota-price">TWD 3,245</span><a class="ota-link" href="https://tw.trip.com/hotels/list?flexType=1&amp;cityId=35747&amp;provinceId=11059&amp;districtId=0&amp;countryId=78&amp;searchWord=REF%E6%B2%96%E7%B9%A9%E9%AB%94%E8%82%B2%E9%A4%A8by%20Vessel%E9%85%92%E5%BA%97%E9%9B%86%E5%9C%98&amp;searchType=H&amp;optionId=106709440&amp;searchValue=31%7C106709440*31*106709440&amp;checkin=2027-01-27&amp;checkout=2027-01-28&amp;crn=1&amp;adult=2&amp;children=1&amp;ages=11&amp;curr=TWD&amp;locale=zh-TW" target="_blank" rel="noopener">前往</a></div><div class="ota-row"><span class="ota-name">Trip.com (TW站)</span><span class="ota-price">TWD 3,317</span><a class="ota-link" href="https://tw.trip.com/hotels/list?flexType=1&amp;cityId=35747&amp;provinceId=11059&amp;districtId=0&amp;countryId=78&amp;searchWord=REF%E6%B2%96%E7%B9%A9%E9%AB%94%E8%82%B2%E9%A4%A8by%20Vessel%E9%85%92%E5%BA%97%E9%9B%86%E5%9C%98&amp;searchType=H&amp;optionId=106709440&amp;searchValue=31%7C106709440*31*106709440&amp;checkin=2027-01-27&amp;checkout=2027-01-28&amp;crn=1&amp;adult=2&amp;children=1&amp;ages=11&amp;curr=TWD&amp;locale=zh-TW" target="_blank" rel="noopener">前往</a></div><div class="ota-row"><span class="ota-name">Agoda</span><span class="ota-price">TWD 5,471</span><a class="ota-link" href="https://www.agoda.com/zh-tw/ref-okinawa-arena-by-vessel-hotels/hotel/okinawa-main-island-jp.html?checkIn=2027-01-27&amp;los=1&amp;rooms=1&amp;adults=2&amp;children=1&amp;childages=11&amp;currencyCode=TWD" target="_blank" rel="noopener">前往</a></div></div><div class="target-row"><span class="target-label">🎯 目標價</span><input type="number" class="target-input" min="0" step="1" placeholder="未設定" value=""><span class="target-status"></span></div></div><div class="plan-box" data-target-key="REF沖繩體育館by Vessel酒店集團||含早餐方案" data-current-price="3894"><div class="plan-title">含早餐方案</div><div class="winner-row"><span class="winner-plat">🏆 Trip.com (JP站) 最低</span></div><div class="price-main">TWD 3,894</div><div class="room-sub">スタンダードルーム(シャワー付)(禁煙)</div><div class="meta-sub">歷史最低：TWD 3,894 <span class="badge low">★ 目前即歷史最低</span></div><div class="ota-list"><div class="ota-row is-best"><span class="ota-name">Trip.com (JP站)</span><span class="ota-price">TWD 3,894</span><a class="ota-link" href="https://tw.trip.com/hotels/list?flexType=1&amp;cityId=35747&amp;provinceId=11059&amp;districtId=0&amp;countryId=78&amp;searchWord=REF%E6%B2%96%E7%B9%A9%E9%AB%94%E8%82%B2%E9%A4%A8by%20Vessel%E9%85%92%E5%BA%97%E9%9B%86%E5%9C%98&amp;searchType=H&amp;optionId=106709440&amp;searchValue=31%7C106709440*31*106709440&amp;checkin=2027-01-27&amp;checkout=2027-01-28&amp;crn=1&amp;adult=2&amp;children=1&amp;ages=11&amp;listFilters=5~1*5*1&amp;curr=TWD&amp;locale=zh-TW" target="_blank" rel="noopener">前往</a></div><div class="ota-row"><span class="ota-name">Trip.com (TW站)</span><span class="ota-price">TWD 3,980</span><a class="ota-link" href="https://tw.trip.com/hotels/list?flexType=1&amp;cityId=35747&amp;provinceId=11059&amp;districtId=0&amp;countryId=78&amp;searchWord=REF%E6%B2%96%E7%B9%A9%E9%AB%94%E8%82%B2%E9%A4%A8by%20Vessel%E9%85%92%E5%BA%97%E9%9B%86%E5%9C%98&amp;searchType=H&amp;optionId=106709440&amp;searchValue=31%7C106709440*31*106709440&amp;checkin=2027-01-27&amp;checkout=2027-01-28&amp;crn=1&amp;adult=2&amp;children=1&amp;ages=11&amp;listFilters=5~1*5*1&amp;curr=TWD&amp;locale=zh-TW" target="_blank" rel="noopener">前往</a></div><div class="ota-row"><span class="ota-name">Agoda</span><span class="ota-price">TWD 6,491</span><a class="ota-link" href="https://www.agoda.com/zh-tw/ref-okinawa-arena-by-vessel-hotels/hotel/okinawa-main-island-jp.html?checkIn=2027-01-27&amp;los=1&amp;rooms=1&amp;adults=2&amp;children=1&amp;childages=11&amp;currencyCode=TWD" target="_blank" rel="noopener">前往</a></div></div><div class="target-row"><span class="target-label">🎯 目標價</span><input type="number" class="target-input" min="0" step="1" placeholder="未設定" value=""><span class="target-status"></span></div></div></div></section><section class="hotel-card"><div class="date-pill">2027-01-28 ～ 2027-01-29</div><h2 class="hotel-name">B/C 那霸飯店</h2><div class="plans-grid"><div class="plan-box" data-target-key="B/C 那霸飯店||不限早餐（最低價）" data-current-price="2243"><div class="plan-title">不限早餐（最低價）</div><div class="winner-row"><span class="winner-plat">🏆 Trip.com (JP站) 最低</span></div><div class="price-main">TWD 2,243</div><div class="room-sub">TWD 3,858</div><div class="meta-sub">歷史最低：TWD 2,243 <span class="badge low">★ 目前即歷史最低</span></div><div class="ota-list"><div class="ota-row is-best"><span class="ota-name">Trip.com (JP站)</span><span class="ota-price">TWD 2,243</span><a class="ota-link" href="https://tw.trip.com/hotels/list?flexType=1&amp;cityId=35747&amp;provinceId=11059&amp;districtId=0&amp;countryId=78&amp;searchWord=B/C%20%E9%82%A3%E9%9C%B8%E9%A3%AF%E5%BA%97&amp;searchType=H&amp;optionId=120097372&amp;searchValue=31%7C120097372*31*120097372&amp;checkin=2027-01-28&amp;checkout=2027-01-29&amp;crn=1&amp;adult=2&amp;children=1&amp;ages=11&amp;curr=TWD&amp;locale=zh-TW" target="_blank" rel="noopener">前往</a></div><div class="ota-row"><span class="ota-name">Trip.com (TW站)</span><span class="ota-price">TWD 2,291</span><a class="ota-link" href="https://tw.trip.com/hotels/list?flexType=1&amp;cityId=35747&amp;provinceId=11059&amp;districtId=0&amp;countryId=78&amp;searchWord=B/C%20%E9%82%A3%E9%9C%B8%E9%A3%AF%E5%BA%97&amp;searchType=H&amp;optionId=120097372&amp;searchValue=31%7C120097372*31*120097372&amp;checkin=2027-01-28&amp;checkout=2027-01-29&amp;crn=1&amp;adult=2&amp;children=1&amp;ages=11&amp;curr=TWD&amp;locale=zh-TW" target="_blank" rel="noopener">前往</a></div><div class="ota-row"><span class="ota-name">Agoda</span><span class="ota-price">TWD 3,707</span><a class="ota-link" href="https://www.agoda.com/zh-tw/b-c-hotel/hotel/okinawa-main-island-jp.html?checkIn=2027-01-28&amp;los=1&amp;rooms=1&amp;adults=2&amp;children=1&amp;childages=11&amp;currencyCode=TWD" target="_blank" rel="noopener">前往</a></div></div><div class="target-row"><span class="target-label">🎯 目標價</span><input type="number" class="target-input" min="0" step="1" placeholder="未設定" value=""><span class="target-status"></span></div></div><div class="plan-box" data-target-key="B/C 那霸飯店||含早餐方案" data-current-price="2243"><div class="plan-title">含早餐方案</div><div class="winner-row"><span class="winner-plat">🏆 Trip.com (JP站) 最低</span></div><div class="price-main">TWD 2,243</div><div class="room-sub">TWD 3,858</div><div class="meta-sub">歷史最低：TWD 2,243 <span class="badge low">★ 目前即歷史最低</span></div><div class="ota-list"><div class="ota-row is-best"><span class="ota-name">Trip.com (JP站)</span><span class="ota-price">TWD 2,243</span><a class="ota-link" href="https://tw.trip.com/hotels/list?flexType=1&amp;cityId=35747&amp;provinceId=11059&amp;districtId=0&amp;countryId=78&amp;searchWord=B/C%20%E9%82%A3%E9%9C%B8%E9%A3%AF%E5%BA%97&amp;searchType=H&amp;optionId=120097372&amp;searchValue=31%7C120097372*31*120097372&amp;checkin=2027-01-28&amp;checkout=2027-01-29&amp;crn=1&amp;adult=2&amp;children=1&amp;ages=11&amp;listFilters=5~1*5*1&amp;curr=TWD&amp;locale=zh-TW" target="_blank" rel="noopener">前往</a></div><div class="ota-row"><span class="ota-name">Trip.com (TW站)</span><span class="ota-price">TWD 2,291</span><a class="ota-link" href="https://tw.trip.com/hotels/list?flexType=1&amp;cityId=35747&amp;provinceId=11059&amp;districtId=0&amp;countryId=78&amp;searchWord=B/C%20%E9%82%A3%E9%9C%B8%E9%A3%AF%E5%BA%97&amp;searchType=H&amp;optionId=120097372&amp;searchValue=31%7C120097372*31*120097372&amp;checkin=2027-01-28&amp;checkout=2027-01-29&amp;crn=1&amp;adult=2&amp;children=1&amp;ages=11&amp;listFilters=5~1*5*1&amp;curr=TWD&amp;locale=zh-TW" target="_blank" rel="noopener">前往</a></div><div class="ota-row"><span class="ota-name">Agoda</span><span class="ota-price">TWD 3,707</span><a class="ota-link" href="https://www.agoda.com/zh-tw/b-c-hotel/hotel/okinawa-main-island-jp.html?checkIn=2027-01-28&amp;los=1&amp;rooms=1&amp;adults=2&amp;children=1&amp;childages=11&amp;currencyCode=TWD" target="_blank" rel="noopener">前往</a></div></div><div class="target-row"><span class="target-label">🎯 目標價</span><input type="number" class="target-input" min="0" step="1" placeholder="未設定" value=""><span class="target-status"></span></div></div></div></section><section class="hotel-card"><div class="date-pill">2027-01-29 ～ 2027-01-30</div><h2 class="hotel-name">艾斯汀納特飯店</h2><div class="plans-grid"><div class="plan-box" data-target-key="艾斯汀納特飯店||不限早餐（最低價）" data-current-price="2073"><div class="plan-title">不限早餐（最低價）</div><div class="winner-row"><span class="winner-plat">🏆 Trip.com (JP站) 最低</span></div><div class="price-main">TWD 2,073</div><div class="room-sub">スタンダードダブルルーム</div><div class="meta-sub">歷史最低：TWD 2,073 <span class="badge low">★ 目前即歷史最低</span></div><div class="ota-list"><div class="ota-row is-best"><span class="ota-name">Trip.com (JP站)</span><span class="ota-price">TWD 2,073</span><a class="ota-link" href="https://tw.trip.com/hotels/list?flexType=1&amp;cityId=35747&amp;provinceId=11059&amp;districtId=0&amp;countryId=78&amp;searchWord=%E8%89%BE%E6%96%AF%E6%B1%80%E7%B4%8D%E7%89%B9%E9%A3%AF%E5%BA%97&amp;searchType=H&amp;optionId=2845951&amp;searchValue=31%7C2845951*31*2845951&amp;checkin=2027-01-29&amp;checkout=2027-01-30&amp;crn=1&amp;adult=2&amp;children=1&amp;ages=11&amp;curr=TWD&amp;locale=zh-TW" target="_blank" rel="noopener">前往</a></div><div class="ota-row"><span class="ota-name">Trip.com (TW站)</span><span class="ota-price">TWD 2,118</span><a class="ota-link" href="https://tw.trip.com/hotels/list?flexType=1&amp;cityId=35747&amp;provinceId=11059&amp;districtId=0&amp;countryId=78&amp;searchWord=%E8%89%BE%E6%96%AF%E6%B1%80%E7%B4%8D%E7%89%B9%E9%A3%AF%E5%BA%97&amp;searchType=H&amp;optionId=2845951&amp;searchValue=31%7C2845951*31*2845951&amp;checkin=2027-01-29&amp;checkout=2027-01-30&amp;crn=1&amp;adult=2&amp;children=1&amp;ages=11&amp;curr=TWD&amp;locale=zh-TW" target="_blank" rel="noopener">前往</a></div><div class="ota-row"><span class="ota-name">Agoda</span><span class="ota-price">TWD 2,565</span><a class="ota-link" href="https://www.agoda.com/zh-tw/estinate-hotel/hotel/okinawa-main-island-jp.html?checkIn=2027-01-29&amp;los=1&amp;rooms=1&amp;adults=2&amp;children=1&amp;childages=11&amp;currencyCode=TWD" target="_blank" rel="noopener">前往</a></div></div><div class="target-row"><span class="target-label">🎯 目標價</span><input type="number" class="target-input" min="0" step="1" placeholder="未設定" value=""><span class="target-status"></span></div></div><div class="plan-box" data-target-key="艾斯汀納特飯店||含早餐方案" data-current-price="2371"><div class="plan-title">含早餐方案</div><div class="winner-row"><span class="winner-plat">🏆 Trip.com (JP站) 最低</span></div><div class="price-main">TWD 2,371</div><div class="room-sub">スタンダードダブルルーム</div><div class="meta-sub">歷史最低：TWD 2,371 <span class="badge low">★ 目前即歷史最低</span></div><div class="ota-list"><div class="ota-row is-best"><span class="ota-name">Trip.com (JP站)</span><span class="ota-price">TWD 2,371</span><a class="ota-link" href="https://tw.trip.com/hotels/list?flexType=1&amp;cityId=35747&amp;provinceId=11059&amp;districtId=0&amp;countryId=78&amp;searchWord=%E8%89%BE%E6%96%AF%E6%B1%80%E7%B4%8D%E7%89%B9%E9%A3%AF%E5%BA%97&amp;searchType=H&amp;optionId=2845951&amp;searchValue=31%7C2845951*31*2845951&amp;checkin=2027-01-29&amp;checkout=2027-01-30&amp;crn=1&amp;adult=2&amp;children=1&amp;ages=11&amp;listFilters=5~1*5*1&amp;curr=TWD&amp;locale=zh-TW" target="_blank" rel="noopener">前往</a></div><div class="ota-row"><span class="ota-name">Trip.com (TW站)</span><span class="ota-price">TWD 2,420</span><a class="ota-link" href="https://tw.trip.com/hotels/list?flexType=1&amp;cityId=35747&amp;provinceId=11059&amp;districtId=0&amp;countryId=78&amp;searchWord=%E8%89%BE%E6%96%AF%E6%B1%80%E7%B4%8D%E7%89%B9%E9%A3%AF%E5%BA%97&amp;searchType=H&amp;optionId=2845951&amp;searchValue=31%7C2845951*31*2845951&amp;checkin=2027-01-29&amp;checkout=2027-01-30&amp;crn=1&amp;adult=2&amp;children=1&amp;ages=11&amp;listFilters=5~1*5*1&amp;curr=TWD&amp;locale=zh-TW" target="_blank" rel="noopener">前往</a></div><div class="ota-row"><span class="ota-name">Agoda</span><span class="ota-price">TWD 2,804</span><a class="ota-link" href="https://www.agoda.com/zh-tw/estinate-hotel/hotel/okinawa-main-island-jp.html?checkIn=2027-01-29&amp;los=1&amp;rooms=1&amp;adults=2&amp;children=1&amp;childages=11&amp;currencyCode=TWD" target="_blank" rel="noopener">前往</a></div></div><div class="target-row"><span class="target-label">🎯 目標價</span><input type="number" class="target-input" min="0" step="1" placeholder="未設定" value=""><span class="target-status"></span></div></div></div></section></div>
+    <div class="history-wrap">
+      <h2 style="font-size:1rem;margin:0 0 10px 0;">📈 房價趨勢折線圖</h2>
+      <div id="chart-tabs" class="chart-tabs"></div>
+      <h3 class="chart-subtitle">🛏️ 不限早餐（最低價）</h3>
+      <div class="chart-container">
+        <canvas id="priceChart"></canvas>
+      </div>
+      <h3 class="chart-subtitle">🍴 含早餐方案</h3>
+      <div class="chart-container">
+        <canvas id="priceChartBf"></canvas>
+      </div>
     </div>
   </div>
   <script>
     const CHART_DATA = {"labels": ["11-17 16:57", "11-17 17:07", "11-17 20:48", "11-18 08:42", "11-18 10:00", "11-18 13:16"], "hotels": ["B/C 那霸飯店", "REF沖繩體育館by Vessel酒店集團", "沖繩餘家弗飯店", "艾斯汀納特飯店"], "any": {"overview": [{"label": "B/C 那霸飯店", "data": [2299.0, 2251.0, 2253.0, 2249.0, 2243.0, 3707.0]}, {"label": "REF沖繩體育館by Vessel酒店集團", "data": [3328.0, 3257.0, 3260.0, 3254.0, 3245.0, 5471.0]}, {"label": "沖繩餘家弗飯店", "data": [3654.0, 3654.0, 3660.0, 3660.0, 3650.0, 3500.0]}, {"label": "艾斯汀納特飯店", "data": [2126.0, 2082.0, 2084.0, 2080.0, 2073.0, 2565.0]}], "byHotel": {"B/C 那霸飯店": [{"label": "Agoda [不限早餐]", "data": [null, null, null, null, null, 3707.0]}, {"label": "Trip.com [JP站 | 不限早餐]", "data": [null, 2251.0, 2253.0, 2249.0, 2243.0, null]}, {"label": "Trip.com [TW站 | 不限早餐]", "data": [2299.0, 2299.0, 2302.0, 2297.0, 2291.0, null]}], "REF沖繩體育館by Vessel酒店集團": [{"label": "Agoda [不限早餐]", "data": [null, null, null, null, null, 5471.0]}, {"label": "Trip.com [JP站 | 不限早餐]", "data": [null, 3257.0, 3260.0, 3254.0, 3245.0, null]}, {"label": "Trip.com [TW站 | 不限早餐]", "data": [3328.0, 3328.0, 3331.0, 3325.0, 3317.0, null]}], "沖繩餘家弗飯店": [{"label": "Agoda [不限早餐]", "data": [null, null, null, null, null, 3500.0]}, {"label": "Trip.com [JP站 | 不限早餐]", "data": [null, 3771.0, 3775.0, 3768.0, 3757.0, null]}, {"label": "Trip.com [TW站 | 不限早餐]", "data": [3654.0, 3654.0, 3660.0, 3660.0, 3650.0, null]}], "艾斯汀納特飯店": [{"label": "Agoda [不限早餐]", "data": [null, null, null, null, null, 2565.0]}, {"label": "Trip.com [JP站 | 不限早餐]", "data": [null, 2082.0, 2084.0, 2080.0, 2073.0, null]}, {"label": "Trip.com [TW站 | 不限早餐]", "data": [2126.0, 2126.0, 2128.0, 2124.0, 2118.0, null]}]}}, "bf": {"overview": [{"label": "B/C 那霸飯店", "data": [2299.0, 2251.0, 2253.0, 2249.0, 2243.0, 3707.0]}, {"label": "REF沖繩體育館by Vessel酒店集團", "data": [3995.0, 3909.0, 3913.0, 3905.0, 3894.0, 6491.0]}, {"label": "沖繩餘家弗飯店", "data": [4830.0, 4830.0, 4838.0, 4838.0, 4824.0, 4615.0]}, {"label": "艾斯汀納特飯店", "data": [2429.0, 2379.0, 2381.0, 2377.0, 2371.0, 2804.0]}], "byHotel": {"B/C 那霸飯店": [{"label": "Agoda [含早餐]", "data": [null, null, null, null, null, 3707.0]}, {"label": "Trip.com [JP站 | 含早餐]", "data": [null, 2251.0, 2253.0, 2249.0, 2243.0, null]}, {"label": "Trip.com [TW站 | 含早餐]", "data": [2299.0, 2299.0, 2302.0, 2297.0, 2291.0, null]}], "REF沖繩體育館by Vessel酒店集團": [{"label": "Agoda [含早餐]", "data": [null, null, null, null, null, 6491.0]}, {"label": "Trip.com [JP站 | 含早餐]", "data": [null, 3909.0, 3913.0, 3905.0, 3894.0, null]}, {"label": "Trip.com [TW站 | 含早餐]", "data": [3995.0, 3995.0, 3999.0, 3991.0, 3980.0, null]}], "沖繩餘家弗飯店": [{"label": "Agoda [含早餐]", "data": [null, null, null, null, null, 4615.0]}, {"label": "Trip.com [JP站 | 含早餐]", "data": [null, 4872.0, 4876.0, 4868.0, 4854.0, null]}, {"label": "Trip.com [TW站 | 含早餐]", "data": [4830.0, 4830.0, 4838.0, 4838.0, 4824.0, null]}], "艾斯汀納特飯店": [{"label": "Agoda [含早餐]", "data": [null, null, null, null, null, 2804.0]}, {"label": "Trip.com [JP站 | 含早餐]", "data": [null, 2379.0, 2381.0, 2377.0, 2371.0, null]}, {"label": "Trip.com [TW站 | 含早餐]", "data": [2429.0, 2430.0, 2431.0, 2428.0, 2420.0, null]}]}}, "overview": [{"label": "B/C 那霸飯店", "data": [2299.0, 2251.0, 2253.0, 2249.0, 2243.0, 3707.0]}, {"label": "REF沖繩體育館by Vessel酒店集團", "data": [3328.0, 3257.0, 3260.0, 3254.0, 3245.0, 5471.0]}, {"label": "沖繩餘家弗飯店", "data": [3654.0, 3654.0, 3660.0, 3660.0, 3650.0, 3500.0]}, {"label": "艾斯汀納特飯店", "data": [2126.0, 2082.0, 2084.0, 2080.0, 2073.0, 2565.0]}], "byHotel": {"B/C 那霸飯店": [{"label": "Agoda [不限早餐]", "data": [null, null, null, null, null, 3707.0]}, {"label": "Trip.com [JP站 | 不限早餐]", "data": [null, 2251.0, 2253.0, 2249.0, 2243.0, null]}, {"label": "Trip.com [TW站 | 不限早餐]", "data": [2299.0, 2299.0, 2302.0, 2297.0, 2291.0, null]}], "REF沖繩體育館by Vessel酒店集團": [{"label": "Agoda [不限早餐]", "data": [null, null, null, null, null, 5471.0]}, {"label": "Trip.com [JP站 | 不限早餐]", "data": [null, 3257.0, 3260.0, 3254.0, 3245.0, null]}, {"label": "Trip.com [TW站 | 不限早餐]", "data": [3328.0, 3328.0, 3331.0, 3325.0, 3317.0, null]}], "沖繩餘家弗飯店": [{"label": "Agoda [不限早餐]", "data": [null, null, null, null, null, 3500.0]}, {"label": "Trip.com [JP站 | 不限早餐]", "data": [null, 3771.0, 3775.0, 3768.0, 3757.0, null]}, {"label": "Trip.com [TW站 | 不限早餐]", "data": [3654.0, 3654.0, 3660.0, 3660.0, 3650.0, null]}], "艾斯汀納特飯店": [{"label": "Agoda [不限早餐]", "data": [null, null, null, null, null, 2565.0]}, {"label": "Trip.com [JP站 | 不限早餐]", "data": [null, 2082.0, 2084.0, 2080.0, 2073.0, null]}, {"label": "Trip.com [TW站 | 不限早餐]", "data": [2126.0, 2126.0, 2128.0, 2124.0, 2118.0, null]}]}};
+    const CLOUD_SYNC_URL = "";
     const PALETTE = ["#2563eb", "#059669", "#d97706", "#7c3aed", "#0891b2", "#db2777"];
+    let activeChartData = CHART_DATA;
     let activeHotelKey = "__all__";
+    let activeUserId = "";
+    let activeProfile = null;
+
+    function targetStorageKey(key) {
+      return activeUserId ? `target:${activeUserId}:${key}` : `target:${key}`;
+    }
 
     function updateTargetBox(box) {
       const input = box.querySelector(".target-input");
@@ -298,15 +445,27 @@
       }
     }
 
-    document.querySelectorAll(".plan-box[data-target-key]").forEach((box) => {
-      const key = "target:" + box.dataset.targetKey;
-      const input = box.querySelector(".target-input");
-      const saved = localStorage.getItem(key);
-      if (saved !== null) {
-        input.value = saved;
-      }
-      updateTargetBox(box);
-    });
+    function bindTargetBoxes() {
+      document.querySelectorAll(".plan-box[data-target-key]").forEach((box) => {
+        const key = targetStorageKey(box.dataset.targetKey);
+        const legacyKey = "target:" + box.dataset.targetKey;
+        const input = box.querySelector(".target-input");
+        const saved = localStorage.getItem(key) ?? localStorage.getItem(legacyKey);
+        if (saved !== null) {
+          input.value = saved;
+        }
+        updateTargetBox(box);
+        input.addEventListener("input", () => {
+          if (input.value === "") {
+            localStorage.removeItem(key);
+          } else {
+            localStorage.setItem(key, input.value);
+          }
+          updateTargetBox(box);
+          refreshCharts();
+        });
+      });
+    }
 
     function getTargetPrice(hotelName, planTitle) {
       const expectedKey = `${hotelName}||${planTitle}`;
@@ -343,7 +502,7 @@
         if (targetVal !== null) {
           datasets.push({
             label: `🎯 目標價 (TWD ${targetVal.toLocaleString()})`,
-            data: CHART_DATA.labels.map(() => targetVal),
+            data: activeChartData.labels.map(() => targetVal),
             borderColor: "#dc2626",
             backgroundColor: "#dc262622",
             borderWidth: 2,
@@ -379,11 +538,13 @@
       };
     }
 
+    bindTargetBoxes();
+
     const chartAny = new Chart(document.getElementById("priceChart").getContext("2d"), {
       type: "line",
       data: {
-        labels: CHART_DATA.labels,
-        datasets: buildDatasets(CHART_DATA.any.overview, "__all__", "不限早餐（最低價）")
+        labels: activeChartData.labels,
+        datasets: buildDatasets(activeChartData.any.overview, "__all__", "不限早餐（最低價）")
       },
       options: createChartOptions()
     });
@@ -391,52 +552,238 @@
     const chartBf = new Chart(document.getElementById("priceChartBf").getContext("2d"), {
       type: "line",
       data: {
-        labels: CHART_DATA.labels,
-        datasets: buildDatasets(CHART_DATA.bf.overview, "__all__", "含早餐方案")
+        labels: activeChartData.labels,
+        datasets: buildDatasets(activeChartData.bf.overview, "__all__", "含早餐方案")
       },
       options: createChartOptions()
     });
 
     function refreshCharts() {
-      const rawAny = activeHotelKey === "__all__" ? CHART_DATA.any.overview : (CHART_DATA.any.byHotel[activeHotelKey] || []);
-      const rawBf = activeHotelKey === "__all__" ? CHART_DATA.bf.overview : (CHART_DATA.bf.byHotel[activeHotelKey] || []);
+      const rawAny = activeHotelKey === "__all__" ? activeChartData.any.overview : (activeChartData.any.byHotel[activeHotelKey] || []);
+      const rawBf = activeHotelKey === "__all__" ? activeChartData.bf.overview : (activeChartData.bf.byHotel[activeHotelKey] || []);
+      chartAny.data.labels = activeChartData.labels;
+      chartBf.data.labels = activeChartData.labels;
       chartAny.data.datasets = buildDatasets(rawAny, activeHotelKey, "不限早餐（最低價）");
       chartBf.data.datasets = buildDatasets(rawBf, activeHotelKey, "含早餐方案");
       chartAny.update();
       chartBf.update();
     }
 
-    const tabsEl = document.getElementById("chart-tabs");
-    const tabOptions = [{ key: "__all__", label: "全部飯店（最低價）" }].concat(
-      CHART_DATA.hotels.map((h) => ({ key: h, label: h }))
-    );
-    tabOptions.forEach((opt, i) => {
-      const btn = document.createElement("button");
-      btn.type = "button";
-      btn.className = "chart-tab" + (i === 0 ? " active" : "");
-      btn.textContent = opt.label;
-      btn.addEventListener("click", () => {
-        tabsEl.querySelectorAll(".chart-tab").forEach((b) => b.classList.remove("active"));
-        btn.classList.add("active");
-        activeHotelKey = opt.key;
-        refreshCharts();
+    function renderChartTabs() {
+      const tabsEl = document.getElementById("chart-tabs");
+      tabsEl.innerHTML = "";
+      activeHotelKey = "__all__";
+      const tabOptions = [{ key: "__all__", label: "全部飯店（最低價）" }].concat(
+        (activeChartData.hotels || []).map((h) => ({ key: h, label: h }))
+      );
+      tabOptions.forEach((opt, i) => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "chart-tab" + (i === 0 ? " active" : "");
+        btn.textContent = opt.label;
+        btn.addEventListener("click", () => {
+          tabsEl.querySelectorAll(".chart-tab").forEach((b) => b.classList.remove("active"));
+          btn.classList.add("active");
+          activeHotelKey = opt.key;
+          refreshCharts();
+        });
+        tabsEl.appendChild(btn);
       });
-      tabsEl.appendChild(btn);
+    }
+
+    function addHotelRow(item = {}) {
+      const listEl = document.getElementById("manage-hotels-list");
+      const row = document.createElement("div");
+      row.className = "hotel-edit-row";
+      row.innerHTML = `
+        <div class="hotel-edit-grid">
+          <div><label class="field-label">飯店名稱</label><input class="field-input h-name" type="text" placeholder="如 沖繩餘家弗飯店"></div>
+          <div><label class="field-label">入住日期</label><input class="field-input h-in" type="date"></div>
+          <div><label class="field-label">退房日期</label><input class="field-input h-out" type="date"></div>
+          <div><label class="field-label">Trip.com ID / 網址（選填）</label><input class="field-input h-trip" type="text" placeholder="如 704038 或貼上網址"></div>
+          <div><label class="field-label">Agoda 路徑 / 網址（選填）</label><input class="field-input h-agoda" type="text" placeholder="/zh-tw/.../hotel/...html"></div>
+          <div><label class="field-label">不含早目標價</label><input class="field-input h-tany" type="number" min="0" placeholder="選填"></div>
+          <div><label class="field-label">含早目標價</label><input class="field-input h-tbf" type="number" min="0" placeholder="選填"></div>
+          <div style="display:flex;align-items:flex-end;"><button type="button" class="bar-btn btn-del-hotel">🗑️ 刪除</button></div>
+        </div>
+      `;
+      row.querySelector(".h-name").value = item.name || "";
+      row.querySelector(".h-in").value = item.check_in || "";
+      row.querySelector(".h-out").value = item.check_out || "";
+      row.querySelector(".h-trip").value = item.trip_hotel_id || "";
+      row.querySelector(".h-agoda").value = item.agoda_path || "";
+      row.querySelector(".h-tany").value = item.target_any ?? "";
+      row.querySelector(".h-tbf").value = item.target_bf ?? "";
+      row.querySelector(".btn-del-hotel").addEventListener("click", () => row.remove());
+      listEl.appendChild(row);
+    }
+
+    function renderManageForm(profileObj) {
+      document.getElementById("cfg-adults").value = profileObj?.adults ?? 2;
+      document.getElementById("cfg-children").value = profileObj?.children ?? 0;
+      document.getElementById("cfg-ages").value = profileObj?.child_ages || "";
+      document.getElementById("cfg-currency").value = profileObj?.currency || "TWD";
+      const listEl = document.getElementById("manage-hotels-list");
+      listEl.innerHTML = "";
+      const hotels = profileObj?.hotels || [];
+      if (hotels.length === 0) {
+        addHotelRow({});
+      } else {
+        hotels.forEach((h) => addHotelRow(h));
+      }
+    }
+
+    function collectProfileFromForm() {
+      const hotels = [];
+      document.querySelectorAll("#manage-hotels-list .hotel-edit-row").forEach((row) => {
+        const name = row.querySelector(".h-name").value.trim();
+        const check_in = row.querySelector(".h-in").value.trim();
+        const check_out = row.querySelector(".h-out").value.trim();
+        if (!name || !check_in || !check_out) return;
+        const rawTrip = row.querySelector(".h-trip").value.trim();
+        const rawAgoda = row.querySelector(".h-agoda").value.trim();
+        const tAny = row.querySelector(".h-tany").value.trim();
+        const tBf = row.querySelector(".h-tbf").value.trim();
+        hotels.push({
+          name,
+          check_in,
+          check_out,
+          trip_hotel_id: rawTrip,
+          agoda_path: rawAgoda,
+          target_any: tAny ? Number(tAny) : null,
+          target_bf: tBf ? Number(tBf) : null,
+        });
+      });
+      return {
+        user_id: activeUserId,
+        title: `${activeUserId} 的飯店比價看板`,
+        adults: Number(document.getElementById("cfg-adults").value || 2),
+        children: Number(document.getElementById("cfg-children").value || 0),
+        child_ages: document.getElementById("cfg-ages").value.trim(),
+        currency: (document.getElementById("cfg-currency").value || "TWD").trim().toUpperCase(),
+        sites: ["tw", "jp"],
+        platforms: ["trip", "agoda"],
+        hotels,
+      };
+    }
+
+    async function loadUserDashboard(userId) {
+      activeUserId = userId;
+      localStorage.setItem("hpc_active_user", userId);
+      const nextUrl = new URL(window.location.href);
+      nextUrl.searchParams.set("user", userId);
+      window.history.replaceState({}, "", nextUrl.toString());
+
+      document.getElementById("passcode-gate").classList.add("hidden");
+      document.getElementById("dashboard-content").classList.remove("hidden");
+      document.getElementById("btn-toggle-manage").classList.remove("hidden");
+      document.getElementById("current-user-badge").textContent = `👤 目前看板：${userId}`;
+
+      const draftRaw = localStorage.getItem(`profile_draft:${userId}`);
+      const draftProfile = draftRaw ? JSON.parse(draftRaw) : null;
+
+      try {
+        const resp = await fetch(`data/${encodeURIComponent(userId)}.json?t=${Date.now()}`);
+        if (!resp.ok) throw new Error("NOT_FOUND");
+        const data = await resp.json();
+        document.getElementById("page-title").textContent = "🏨 " + (data.title || `${userId} 的飯店比價看板`);
+        document.getElementById("page-subtitle").textContent = data.subtitle || "";
+        document.getElementById("cards-container").innerHTML = data.cards_html || '<div class="empty-state">尚無房價資料，請點擊上方「⚙️ 管理我的飯店」新增飯店。</div>';
+        activeChartData = data.chart_payload || { labels: [], hotels: [], any: { overview: [], byHotel: {} }, bf: { overview: [], byHotel: {} } };
+        activeProfile = draftProfile || data.profile || { user_id: userId, hotels: [] };
+        bindTargetBoxes();
+        renderChartTabs();
+        refreshCharts();
+        renderManageForm(activeProfile);
+      } catch (_err) {
+        document.getElementById("page-title").textContent = `🏨 ${userId} 的飯店比價看板`;
+        document.getElementById("page-subtitle").textContent = "尚無雲端抓價紀錄（請在下方新增飯店並送出，待雲端排程抓價後即會顯示）";
+        document.getElementById("cards-container").innerHTML = '<div class="empty-state">目前還沒有「' + userId + '」的抓價紀錄。<br>請在上方設定您的飯店、日期與人數並儲存清單！</div>';
+        activeChartData = { labels: [], hotels: [], any: { overview: [], byHotel: {} }, bf: { overview: [], byHotel: {} } };
+        activeProfile = draftProfile || { user_id: userId, adults: 2, children: 0, child_ages: "", currency: "TWD", hotels: [] };
+        renderChartTabs();
+        refreshCharts();
+        renderManageForm(activeProfile);
+        document.getElementById("manage-panel").classList.remove("hidden");
+      }
+    }
+
+    function showPasscodeGate() {
+      document.getElementById("passcode-gate").classList.remove("hidden");
+      document.getElementById("dashboard-content").classList.add("hidden");
+      document.getElementById("manage-panel").classList.add("hidden");
+      document.getElementById("btn-toggle-manage").classList.add("hidden");
+      document.getElementById("current-user-badge").textContent = "🔑 尚未輸入專屬代號";
+    }
+
+    document.getElementById("btn-enter-user").addEventListener("click", () => {
+      const raw = document.getElementById("passcode-input").value.trim();
+      const errEl = document.getElementById("gate-error");
+      if (!/^[A-Za-z0-9_-]{2,32}$/.test(raw)) {
+        errEl.textContent = "代號格式不符：請輸入 2～32 碼英數字、底線 _ 或連字號 -。";
+        return;
+      }
+      errEl.textContent = "";
+      loadUserDashboard(raw);
     });
 
-    document.querySelectorAll(".plan-box[data-target-key]").forEach((box) => {
-      const key = "target:" + box.dataset.targetKey;
-      const input = box.querySelector(".target-input");
-      input.addEventListener("input", () => {
-        if (input.value === "") {
-          localStorage.removeItem(key);
-        } else {
-          localStorage.setItem(key, input.value);
-        }
-        updateTargetBox(box);
-        refreshCharts();
-      });
+    document.getElementById("btn-switch-user").addEventListener("click", () => {
+      localStorage.removeItem("hpc_active_user");
+      const nextUrl = new URL(window.location.href);
+      nextUrl.searchParams.delete("user");
+      window.history.replaceState({}, "", nextUrl.toString());
+      showPasscodeGate();
     });
+
+    document.getElementById("btn-toggle-manage").addEventListener("click", () => {
+      document.getElementById("manage-panel").classList.toggle("hidden");
+    });
+
+    document.getElementById("btn-add-hotel").addEventListener("click", () => addHotelRow({}));
+
+    document.getElementById("btn-save-profile").addEventListener("click", async () => {
+      const statusEl = document.getElementById("manage-status");
+      const profileObj = collectProfileFromForm();
+      localStorage.setItem(`profile_draft:${activeUserId}`, JSON.stringify(profileObj));
+      if (CLOUD_SYNC_URL) {
+        statusEl.textContent = "正在同步至雲端排程...";
+        try {
+          const resp = await fetch(CLOUD_SYNC_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(profileObj),
+          });
+          if (!resp.ok) throw new Error("SYNC_FAIL");
+          statusEl.textContent = "✅ 已儲存並觸發雲端抓價，請約 1～2 分鐘後重新整理網頁查看！";
+        } catch (_e) {
+          statusEl.textContent = "⚠️ 已暫存於本機瀏覽器，但雲端同步失敗（請改用複製 JSON 提交）。";
+        }
+      } else {
+        statusEl.textContent = "✅ 已暫存於本機瀏覽器！（尚未設定雲端轉發網址，如需加入每日排程請點「📋 複製設定檔 JSON」傳給管理員，或稍後串接免費 Google 轉發器即可一鍵同步。）";
+      }
+    });
+
+    document.getElementById("btn-copy-profile").addEventListener("click", async () => {
+      const profileObj = collectProfileFromForm();
+      const text = JSON.stringify(profileObj, null, 2);
+      const statusEl = document.getElementById("manage-status");
+      try {
+        await navigator.clipboard.writeText(text);
+        statusEl.textContent = "📋 已複製您的設定檔 JSON（對應檔案：profiles/" + activeUserId + ".json）！";
+      } catch (_e) {
+        statusEl.textContent = "請手動複製以下設定：
+" + text;
+      }
+    });
+
+    renderChartTabs();
+    const urlParams = new URLSearchParams(window.location.search);
+    const initialUser = (urlParams.get("user") || localStorage.getItem("hpc_active_user") || "").trim();
+    if (/^[A-Za-z0-9_-]{2,32}$/.test(initialUser)) {
+      loadUserDashboard(initialUser);
+    } else if (window.location.protocol.startsWith("http")) {
+      showPasscodeGate();
+    }
   </script>
 </body>
 </html>

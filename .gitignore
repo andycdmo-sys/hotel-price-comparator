@@ -9,7 +9,10 @@ __pycache__/
 *$py.class
 .pytest_cache/
 
-# 輸出與紀錄檔（保留沖繩追蹤歷史 CSV 供 GitHub Actions 自動更新）
+# 輸出與紀錄檔（保留沖繩追蹤歷史與各使用者歷史 CSV／設定／看板資料）
 output/*.csv
 !output/okinawa_2027_history.csv
+!output/history_*.csv
+!profiles/*.json
+!docs/data/*.json
 logs/
