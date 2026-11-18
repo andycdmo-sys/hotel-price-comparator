@@ -395,7 +395,7 @@ def export_user_dashboard_json(
         user_id = profile.user_id
     else:
         subtitle = f"條件：2 成人 + 1 兒童 (11歲) ｜ 幣別：TWD 含稅 ｜ 最後更新：{updated_str}"
-        title = "沖繩飯店每日比價看板"
+        title = "飯店每日比價看板"
         user_id = ""
 
     payload = {
@@ -431,7 +431,8 @@ def export_to_html(
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>沖繩飯店每日比價看板 (2027/01/26 - 01/30)</title>
+  <title>飯店每日比價看板</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏨</text></svg>">
   <style>
     :root {{
       --bg: #f4f6fb;
@@ -955,7 +956,7 @@ def export_to_html(
 
   <div id="dashboard-content" class="hidden">
     <header>
-      <h1 id="page-title">🏨 沖繩飯店每日比價看板</h1>
+      <h1 id="page-title">🏨 飯店每日比價看板</h1>
       <div id="page-subtitle" class="sub-info">條件：2 成人 + 1 兒童 (11歲) ｜ 幣別：TWD 含稅 ｜ 最後更新：{html.escape(updated_str)}</div>
     </header>
     <div id="cards-container">{"".join(cards_html)}</div>
