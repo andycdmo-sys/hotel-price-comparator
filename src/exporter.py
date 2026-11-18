@@ -753,9 +753,9 @@ def export_to_html(
     </div>
   </div>
 
-  <section id="passcode-gate" class="gate-card hidden">
+  <section id="passcode-gate" class="gate-card">
     <h2 style="font-size:1.1rem;margin:0 0 6px 0;">🔑 專屬飯店比價看板入口</h2>
-    <div class="sub-info">每位使用者輸入自己的專屬代號後，只會載入您自己的飯店清單與價格紀錄（支援英數字、底線 _、連字號 -）。</div>
+    <div class="sub-info">每位使用者輸入自己的專屬代號後，只會載入您自己的飯店清單與價格紀錄（支援英數字、底線 _、連字號 -，區分大小寫）。</div>
     <div class="gate-row">
       <input id="passcode-input" class="gate-input" type="text" placeholder="請輸入您的代號（例如 Andy1025）或建立新代號">
       <button type="button" id="btn-enter-user" class="bar-btn primary">進入我的看板</button>
@@ -780,7 +780,7 @@ def export_to_html(
     <div id="manage-status" class="manage-status"></div>
   </section>
 
-  <div id="dashboard-content">
+  <div id="dashboard-content" class="hidden">
     <header>
       <h1 id="page-title">🏨 沖繩飯店每日比價看板</h1>
       <div id="page-subtitle" class="sub-info">條件：2 成人 + 1 兒童 (11歲) ｜ 幣別：TWD 含稅 ｜ 最後更新：{html.escape(updated_str)}</div>
@@ -1102,6 +1102,9 @@ def export_to_html(
       document.getElementById("manage-panel").classList.add("hidden");
       document.getElementById("btn-toggle-manage").classList.add("hidden");
       document.getElementById("current-user-badge").textContent = "🔑 尚未輸入專屬代號";
+      document.getElementById("cards-container").innerHTML = "";
+      document.getElementById("page-title").textContent = "";
+      document.getElementById("page-subtitle").textContent = "";
     }}
 
     document.getElementById("btn-enter-user").addEventListener("click", () => {{
@@ -1159,7 +1162,7 @@ def export_to_html(
         await navigator.clipboard.writeText(text);
         statusEl.textContent = "📋 已複製您的設定檔 JSON（對應檔案：profiles/" + activeUserId + ".json）！";
       }} catch (_e) {{
-        statusEl.textContent = "請手動複製以下設定：\n" + text;
+        statusEl.textContent = "請手動複製以下設定：\\n" + text;
       }}
     }});
 

@@ -354,3 +354,5 @@ def test_profile_loading_and_user_dashboard_json_export(tmp_path: Path) -> None:
     html_content = html_out.read_text(encoding="utf-8")
     assert 'id="passcode-gate"' in html_content
     assert 'id="manage-panel"' in html_content
+    assert '<div id="dashboard-content" class="hidden">' in html_content
+    assert '"請手動複製以下設定：\\n"' in html_content
