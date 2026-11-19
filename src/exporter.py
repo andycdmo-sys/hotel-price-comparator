@@ -818,6 +818,26 @@ def export_to_html(
       padding: 4px 8px;
       font-size: 0.84rem;
     }}
+    .room-mismatch-box {{
+      margin-top: 8px;
+      padding: 8px 10px;
+      border-radius: 8px;
+      background: #fff7ed;
+      border: 1px solid #fdba74;
+      color: #c2410c;
+      font-size: 0.82rem;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }}
+    .room-mismatch-check {{
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 600;
+      color: #9a3412;
+      cursor: pointer;
+    }}
     .field-label {{
       display: block;
       font-size: 0.74rem;
@@ -1228,6 +1248,12 @@ def export_to_html(
       renderChildAgeSelects(Number(e.target.value || 0));
     }});
 
+    document.getElementById("cfg-adults").addEventListener("change", () => {{
+      document.querySelectorAll("#manage-hotels-list .hotel-edit-row").forEach((row) => {{
+        updateHotelRoomSummary(row, false);
+      }});
+    }});
+
     function distributeAdults(totalAdults, roomCount) {{
       const base = Math.floor(totalAdults / roomCount);
       const rem = totalAdults % roomCount;
@@ -1238,25 +1264,49 @@ def export_to_html(
       return out;
     }}
 
-    function updateHotelRoomSummary(row) {{
+    function updateHotelRoomSummary(row, precheckSaved = false) {{
       const summaryEl = row.querySelector(".h-room-summary");
+      const mismatchBox = row.querySelector(".h-room-mismatch-box");
+      const mismatchText = row.querySelector(".h-room-mismatch-text");
+      const useSplitChk = row.querySelector(".h-room-use-split");
+      const useSplitLabel = row.querySelector(".h-room-use-split-label");
       const selects = Array.from(row.querySelectorAll(".h-room-guest-select"));
       if (selects.length < 2) {{
         summaryEl.textContent = "";
+        if (mismatchBox) mismatchBox.classList.add("hidden");
+        if (useSplitChk) useSplitChk.checked = false;
         return;
       }}
       const vals = selects.map((s) => Number(s.value || 1));
       const total = vals.reduce((a, b) => a + b, 0);
+      const profileAdults = Number(document.getElementById("cfg-adults").value || 2);
       summaryEl.textContent = `目前組合：${{vals.join("+")}}（共 ${{total}} 位成人）`;
+      if (mismatchBox && mismatchText && useSplitChk && useSplitLabel) {{
+        if (total !== profileAdults) {{
+          const wasHidden = mismatchBox.classList.contains("hidden");
+          mismatchBox.classList.remove("hidden");
+          mismatchText.textContent = `⚠️ 目前分配共 ${{total}} 位成人，與上方個人檔設定的 ${{profileAdults}} 位成人不同。`;
+          useSplitLabel.textContent = `依現在分配的方式查詢（${{vals.join("+")}}，共 ${{total}} 位成人）`;
+          if (precheckSaved) {{
+            useSplitChk.checked = true;
+          }} else if (wasHidden) {{
+            useSplitChk.checked = false;
+          }}
+        }} else {{
+          mismatchBox.classList.add("hidden");
+          useSplitChk.checked = false;
+        }}
+      }}
     }}
 
-    function renderHotelRoomGuestSelects(row, roomCount, existingList = null) {{
+    function renderHotelRoomGuestSelects(row, roomCount, existingList = null, precheckSaved = false) {{
       const wrap = row.querySelector(".h-room-guests-wrap");
       const summaryEl = row.querySelector(".h-room-summary");
       wrap.innerHTML = "";
       if (roomCount <= 1) {{
         wrap.classList.add("hidden");
         summaryEl.textContent = "";
+        updateHotelRoomSummary(row, false);
         return;
       }}
       wrap.classList.remove("hidden");
@@ -1280,12 +1330,12 @@ def export_to_html(
           sel.appendChild(opt);
         }}
         sel.value = String(initialVals[i] ?? 2);
-        sel.addEventListener("change", () => updateHotelRoomSummary(row));
+        sel.addEventListener("change", () => updateHotelRoomSummary(row, false));
         chip.appendChild(lbl);
         chip.appendChild(sel);
         wrap.appendChild(chip);
       }}
-      updateHotelRoomSummary(row);
+      updateHotelRoomSummary(row, precheckSaved);
     }}
 
     function parseBookingUrls(rawText) {{
@@ -1390,6 +1440,13 @@ def export_to_html(
             <div class="sub-info h-room-summary" style="font-weight:600;color:var(--primary);"></div>
           </div>
           <div class="room-guests-wrap h-room-guests-wrap hidden"></div>
+          <div class="room-mismatch-box h-room-mismatch-box hidden">
+            <div class="h-room-mismatch-text"></div>
+            <label class="room-mismatch-check">
+              <input type="checkbox" class="h-room-use-split">
+              <span class="h-room-use-split-label">依現在分配的方式查詢此飯店</span>
+            </label>
+          </div>
         </div>
         <div class="hotel-row-line3">
           <label class="field-label">房價網網址（一行一個，選填，系統自動判斷平台）</label>
@@ -1408,9 +1465,9 @@ def export_to_html(
       const itemRooms = Number(item.rooms || itemSplit.length || 1);
       const roomsSel = row.querySelector(".h-rooms");
       roomsSel.value = String(Math.min(5, Math.max(1, itemRooms)));
-      renderHotelRoomGuestSelects(row, itemRooms, itemSplit);
+      renderHotelRoomGuestSelects(row, itemRooms, itemSplit, itemSplit.length >= 2);
       roomsSel.addEventListener("change", (e) => {{
-        renderHotelRoomGuestSelects(row, Number(e.target.value || 1));
+        renderHotelRoomGuestSelects(row, Number(e.target.value || 1), null, false);
       }});
       const initialUrls = [];
       if (Array.isArray(item.urls) && item.urls.length > 0) {{
@@ -1643,6 +1700,19 @@ def export_to_html(
     }}
 
     document.getElementById("btn-save-profile").addEventListener("click", async () => {{
+      const rows = Array.from(document.querySelectorAll("#manage-hotels-list .hotel-edit-row"));
+      for (const row of rows) {{
+        const mismatchBox = row.querySelector(".h-room-mismatch-box");
+        const useSplitChk = row.querySelector(".h-room-use-split");
+        if (mismatchBox && !mismatchBox.classList.contains("hidden") && useSplitChk && !useSplitChk.checked) {{
+          const hotelName = (row.querySelector(".h-name")?.value || "").trim() || "該飯店";
+          document.getElementById("manage-status").textContent =
+            `⚠️ 「${{hotelName}}」分配的成人人數與個人檔上方不同，請勾選「依現在分配的方式查詢」，或調整各房人數後再儲存！`;
+          useSplitChk.scrollIntoView({{ behavior: "smooth", block: "center" }});
+          useSplitChk.focus();
+          return;
+        }}
+      }}
       const profileObj = collectProfileFromForm();
       await syncProfileToCloud(profileObj, false);
     }});

@@ -609,5 +609,8 @@ def test_custom_room_guests_profile_and_ui_controls(tmp_path: Path) -> None:
     html_content = html_out.read_text(encoding="utf-8")
     assert 'field-input h-rooms' in html_content
     assert 'room-guests-wrap h-room-guests-wrap' in html_content
+    assert 'h-room-mismatch-box' in html_content
+    assert 'h-room-use-split' in html_content
+    assert "依現在分配的方式查詢" in html_content
     assert "renderHotelRoomGuestSelects" in html_content
     assert 'id="cfg-rooms"' not in html_content
