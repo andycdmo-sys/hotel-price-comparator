@@ -728,24 +728,156 @@ def export_to_html(
     .gate-card, .manage-card {{
       background: var(--card);
       border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 18px;
+      border-radius: 16px;
+      padding: 20px;
       margin-bottom: 14px;
-      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
+      box-shadow: 0 4px 16px rgba(15, 23, 42, 0.06);
     }}
-    .gate-row {{
+    .gate-card {{
+      padding: 28px 24px;
+      background: linear-gradient(180deg, #f8fbff 0%, #ffffff 38%);
+      border: 1px solid #dbeafe;
+      box-shadow: 0 10px 28px rgba(37, 99, 235, 0.08);
+    }}
+    .gate-hero {{
+      text-align: center;
+      margin-bottom: 20px;
+    }}
+    .gate-icon-badge {{
+      width: 54px;
+      height: 54px;
+      margin: 0 auto 12px auto;
+      border-radius: 16px;
+      background: linear-gradient(135deg, #2563eb, #4f46e5);
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.6rem;
+      box-shadow: 0 6px 16px rgba(37, 99, 235, 0.25);
+    }}
+    .gate-title {{
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin: 0 0 6px 0;
+      color: var(--text);
+    }}
+    .gate-desc {{
+      font-size: 0.86rem;
+      color: var(--muted);
+      line-height: 1.5;
+      max-width: 520px;
+      margin: 0 auto;
+    }}
+    .recent-users-box {{
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 14px;
+      margin-bottom: 18px;
+    }}
+    .recent-users-title {{
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: #334155;
+      margin-bottom: 8px;
+    }}
+    .recent-users-list {{
       display: flex;
       flex-wrap: wrap;
       gap: 8px;
-      margin-top: 12px;
+    }}
+    .recent-chip {{
+      display: inline-flex;
+      align-items: center;
+      background: #ffffff;
+      border: 1px solid #bfdbfe;
+      border-radius: 999px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.05);
+      transition: transform 0.12s ease, border-color 0.12s ease;
+    }}
+    .recent-chip:hover {{
+      border-color: var(--primary);
+      transform: translateY(-1px);
+    }}
+    .recent-chip-btn {{
+      border: none;
+      background: transparent;
+      color: #1e40af;
+      font-size: 0.85rem;
+      font-weight: 600;
+      padding: 6px 10px 6px 12px;
+      cursor: pointer;
+    }}
+    .recent-chip-del {{
+      border: none;
+      border-left: 1px solid #e2e8f0;
+      background: transparent;
+      color: #94a3b8;
+      font-size: 0.85rem;
+      padding: 6px 9px;
+      cursor: pointer;
+    }}
+    .recent-chip-del:hover {{
+      color: #dc2626;
+      background: #fef2f2;
+    }}
+    .gate-form-box {{
+      max-width: 520px;
+      margin: 0 auto;
     }}
     .gate-input {{
-      flex: 1;
-      min-width: 140px;
-      padding: 8px 10px;
-      border: 1px solid #cbd5e1;
-      border-radius: 8px;
-      font-size: 0.9rem;
+      width: 100%;
+      box-sizing: border-box;
+      padding: 11px 14px;
+      border: 1.5px solid #cbd5e1;
+      border-radius: 10px;
+      font-size: 0.96rem;
+      background: #ffffff;
+      color: var(--text);
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }}
+    .gate-input:focus {{
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.14);
+    }}
+    .gate-actions {{
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 10px;
+    }}
+    .gate-btn-existing {{
+      background: linear-gradient(135deg, #2563eb, #1d4ed8);
+      color: #ffffff;
+      border: none;
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-size: 0.92rem;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25);
+    }}
+    .gate-btn-create {{
+      background: #ecfdf5;
+      color: #047857;
+      border: 1.5px solid #6ee7b7;
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-size: 0.92rem;
+      font-weight: 600;
+      cursor: pointer;
+    }}
+    .gate-btn-existing:disabled, .gate-btn-create:disabled {{
+      opacity: 0.6;
+      cursor: wait;
+    }}
+    @media (max-width: 540px) {{
+      .gate-actions {{
+        grid-template-columns: 1fr;
+      }}
     }}
     .field-input {{
       width: 100%;
@@ -970,13 +1102,23 @@ def export_to_html(
   </div>
 
   <section id="passcode-gate" class="gate-card">
-    <h2 style="font-size:1.1rem;margin:0 0 6px 0;">🔑 專屬飯店比價看板入口</h2>
-    <div class="sub-info">每位使用者輸入自己的專屬代號後，只會載入您自己的飯店清單與價格紀錄（支援英數字、底線 _、連字號 -，區分大小寫）。</div>
-    <div class="gate-row">
-      <input id="passcode-input" class="gate-input" type="text" placeholder="請輸入您的代號（例如 travel2027）或建立新代號">
-      <button type="button" id="btn-enter-user" class="bar-btn primary">進入我的看板</button>
+    <div class="gate-hero">
+      <div class="gate-icon-badge">🏨</div>
+      <h2 class="gate-title">專屬飯店比價看板入口</h2>
+      <div class="gate-desc">每位使用者輸入自己的專屬代號後，只會載入您自己的飯店清單與價格紀錄（支援 2～32 碼英數字、底線 _、連字號 -，區分大小寫）。</div>
     </div>
-    <div id="gate-error" class="sub-info" style="color:#dc2626;margin-top:8px;"></div>
+    <div class="gate-form-box">
+      <div id="recent-users-section" class="recent-users-box hidden">
+        <div class="recent-users-title">🕒 這台電腦曾使用過的代號（點選直接進入）</div>
+        <div id="recent-users-list" class="recent-users-list"></div>
+      </div>
+      <input id="passcode-input" class="gate-input" type="text" placeholder="請輸入代號（例如 travel2027）" autocomplete="username">
+      <div class="gate-actions">
+        <button type="button" id="btn-enter-existing" class="gate-btn-existing">🔑 進入已有代號</button>
+        <button type="button" id="btn-create-new" class="gate-btn-create">✨ 建立新代號</button>
+      </div>
+      <div id="gate-error" class="sub-info" style="color:#dc2626;margin-top:10px;min-height:1.2em;text-align:center;font-weight:600;"></div>
+    </div>
   </section>
 
   <section id="manage-panel" class="manage-card hidden">
@@ -1606,9 +1748,93 @@ def export_to_html(
       }};
     }}
 
+    const RECENT_USERS_KEY = "hpc_recent_users";
+
+    function getRecentUsers() {{
+      const list = [];
+      try {{
+        const saved = JSON.parse(localStorage.getItem(RECENT_USERS_KEY) || "[]");
+        if (Array.isArray(saved)) {{
+          saved.forEach((u) => {{
+            const s = String(u || "").trim();
+            if (/^[A-Za-z0-9_-]{{2,32}}$/.test(s) && !list.includes(s)) list.push(s);
+          }});
+        }}
+      }} catch (_e) {{}}
+      Object.keys(localStorage).forEach((k) => {{
+        if (k.startsWith("profile_draft:")) {{
+          const s = k.slice("profile_draft:".length).trim();
+          if (/^[A-Za-z0-9_-]{{2,32}}$/.test(s) && !list.includes(s)) list.push(s);
+        }}
+      }});
+      return list.slice(0, 10);
+    }}
+
+    function addRecentUser(userId) {{
+      if (!/^[A-Za-z0-9_-]{{2,32}}$/.test(userId)) return;
+      const list = getRecentUsers().filter((u) => u !== userId);
+      list.unshift(userId);
+      localStorage.setItem(RECENT_USERS_KEY, JSON.stringify(list.slice(0, 10)));
+    }}
+
+    function removeRecentUser(userId) {{
+      const list = getRecentUsers().filter((u) => u !== userId);
+      localStorage.setItem(RECENT_USERS_KEY, JSON.stringify(list));
+      renderRecentUsers();
+    }}
+
+    function renderRecentUsers() {{
+      const box = document.getElementById("recent-users-section");
+      const listEl = document.getElementById("recent-users-list");
+      if (!box || !listEl) return;
+      const users = getRecentUsers();
+      listEl.innerHTML = "";
+      if (users.length === 0) {{
+        box.classList.add("hidden");
+        return;
+      }}
+      box.classList.remove("hidden");
+      users.forEach((uid) => {{
+        const chip = document.createElement("div");
+        chip.className = "recent-chip";
+        const enterBtn = document.createElement("button");
+        enterBtn.type = "button";
+        enterBtn.className = "recent-chip-btn";
+        enterBtn.textContent = `👤 ${{uid}}`;
+        enterBtn.addEventListener("click", () => {{
+          document.getElementById("gate-error").textContent = "";
+          loadUserDashboard(uid);
+        }});
+        const delBtn = document.createElement("button");
+        delBtn.type = "button";
+        delBtn.className = "recent-chip-del";
+        delBtn.title = "從這台電腦的常用紀錄移除";
+        delBtn.textContent = "×";
+        delBtn.addEventListener("click", (e) => {{
+          e.stopPropagation();
+          removeRecentUser(uid);
+        }});
+        chip.appendChild(enterBtn);
+        chip.appendChild(delBtn);
+        listEl.appendChild(chip);
+      }});
+    }}
+
+    async function checkUserExists(userId) {{
+      if (localStorage.getItem(`profile_draft:${{userId}}`)) return true;
+      if (!window.location.protocol.startsWith("http")) return false;
+      try {{
+        const resp = await fetch(`data/${{encodeURIComponent(userId)}}.json?t=${{Date.now()}}`, {{ cache: "no-store" }});
+        return resp.ok;
+      }} catch (_e) {{
+        return false;
+      }}
+    }}
+
     async function loadUserDashboard(userId) {{
       activeUserId = userId;
       localStorage.setItem("hpc_active_user", userId);
+      addRecentUser(userId);
       const nextUrl = new URL(window.location.href);
       nextUrl.searchParams.set("user", userId);
       window.history.replaceState({{}}, "", nextUrl.toString());
@@ -1656,17 +1882,60 @@ def export_to_html(
       document.getElementById("cards-container").innerHTML = "";
       document.getElementById("page-title").textContent = "";
       document.getElementById("page-subtitle").textContent = "";
+      document.getElementById("gate-error").textContent = "";
+      renderRecentUsers();
     }}
 
-    document.getElementById("btn-enter-user").addEventListener("click", () => {{
-      const raw = document.getElementById("passcode-input").value.trim();
+    async function handleGateAction(mode) {{
+      const inputEl = document.getElementById("passcode-input");
+      const raw = inputEl.value.trim();
       const errEl = document.getElementById("gate-error");
+      const btnExisting = document.getElementById("btn-enter-existing");
+      const btnCreate = document.getElementById("btn-create-new");
+
       if (!/^[A-Za-z0-9_-]{{2,32}}$/.test(raw)) {{
+        errEl.style.color = "#dc2626";
         errEl.textContent = "代號格式不符：請輸入 2～32 碼英數字、底線 _ 或連字號 -。";
+        inputEl.focus();
         return;
       }}
-      errEl.textContent = "";
-      loadUserDashboard(raw);
+
+      btnExisting.disabled = true;
+      btnCreate.disabled = true;
+      errEl.style.color = "#475569";
+      errEl.textContent = mode === "create" ? "⏳ 正在檢查代號是否已被使用..." : "⏳ 正在驗證代號是否存在...";
+
+      try {{
+        const isHttp = window.location.protocol.startsWith("http");
+        const exists = await checkUserExists(raw);
+        if (mode === "create") {{
+          if (exists) {{
+            errEl.style.color = "#dc2626";
+            errEl.textContent = `⚠️ 代號「${{raw}}」已被使用，請改用其他代號，或改按「🔑 進入已有代號」。`;
+            inputEl.focus();
+            return;
+          }}
+        }} else if (isHttp && !exists) {{
+          errEl.style.color = "#dc2626";
+          errEl.textContent = `⚠️ 找不到代號「${{raw}}」，請確認大小寫是否正確，或改按「✨ 建立新代號」。`;
+          inputEl.focus();
+          return;
+        }}
+        errEl.textContent = "";
+        await loadUserDashboard(raw);
+      }} finally {{
+        btnExisting.disabled = false;
+        btnCreate.disabled = false;
+      }}
+    }}
+
+    document.getElementById("btn-enter-existing").addEventListener("click", () => handleGateAction("existing"));
+    document.getElementById("btn-create-new").addEventListener("click", () => handleGateAction("create"));
+    document.getElementById("passcode-input").addEventListener("keydown", (e) => {{
+      if (e.key === "Enter") {{
+        e.preventDefault();
+        handleGateAction("existing");
+      }}
     }});
 
     document.getElementById("btn-switch-user").addEventListener("click", () => {{
@@ -1696,6 +1965,7 @@ def export_to_html(
       const clearing = isClearing || !profileObj.hotels || profileObj.hotels.length === 0;
       if (clearing) {{
         localStorage.removeItem(`profile_draft:${{activeUserId}}`);
+        removeRecentUser(activeUserId);
         Object.keys(localStorage).forEach((k) => {{
           if (k.startsWith(`target:${{activeUserId}}:`)) {{
             localStorage.removeItem(k);
