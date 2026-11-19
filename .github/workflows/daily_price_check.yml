@@ -1,9 +1,7 @@
-name: 沖繩飯店每日兩次比價 (08:43 & 20:43 TW)
+name: 飯店每日比價排程 (Cloudflare Worker / 網頁觸發)
 
 on:
-  schedule:
-    # UTC 00:43 = 台灣時間 08:43；UTC 12:43 = 台灣時間 20:43
-    - cron: "43 0,12 * * *"
+  # 定時排程已改由 Cloudflare Worker 透過 workflow_dispatch API 準時觸發，避免 GitHub schedule 延遲與重複執行
   workflow_dispatch:
     inputs:
       user_id:
