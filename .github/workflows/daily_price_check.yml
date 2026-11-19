@@ -36,8 +36,24 @@ jobs:
       - name: 安裝 Python 相依套件
         run: pip install -r requirements.txt
 
-      - name: 安裝 Playwright Chromium 瀏覽器
+      - name: 取得 Playwright 版本作為快取鍵值
+        id: playwright-version
+        run: echo "version=$(python -c 'import importlib.metadata; print(importlib.metadata.version("playwright"))')" >> "$GITHUB_OUTPUT"
+
+      - name: 快取 Playwright Chromium 瀏覽器
+        id: playwright-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ steps.playwright-version.outputs.version }}
+
+      - name: 安裝 Playwright Chromium 瀏覽器（未命中快取時）
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
         run: playwright install --with-deps chromium
+
+      - name: 安裝 Playwright 系統相依套件（命中快取時）
+        if: steps.playwright-cache.outputs.cache-hit == 'true'
+        run: playwright install-deps chromium
 
       - name: 寫入網頁送出的使用者設定（若有）
         if: ${{ github.event_name == 'workflow_dispatch' && inputs.profile_json != '' }}
