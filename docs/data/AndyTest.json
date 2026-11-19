@@ -124,6 +124,8 @@
     "adults": 2,
     "children": 0,
     "child_ages": "",
+    "rooms": 1,
+    "room_guests": [],
     "currency": "TWD",
     "sites": [
       "tw"

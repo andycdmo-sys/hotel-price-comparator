@@ -556,3 +556,48 @@ def test_booking_url_detection_and_short_label(tmp_path: Path) -> None:
     html_content = html_out.read_text(encoding="utf-8")
     assert "🏆 Booking.com 最低" in html_content
     assert 'detectedLabels.push("Booking.com")' in html_content
+
+
+def test_custom_room_guests_profile_and_ui_controls(tmp_path: Path) -> None:
+    import json
+    from src.exporter import export_user_dashboard_json
+    from src.profiles import load_profile, save_profile_from_json_str
+
+    raw_json = json.dumps(
+        {
+            "user_id": "GroupFive",
+            "adults": 5,
+            "children": 0,
+            "rooms": 2,
+            "room_guests": [2, 3],
+            "hotels": [
+                {
+                    "name": "東京黎凡特東武酒店",
+                    "check_in": "2027-01-17",
+                    "check_out": "2027-01-19",
+                }
+            ],
+        },
+        ensure_ascii=False,
+    )
+    saved_path = save_profile_from_json_str(raw_json, tmp_path, expected_user_id="GroupFive")
+    loaded = load_profile(saved_path)
+    assert loaded.rooms == 2
+    assert loaded.room_guests == [2, 3]
+    assert loaded.adults == 5
+
+    csv_file = tmp_path / "history_GroupFive.csv"
+    json_out = tmp_path / "data" / "GroupFive.json"
+    html_out = tmp_path / "index.html"
+    export_to_csv([], csv_file)
+    export_user_dashboard_json(csv_file, json_out, profile=loaded)
+    export_to_html(csv_file, html_out)
+
+    dash = json.loads(json_out.read_text(encoding="utf-8"))
+    assert "2 間房：2+3" in dash["subtitle"]
+    assert dash["profile"]["room_guests"] == [2, 3]
+
+    html_content = html_out.read_text(encoding="utf-8")
+    assert 'id="cfg-rooms"' in html_content
+    assert 'id="cfg-room-guests-wrap"' in html_content
+    assert "renderRoomGuestSelects" in html_content

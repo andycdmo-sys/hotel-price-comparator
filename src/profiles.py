@@ -83,6 +83,8 @@ class UserProfile:
     adults: int = 2
     children: int = 0
     child_ages: str = ""
+    rooms: int = 1
+    room_guests: list[int] = field(default_factory=list)
     currency: str = "TWD"
     sites: list[str] = field(default_factory=lambda: ["tw"])
     platforms: list[str] = field(default_factory=lambda: ["trip", "agoda", "booking"])
@@ -149,12 +151,33 @@ def parse_profile_dict(raw: dict[str, Any], fallback_user_id: str = "") -> UserP
     sites = [str(s).strip().lower() for s in (raw.get("sites") or ["tw"]) if str(s).strip()]
     platforms = [str(p).strip().lower() for p in (raw.get("platforms") or ["trip", "agoda", "booking"]) if str(p).strip()]
 
+    raw_room_guests = raw.get("room_guests") or []
+    room_guests: list[int] = []
+    if isinstance(raw_room_guests, list):
+        for g in raw_room_guests:
+            try:
+                val = int(g)
+                if val > 0:
+                    room_guests.append(val)
+            except (TypeError, ValueError):
+                continue
+
+    rooms = max(1, int(raw.get("rooms") or len(room_guests) or 1))
+    if rooms == 1:
+        room_guests = []
+    elif room_guests and len(room_guests) != rooms:
+        room_guests = room_guests[:rooms]
+
+    adults_val = max(1, int(raw.get("adults") or (sum(room_guests) if room_guests else 2)))
+
     return UserProfile(
         user_id=user_id,
         title=str(raw.get("title") or f"{user_id} 的飯店比價看板").strip(),
-        adults=max(1, int(raw.get("adults") or 2)),
+        adults=adults_val,
         children=max(0, int(raw.get("children") or 0)),
         child_ages=str(raw.get("child_ages") or "").strip(),
+        rooms=rooms,
+        room_guests=room_guests,
         currency=str(raw.get("currency") or "TWD").strip().upper() or "TWD",
         sites=sites or ["tw"],
         platforms=platforms or ["trip", "agoda", "booking"],

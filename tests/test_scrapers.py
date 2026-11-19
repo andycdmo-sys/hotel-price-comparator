@@ -408,3 +408,21 @@ def test_agoda_multi_room_total_price_and_trip_total_label() -> None:
     ]
     miss_price, _ = _extract_hotel_price_and_room(wrong_hotel_lines, "淺草東武飯店", allow_cta_fallback=False)
     assert miss_price is None
+
+
+def test_booking_explicit_room_guests_split() -> None:
+    from src.scrapers.booking import extract_booking_room_table_price
+
+    rows = [
+        {"room": "三人房", "occ": "最多人數: 3", "price": "TWD 12,450", "tax": "", "cond": "", "maxRooms": 2},
+        {"room": "雙床房", "occ": "最多人數: 2", "price": "TWD 9,371", "tax": "", "cond": "", "maxRooms": 5},
+        {"room": "單人房", "occ": "最多人數: 1", "price": "TWD 5,500", "tax": "", "cond": "", "maxRooms": 5},
+    ]
+
+    p_2_3, lbl_2_3 = extract_booking_room_table_price(rows, adults=5, children=0, room_guests=[2, 3])
+    assert p_2_3 == 21821.0
+    assert "2+3 組合" in lbl_2_3
+
+    p_2_2_1, lbl_2_2_1 = extract_booking_room_table_price(rows, adults=5, children=0, room_guests=[2, 2, 1])
+    assert p_2_2_1 == 9371.0 + 9371.0 + 5500.0
+    assert "2+2+1 組合" in lbl_2_2_1

@@ -147,8 +147,11 @@ def extract_booking_room_table_price(
     adults: int = 2,
     children: int = 0,
     breakfast_only: bool = False,
+    room_guests: Optional[list[int]] = None,
 ) -> tuple[Optional[float], str]:
-    """從 Booking.com 飯店頁面 `#hprt-table` 列資料擷取最低含稅總價（單房不足時自動試算 2～3 間多房組合）。"""
+    """從 Booking.com 飯店頁面 `#hprt-table` 列資料擷取最低含稅總價（單房不足或指定配房時計算多房組合）。"""
+    explicit_split = [int(g) for g in (room_guests or []) if int(g) > 0]
+    use_explicit_split = len(explicit_split) >= 2
     best_price: Optional[float] = None
     best_room = ""
 
@@ -172,7 +175,7 @@ def extract_booking_room_table_price(
 
         room_name = str(row.get("room") or "").strip() or "標準房型"
         max_adults, max_children, max_total = _extract_row_capacity(row)
-        if _capacity_fits(max_adults, max_children, max_total, adults, children):
+        if not use_explicit_split and _capacity_fits(max_adults, max_children, max_total, adults, children):
             if best_price is None or total_price < best_price:
                 best_price = total_price
                 best_room = room_name
@@ -192,7 +195,7 @@ def extract_booking_room_table_price(
     if best_price is not None:
         return best_price, best_room
 
-    if not valid_rates or (adults + children) <= 1:
+    if not valid_rates or ((adults + children) <= 1 and not use_explicit_split):
         return None, ""
 
     # 依 `(房型名稱, 可住人數)` 取最低價方案，避免重複列組合爆炸，並記錄各房型實體庫存上限
@@ -208,7 +211,11 @@ def extract_booking_room_table_price(
     options = sorted(dedup_map.values(), key=lambda x: x["price"])[:12]
     combo_best_price: Optional[float] = None
     combo_best_label = ""
-    for room_count in (2, 3):
+    target_counts = (len(explicit_split),) if use_explicit_split else (2, 3)
+    target_groups = sorted(explicit_split, reverse=True) if use_explicit_split else []
+    split_tag = "+".join(str(g) for g in explicit_split) if use_explicit_split else ""
+
+    for room_count in target_counts:
         for combo in combinations_with_replacement(options, room_count):
             counts = Counter(item["room"] for item in combo)
             if any(cnt > room_inventory.get(r_name, 1) for r_name, cnt in counts.items()):
@@ -219,10 +226,21 @@ def extract_booking_room_table_price(
             if not _capacity_fits(sum_adults, sum_children, sum_total, adults, children):
                 continue
 
-            combo_price = float(round(sum(item["price"] for item in combo)))
+            combo_ordered = combo
+            if use_explicit_split:
+                combo_ordered = tuple(sorted(combo, key=lambda x: (x["max_total"], x["max_adults"]), reverse=True))
+                if not all(
+                    combo_ordered[idx]["max_adults"] >= target_groups[idx]
+                    and combo_ordered[idx]["max_total"] >= target_groups[idx]
+                    for idx in range(room_count)
+                ):
+                    continue
+
+            combo_price = float(round(sum(item["price"] for item in combo_ordered)))
             if combo_best_price is None or combo_price < combo_best_price:
                 combo_best_price = combo_price
-                combo_best_label = " + ".join(item["room"] for item in combo) + f" ({room_count}間組合)"
+                tag = f"{split_tag} 組合" if use_explicit_split else f"{room_count}間組合"
+                combo_best_label = " + ".join(item["room"] for item in combo_ordered) + f" ({tag})"
 
     if combo_best_price is None:
         return None, ""
@@ -292,6 +310,7 @@ class BookingScraper(BaseHotelScraper):
         children: int = 0,
         child_ages: str = "",
         rooms: int = 1,
+        room_guests: Optional[list[int]] = None,
         currency: str = "TWD",
         breakfast_only: bool = False,
         ip_info: str = "",
@@ -303,7 +322,8 @@ class BookingScraper(BaseHotelScraper):
         self.adults = adults
         self.children = children
         self.child_ages = child_ages.strip()
-        self.rooms = rooms
+        self.room_guests = [int(g) for g in (room_guests or []) if int(g) > 0]
+        self.rooms = len(self.room_guests) if self.room_guests else rooms
         self.currency = currency.strip().upper() or "TWD"
         self.breakfast_only = breakfast_only
         self.ip_info = ip_info.strip()
@@ -311,7 +331,11 @@ class BookingScraper(BaseHotelScraper):
         self.platform_name = f"Booking [{meal_label} | IP:{self.ip_info or 'LOCAL'}]"
 
     def _guest_query_params(self, check_in: str, check_out: str) -> str:
-        effective_rooms = max(self.rooms, (self.adults + 2) // 3) if (self.adults >= 4 and self.rooms == 1) else self.rooms
+        effective_rooms = (
+            len(self.room_guests)
+            if self.room_guests
+            else (max(self.rooms, (self.adults + 2) // 3) if (self.adults >= 4 and self.rooms == 1) else self.rooms)
+        )
         params = (
             f"checkin={check_in}&checkout={check_out}"
             f"&group_adults={self.adults}&no_rooms={effective_rooms}&group_children={self.children}"
@@ -391,6 +415,7 @@ class BookingScraper(BaseHotelScraper):
             adults=self.adults,
             children=self.children,
             breakfast_only=self.breakfast_only,
+            room_guests=self.room_guests,
         )
         if price is None:
             return None

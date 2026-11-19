@@ -745,6 +745,8 @@
     "adults": 2,
     "children": 1,
     "child_ages": "11",
+    "rooms": 1,
+    "room_guests": [],
     "currency": "TWD",
     "sites": [
       "tw"

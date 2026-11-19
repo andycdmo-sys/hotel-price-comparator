@@ -390,6 +390,9 @@ def export_user_dashboard_json(
             if profile.children > 0 and profile.child_ages
             else (f" + {profile.children} 兒童" if profile.children > 0 else "")
         )
+        if profile.rooms > 1:
+            split_desc = "+".join(str(g) for g in profile.room_guests) if profile.room_guests else ""
+            guest_str += f"（{profile.rooms} 間房：{split_desc}）" if split_desc else f"（{profile.rooms} 間房）"
         subtitle = f"條件：{guest_str} ｜ 幣別：{profile.currency} 含稅 ｜ 最後更新：{updated_str}"
         title = profile.title or f"{profile.user_id} 的飯店比價看板"
         user_id = profile.user_id
@@ -777,6 +780,44 @@ def export_to_html(
       flex: 1;
       min-width: 72px;
     }}
+    .room-split-bar {{
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 12px;
+      margin-bottom: 12px;
+    }}
+    .room-split-head {{
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 8px;
+    }}
+    .room-guests-wrap {{
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 8px;
+    }}
+    .room-guest-chip {{
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      padding: 4px 8px;
+    }}
+    .room-guest-chip .field-label {{
+      margin: 0;
+      white-space: nowrap;
+    }}
+    .room-guest-chip .field-input {{
+      width: auto;
+      padding: 4px 8px;
+      font-size: 0.84rem;
+    }}
     .field-label {{
       display: block;
       font-size: 0.74rem;
@@ -916,6 +957,10 @@ def export_to_html(
           <option value="6">6 位成人</option>
           <option value="7">7 位成人</option>
           <option value="8">8 位成人</option>
+          <option value="9">9 位成人</option>
+          <option value="10">10 位成人</option>
+          <option value="11">11 位成人</option>
+          <option value="12">12 位成人</option>
         </select>
       </div>
       <div>
@@ -942,6 +987,22 @@ def export_to_html(
           <option value="SGD">SGD (新幣)</option>
         </select>
       </div>
+    </div>
+    <div class="room-split-bar">
+      <div class="room-split-head">
+        <div>
+          <label class="field-label" style="margin-bottom:4px;">房間數與每間人數組合（5 人以上可自訂如 2+3 或 2+2+1）</label>
+          <select id="cfg-rooms" class="field-input" style="width:auto;min-width:190px;">
+            <option value="1" selected>1 間房（預設）</option>
+            <option value="2">2 間房（自訂每間人數）</option>
+            <option value="3">3 間房（自訂每間人數）</option>
+            <option value="4">4 間房（自訂每間人數）</option>
+            <option value="5">5 間房（自訂每間人數）</option>
+          </select>
+        </div>
+        <div id="cfg-room-summary" class="sub-info" style="font-weight:600;color:var(--primary);"></div>
+      </div>
+      <div id="cfg-room-guests-wrap" class="room-guests-wrap hidden"></div>
     </div>
     <div id="manage-hotels-list"></div>
     <div class="bar-actions" style="margin-top:10px;">
@@ -1183,6 +1244,81 @@ def export_to_html(
       renderChildAgeSelects(Number(e.target.value || 0));
     }});
 
+    function distributeAdults(totalAdults, roomCount) {{
+      const base = Math.floor(totalAdults / roomCount);
+      const rem = totalAdults % roomCount;
+      const out = [];
+      for (let i = 0; i < roomCount; i += 1) {{
+        out.push(Math.max(1, base + (i < rem ? 1 : 0)));
+      }}
+      return out;
+    }}
+
+    function updateRoomGuestSummary() {{
+      const summaryEl = document.getElementById("cfg-room-summary");
+      const selects = Array.from(document.querySelectorAll("#cfg-room-guests-wrap .cfg-room-guest-select"));
+      if (selects.length < 2) {{
+        summaryEl.textContent = "";
+        return;
+      }}
+      const vals = selects.map((s) => Number(s.value || 1));
+      const total = vals.reduce((a, b) => a + b, 0);
+      const adultsSel = document.getElementById("cfg-adults");
+      if (total >= 1 && total <= 12) {{
+        adultsSel.value = String(total);
+      }}
+      summaryEl.textContent = `目前組合：${{vals.join("+")}}（共 ${{total}} 位成人）`;
+    }}
+
+    function renderRoomGuestSelects(roomCount, existingList = null) {{
+      const wrap = document.getElementById("cfg-room-guests-wrap");
+      const summaryEl = document.getElementById("cfg-room-summary");
+      wrap.innerHTML = "";
+      if (roomCount <= 1) {{
+        wrap.classList.add("hidden");
+        summaryEl.textContent = "";
+        return;
+      }}
+      wrap.classList.remove("hidden");
+      const totalAdults = Number(document.getElementById("cfg-adults").value || 2);
+      const initialVals = Array.isArray(existingList) && existingList.length === roomCount
+        ? existingList.map((v) => Math.max(1, Math.min(6, Number(v) || 1)))
+        : distributeAdults(totalAdults, roomCount);
+
+      for (let i = 0; i < roomCount; i += 1) {{
+        const chip = document.createElement("div");
+        chip.className = "room-guest-chip";
+        const lbl = document.createElement("span");
+        lbl.className = "field-label";
+        lbl.textContent = `第 ${{i + 1}} 間`;
+        const sel = document.createElement("select");
+        sel.className = "field-input cfg-room-guest-select";
+        for (let g = 1; g <= 6; g += 1) {{
+          const opt = document.createElement("option");
+          opt.value = String(g);
+          opt.textContent = `${{g}} 人`;
+          sel.appendChild(opt);
+        }}
+        sel.value = String(initialVals[i] ?? 2);
+        sel.addEventListener("change", updateRoomGuestSummary);
+        chip.appendChild(lbl);
+        chip.appendChild(sel);
+        wrap.appendChild(chip);
+      }}
+      updateRoomGuestSummary();
+    }}
+
+    document.getElementById("cfg-rooms").addEventListener("change", (e) => {{
+      renderRoomGuestSelects(Number(e.target.value || 1));
+    }});
+
+    document.getElementById("cfg-adults").addEventListener("change", () => {{
+      const roomCount = Number(document.getElementById("cfg-rooms").value || 1);
+      if (roomCount >= 2) {{
+        renderRoomGuestSelects(roomCount);
+      }}
+    }});
+
     function parseBookingUrls(rawText) {{
       let trip_hotel_id = "";
       let agoda_path = "";
@@ -1318,6 +1454,10 @@ def export_to_html(
       const childCount = Number(profileObj?.children ?? 0);
       document.getElementById("cfg-children").value = String(childCount);
       renderChildAgeSelects(childCount, profileObj?.child_ages || "");
+      const existingSplit = Array.isArray(profileObj?.room_guests) ? profileObj.room_guests : [];
+      const roomCount = Number(profileObj?.rooms || existingSplit.length || 1);
+      document.getElementById("cfg-rooms").value = String(Math.min(5, Math.max(1, roomCount)));
+      renderRoomGuestSelects(roomCount, existingSplit);
       document.getElementById("cfg-currency").value = profileObj?.currency || "TWD";
       const listEl = document.getElementById("manage-hotels-list");
       listEl.innerHTML = "";
@@ -1355,12 +1495,21 @@ def export_to_html(
         }});
       }});
       const ageValues = Array.from(document.querySelectorAll("#cfg-ages-wrap .cfg-age-select")).map((s) => s.value);
+      const roomCount = Number(document.getElementById("cfg-rooms").value || 1);
+      const roomGuests = roomCount >= 2
+        ? Array.from(document.querySelectorAll("#cfg-room-guests-wrap .cfg-room-guest-select")).map((s) => Number(s.value || 1))
+        : [];
+      const totalAdults = roomGuests.length >= 2
+        ? roomGuests.reduce((a, b) => a + b, 0)
+        : Number(document.getElementById("cfg-adults").value || 2);
       return {{
         user_id: activeUserId,
         title: `${{activeUserId}} 的飯店比價看板`,
-        adults: Number(document.getElementById("cfg-adults").value || 2),
+        adults: totalAdults,
         children: Number(document.getElementById("cfg-children").value || 0),
         child_ages: ageValues.join(","),
+        rooms: roomCount,
+        room_guests: roomGuests,
         currency: (document.getElementById("cfg-currency").value || "TWD").trim().toUpperCase(),
         sites: ["tw"],
         platforms: ["trip", "agoda", "booking"],
@@ -1512,6 +1661,8 @@ def export_to_html(
         adults: 2,
         children: 0,
         child_ages: "",
+        rooms: 1,
+        room_guests: [],
         currency: "TWD",
         sites: ["tw"],
         platforms: ["trip", "agoda", "booking"],
