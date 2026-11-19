@@ -568,22 +568,31 @@ def test_custom_room_guests_profile_and_ui_controls(tmp_path: Path) -> None:
             "user_id": "GroupFive",
             "adults": 5,
             "children": 0,
-            "rooms": 2,
-            "room_guests": [2, 3],
             "hotels": [
                 {
                     "name": "東京黎凡特東武酒店",
                     "check_in": "2027-01-17",
                     "check_out": "2027-01-19",
-                }
+                    "rooms": 2,
+                    "room_guests": [2, 3],
+                },
+                {
+                    "name": "淺草東武飯店",
+                    "check_in": "2027-01-19",
+                    "check_out": "2027-01-21",
+                    "rooms": 3,
+                    "room_guests": [2, 2, 1],
+                },
             ],
         },
         ensure_ascii=False,
     )
     saved_path = save_profile_from_json_str(raw_json, tmp_path, expected_user_id="GroupFive")
     loaded = load_profile(saved_path)
-    assert loaded.rooms == 2
-    assert loaded.room_guests == [2, 3]
+    assert loaded.hotels[0].rooms == 2
+    assert loaded.hotels[0].room_guests == [2, 3]
+    assert loaded.hotels[1].rooms == 3
+    assert loaded.hotels[1].room_guests == [2, 2, 1]
     assert loaded.adults == 5
 
     csv_file = tmp_path / "history_GroupFive.csv"
@@ -594,10 +603,11 @@ def test_custom_room_guests_profile_and_ui_controls(tmp_path: Path) -> None:
     export_to_html(csv_file, html_out)
 
     dash = json.loads(json_out.read_text(encoding="utf-8"))
-    assert "2 間房：2+3" in dash["subtitle"]
-    assert dash["profile"]["room_guests"] == [2, 3]
+    assert dash["profile"]["hotels"][0]["room_guests"] == [2, 3]
+    assert dash["profile"]["hotels"][1]["room_guests"] == [2, 2, 1]
 
     html_content = html_out.read_text(encoding="utf-8")
-    assert 'id="cfg-rooms"' in html_content
-    assert 'id="cfg-room-guests-wrap"' in html_content
-    assert "renderRoomGuestSelects" in html_content
+    assert 'field-input h-rooms' in html_content
+    assert 'room-guests-wrap h-room-guests-wrap' in html_content
+    assert "renderHotelRoomGuestSelects" in html_content
+    assert 'id="cfg-rooms"' not in html_content

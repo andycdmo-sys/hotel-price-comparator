@@ -235,6 +235,8 @@
         "trip_hotel_id": "57099041",
         "agoda_path": "/zh-tw/asakusa-tobu-hotel/hotel/tokyo-jp.html",
         "booking_path": "/hotel/jp/asakusa-tobu.zh-tw.html",
+        "rooms": 1,
+        "room_guests": [],
         "target_any": 27980,
         "target_bf": 30000
       },
@@ -245,6 +247,8 @@
         "trip_hotel_id": "686270",
         "agoda_path": "/zh-tw/tobu-hotel-levant-tokyo/hotel/tokyo-jp.html",
         "booking_path": "/hotel/jp/tobu-levant-tokyo.zh-tw.html",
+        "rooms": 1,
+        "room_guests": [],
         "target_any": 22156,
         "target_bf": 24000
       }

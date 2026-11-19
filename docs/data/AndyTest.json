@@ -143,6 +143,8 @@
         "trip_hotel_id": "1001027",
         "agoda_path": "",
         "booking_path": "",
+        "rooms": 1,
+        "room_guests": [],
         "target_any": null,
         "target_bf": null
       }

@@ -240,6 +240,9 @@ async def _run_profile_batch(
 
     profile_results: list[HotelPriceResult] = []
     for hotel in profile.hotels:
+        hotel_rooms = hotel.rooms if hotel.rooms > 1 else profile.rooms
+        hotel_room_guests = hotel.room_guests if hotel.room_guests else profile.room_guests
+        hotel_adults = sum(hotel_room_guests) if hotel_room_guests else profile.adults
         scrapers = _build_hotel_scrapers(
             hotel_name=hotel.name,
             trip_hotel_id=hotel.trip_hotel_id,
@@ -247,11 +250,11 @@ async def _run_profile_batch(
             booking_path=hotel.booking_path,
             platforms=profile.platforms,
             sites=profile.sites,
-            adults=profile.adults,
+            adults=hotel_adults,
             children=profile.children,
             child_ages=profile.child_ages,
-            rooms=profile.rooms,
-            room_guests=profile.room_guests,
+            rooms=hotel_rooms,
+            room_guests=hotel_room_guests,
             currency=profile.currency,
             ip_info=ip_info,
             breakfast_options=breakfast_options,

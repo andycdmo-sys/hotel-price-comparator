@@ -781,11 +781,11 @@ def export_to_html(
       min-width: 72px;
     }}
     .room-split-bar {{
-      background: #f8fafc;
+      background: #ffffff;
       border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 10px 12px;
-      margin-bottom: 12px;
+      border-radius: 8px;
+      padding: 8px 10px;
+      margin: 8px 0;
     }}
     .room-split-head {{
       display: flex;
@@ -987,22 +987,6 @@ def export_to_html(
           <option value="SGD">SGD (新幣)</option>
         </select>
       </div>
-    </div>
-    <div class="room-split-bar">
-      <div class="room-split-head">
-        <div>
-          <label class="field-label" style="margin-bottom:4px;">房間數與每間人數組合（5 人以上可自訂如 2+3 或 2+2+1）</label>
-          <select id="cfg-rooms" class="field-input" style="width:auto;min-width:190px;">
-            <option value="1" selected>1 間房（預設）</option>
-            <option value="2">2 間房（自訂每間人數）</option>
-            <option value="3">3 間房（自訂每間人數）</option>
-            <option value="4">4 間房（自訂每間人數）</option>
-            <option value="5">5 間房（自訂每間人數）</option>
-          </select>
-        </div>
-        <div id="cfg-room-summary" class="sub-info" style="font-weight:600;color:var(--primary);"></div>
-      </div>
-      <div id="cfg-room-guests-wrap" class="room-guests-wrap hidden"></div>
     </div>
     <div id="manage-hotels-list"></div>
     <div class="bar-actions" style="margin-top:10px;">
@@ -1254,25 +1238,21 @@ def export_to_html(
       return out;
     }}
 
-    function updateRoomGuestSummary() {{
-      const summaryEl = document.getElementById("cfg-room-summary");
-      const selects = Array.from(document.querySelectorAll("#cfg-room-guests-wrap .cfg-room-guest-select"));
+    function updateHotelRoomSummary(row) {{
+      const summaryEl = row.querySelector(".h-room-summary");
+      const selects = Array.from(row.querySelectorAll(".h-room-guest-select"));
       if (selects.length < 2) {{
         summaryEl.textContent = "";
         return;
       }}
       const vals = selects.map((s) => Number(s.value || 1));
       const total = vals.reduce((a, b) => a + b, 0);
-      const adultsSel = document.getElementById("cfg-adults");
-      if (total >= 1 && total <= 12) {{
-        adultsSel.value = String(total);
-      }}
       summaryEl.textContent = `目前組合：${{vals.join("+")}}（共 ${{total}} 位成人）`;
     }}
 
-    function renderRoomGuestSelects(roomCount, existingList = null) {{
-      const wrap = document.getElementById("cfg-room-guests-wrap");
-      const summaryEl = document.getElementById("cfg-room-summary");
+    function renderHotelRoomGuestSelects(row, roomCount, existingList = null) {{
+      const wrap = row.querySelector(".h-room-guests-wrap");
+      const summaryEl = row.querySelector(".h-room-summary");
       wrap.innerHTML = "";
       if (roomCount <= 1) {{
         wrap.classList.add("hidden");
@@ -1292,7 +1272,7 @@ def export_to_html(
         lbl.className = "field-label";
         lbl.textContent = `第 ${{i + 1}} 間`;
         const sel = document.createElement("select");
-        sel.className = "field-input cfg-room-guest-select";
+        sel.className = "field-input h-room-guest-select";
         for (let g = 1; g <= 6; g += 1) {{
           const opt = document.createElement("option");
           opt.value = String(g);
@@ -1300,24 +1280,13 @@ def export_to_html(
           sel.appendChild(opt);
         }}
         sel.value = String(initialVals[i] ?? 2);
-        sel.addEventListener("change", updateRoomGuestSummary);
+        sel.addEventListener("change", () => updateHotelRoomSummary(row));
         chip.appendChild(lbl);
         chip.appendChild(sel);
         wrap.appendChild(chip);
       }}
-      updateRoomGuestSummary();
+      updateHotelRoomSummary(row);
     }}
-
-    document.getElementById("cfg-rooms").addEventListener("change", (e) => {{
-      renderRoomGuestSelects(Number(e.target.value || 1));
-    }});
-
-    document.getElementById("cfg-adults").addEventListener("change", () => {{
-      const roomCount = Number(document.getElementById("cfg-rooms").value || 1);
-      if (roomCount >= 2) {{
-        renderRoomGuestSelects(roomCount);
-      }}
-    }});
 
     function parseBookingUrls(rawText) {{
       let trip_hotel_id = "";
@@ -1406,6 +1375,22 @@ def export_to_html(
           <div><label class="field-label">不含早目標價</label><input class="field-input h-tany" type="number" min="0" placeholder="選填"></div>
           <div><label class="field-label">含早目標價</label><input class="field-input h-tbf" type="number" min="0" placeholder="選填"></div>
         </div>
+        <div class="room-split-bar">
+          <div class="room-split-head">
+            <div>
+              <label class="field-label" style="margin-bottom:4px;">房間數與每間人數組合（5 人以上可自訂如 2+3 或 2+2+1）</label>
+              <select class="field-input h-rooms" style="width:auto;min-width:190px;">
+                <option value="1" selected>1 間房（預設）</option>
+                <option value="2">2 間房（自訂每間人數）</option>
+                <option value="3">3 間房（自訂每間人數）</option>
+                <option value="4">4 間房（自訂每間人數）</option>
+                <option value="5">5 間房（自訂每間人數）</option>
+              </select>
+            </div>
+            <div class="sub-info h-room-summary" style="font-weight:600;color:var(--primary);"></div>
+          </div>
+          <div class="room-guests-wrap h-room-guests-wrap hidden"></div>
+        </div>
         <div class="hotel-row-line3">
           <label class="field-label">房價網網址（一行一個，選填，系統自動判斷平台）</label>
           <div class="h-urls-list"></div>
@@ -1419,6 +1404,14 @@ def export_to_html(
       row.querySelector(".h-out").value = item.check_out || "";
       row.querySelector(".h-tany").value = item.target_any ?? "";
       row.querySelector(".h-tbf").value = item.target_bf ?? "";
+      const itemSplit = Array.isArray(item.room_guests) ? item.room_guests : [];
+      const itemRooms = Number(item.rooms || itemSplit.length || 1);
+      const roomsSel = row.querySelector(".h-rooms");
+      roomsSel.value = String(Math.min(5, Math.max(1, itemRooms)));
+      renderHotelRoomGuestSelects(row, itemRooms, itemSplit);
+      roomsSel.addEventListener("change", (e) => {{
+        renderHotelRoomGuestSelects(row, Number(e.target.value || 1));
+      }});
       const initialUrls = [];
       if (Array.isArray(item.urls) && item.urls.length > 0) {{
         item.urls.forEach((u) => {{
@@ -1454,10 +1447,6 @@ def export_to_html(
       const childCount = Number(profileObj?.children ?? 0);
       document.getElementById("cfg-children").value = String(childCount);
       renderChildAgeSelects(childCount, profileObj?.child_ages || "");
-      const existingSplit = Array.isArray(profileObj?.room_guests) ? profileObj.room_guests : [];
-      const roomCount = Number(profileObj?.rooms || existingSplit.length || 1);
-      document.getElementById("cfg-rooms").value = String(Math.min(5, Math.max(1, roomCount)));
-      renderRoomGuestSelects(roomCount, existingSplit);
       document.getElementById("cfg-currency").value = profileObj?.currency || "TWD";
       const listEl = document.getElementById("manage-hotels-list");
       listEl.innerHTML = "";
@@ -1465,7 +1454,14 @@ def export_to_html(
       if (hotels.length === 0) {{
         addHotelRow({{}});
       }} else {{
-        hotels.forEach((h) => addHotelRow(h));
+        hotels.forEach((h) => {{
+          const merged = {{ ...h }};
+          if (!merged.rooms && profileObj?.rooms > 1) merged.rooms = profileObj.rooms;
+          if ((!merged.room_guests || merged.room_guests.length === 0) && Array.isArray(profileObj?.room_guests) && profileObj.room_guests.length > 0) {{
+            merged.room_guests = profileObj.room_guests;
+          }}
+          addHotelRow(merged);
+        }});
       }}
     }}
 
@@ -1482,6 +1478,10 @@ def export_to_html(
         const {{ trip_hotel_id, agoda_path, booking_path }} = parseBookingUrls(urls.join(" "));
         const tAny = row.querySelector(".h-tany").value.trim();
         const tBf = row.querySelector(".h-tbf").value.trim();
+        const hRooms = Number(row.querySelector(".h-rooms").value || 1);
+        const hRoomGuests = hRooms >= 2
+          ? Array.from(row.querySelectorAll(".h-room-guest-select")).map((s) => Number(s.value || 1))
+          : [];
         hotels.push({{
           name,
           check_in,
@@ -1490,26 +1490,21 @@ def export_to_html(
           trip_hotel_id,
           agoda_path,
           booking_path,
+          rooms: hRooms,
+          room_guests: hRoomGuests,
           target_any: tAny ? Number(tAny) : null,
           target_bf: tBf ? Number(tBf) : null,
         }});
       }});
       const ageValues = Array.from(document.querySelectorAll("#cfg-ages-wrap .cfg-age-select")).map((s) => s.value);
-      const roomCount = Number(document.getElementById("cfg-rooms").value || 1);
-      const roomGuests = roomCount >= 2
-        ? Array.from(document.querySelectorAll("#cfg-room-guests-wrap .cfg-room-guest-select")).map((s) => Number(s.value || 1))
-        : [];
-      const totalAdults = roomGuests.length >= 2
-        ? roomGuests.reduce((a, b) => a + b, 0)
-        : Number(document.getElementById("cfg-adults").value || 2);
       return {{
         user_id: activeUserId,
         title: `${{activeUserId}} 的飯店比價看板`,
-        adults: totalAdults,
+        adults: Number(document.getElementById("cfg-adults").value || 2),
         children: Number(document.getElementById("cfg-children").value || 0),
         child_ages: ageValues.join(","),
-        rooms: roomCount,
-        room_guests: roomGuests,
+        rooms: 1,
+        room_guests: [],
         currency: (document.getElementById("cfg-currency").value || "TWD").trim().toUpperCase(),
         sites: ["tw"],
         platforms: ["trip", "agoda", "booking"],

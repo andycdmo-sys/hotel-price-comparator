@@ -70,6 +70,8 @@ class HotelWatchItem:
     trip_hotel_id: str = ""
     agoda_path: str = ""
     booking_path: str = ""
+    rooms: int = 1
+    room_guests: list[int] = field(default_factory=list)
     target_any: Optional[int] = None
     target_bf: Optional[int] = None
 
@@ -113,9 +115,38 @@ def _optional_int(val: Any) -> Optional[int]:
         return None
 
 
+def _parse_room_split(
+    raw_obj: dict[str, Any],
+    fallback_rooms: int = 1,
+    fallback_guests: Optional[list[int]] = None,
+) -> tuple[int, list[int]]:
+    has_explicit = ("rooms" in raw_obj) or ("room_guests" in raw_obj)
+    if not has_explicit:
+        return fallback_rooms, list(fallback_guests or [])
+
+    raw_room_guests = raw_obj.get("room_guests") or []
+    room_guests: list[int] = []
+    if isinstance(raw_room_guests, list):
+        for g in raw_room_guests:
+            try:
+                val = int(g)
+                if val > 0:
+                    room_guests.append(val)
+            except (TypeError, ValueError):
+                continue
+
+    rooms = max(1, int(raw_obj.get("rooms") or len(room_guests) or 1))
+    if rooms == 1:
+        room_guests = []
+    elif room_guests and len(room_guests) != rooms:
+        room_guests = room_guests[:rooms]
+    return rooms, room_guests
+
+
 def parse_profile_dict(raw: dict[str, Any], fallback_user_id: str = "") -> UserProfile:
     """從字典解析並正規化單一使用者 Profile。"""
     user_id = validate_user_id(str(raw.get("user_id") or fallback_user_id))
+    profile_rooms, profile_room_guests = _parse_room_split(raw)
 
     hotels: list[HotelWatchItem] = []
     for item in raw.get("hotels", []) or []:
@@ -135,6 +166,11 @@ def parse_profile_dict(raw: dict[str, Any], fallback_user_id: str = "") -> UserP
             agoda_path=str(item.get("agoda_path") or ""),
             booking_path=str(item.get("booking_path") or ""),
         )
+        h_rooms, h_room_guests = _parse_room_split(
+            item,
+            fallback_rooms=profile_rooms,
+            fallback_guests=profile_room_guests,
+        )
         hotels.append(
             HotelWatchItem(
                 name=name,
@@ -143,6 +179,8 @@ def parse_profile_dict(raw: dict[str, Any], fallback_user_id: str = "") -> UserP
                 trip_hotel_id=parsed_trip,
                 agoda_path=parsed_agoda,
                 booking_path=parsed_booking,
+                rooms=h_rooms,
+                room_guests=h_room_guests,
                 target_any=_optional_int(item.get("target_any")),
                 target_bf=_optional_int(item.get("target_bf")),
             )
@@ -150,25 +188,7 @@ def parse_profile_dict(raw: dict[str, Any], fallback_user_id: str = "") -> UserP
 
     sites = [str(s).strip().lower() for s in (raw.get("sites") or ["tw"]) if str(s).strip()]
     platforms = [str(p).strip().lower() for p in (raw.get("platforms") or ["trip", "agoda", "booking"]) if str(p).strip()]
-
-    raw_room_guests = raw.get("room_guests") or []
-    room_guests: list[int] = []
-    if isinstance(raw_room_guests, list):
-        for g in raw_room_guests:
-            try:
-                val = int(g)
-                if val > 0:
-                    room_guests.append(val)
-            except (TypeError, ValueError):
-                continue
-
-    rooms = max(1, int(raw.get("rooms") or len(room_guests) or 1))
-    if rooms == 1:
-        room_guests = []
-    elif room_guests and len(room_guests) != rooms:
-        room_guests = room_guests[:rooms]
-
-    adults_val = max(1, int(raw.get("adults") or (sum(room_guests) if room_guests else 2)))
+    adults_val = max(1, int(raw.get("adults") or (sum(profile_room_guests) if profile_room_guests else 2)))
 
     return UserProfile(
         user_id=user_id,
@@ -176,8 +196,8 @@ def parse_profile_dict(raw: dict[str, Any], fallback_user_id: str = "") -> UserP
         adults=adults_val,
         children=max(0, int(raw.get("children") or 0)),
         child_ages=str(raw.get("child_ages") or "").strip(),
-        rooms=rooms,
-        room_guests=room_guests,
+        rooms=profile_rooms,
+        room_guests=profile_room_guests,
         currency=str(raw.get("currency") or "TWD").strip().upper() or "TWD",
         sites=sites or ["tw"],
         platforms=platforms or ["trip", "agoda", "booking"],

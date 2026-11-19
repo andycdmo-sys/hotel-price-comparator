@@ -764,6 +764,8 @@
         "trip_hotel_id": "704038",
         "agoda_path": "/zh-tw/hotel-yugaf-inn-okinawa/hotel/okinawa-main-island-jp.html",
         "booking_path": "/hotel/jp/yugafu-inn-okinawa.zh-tw.html",
+        "rooms": 1,
+        "room_guests": [],
         "target_any": null,
         "target_bf": 4193
       },
@@ -774,6 +776,8 @@
         "trip_hotel_id": "106709440",
         "agoda_path": "/zh-tw/ref-okinawa-arena-by-vessel-hotels/hotel/okinawa-main-island-jp.html",
         "booking_path": "/hotel/jp/rehuchong-nawa-arinaby-betuseruhoteruzu.zh-tw.html",
+        "rooms": 1,
+        "room_guests": [],
         "target_any": 2982,
         "target_bf": null
       },
@@ -784,6 +788,8 @@
         "trip_hotel_id": "120097372",
         "agoda_path": "/zh-tw/b-c-hotel/hotel/okinawa-main-island-jp.html",
         "booking_path": "/hotel/jp/bbyc-naha-hotel-with-rental-car.zh-tw.html",
+        "rooms": 1,
+        "room_guests": [],
         "target_any": 2066,
         "target_bf": 2066
       },
@@ -794,6 +800,8 @@
         "trip_hotel_id": "2845951",
         "agoda_path": "/zh-tw/estinate-hotel/hotel/okinawa-main-island-jp.html",
         "booking_path": "/hotel/jp/estination.zh-tw.html",
+        "rooms": 1,
+        "room_guests": [],
         "target_any": 1957,
         "target_bf": null
       }
