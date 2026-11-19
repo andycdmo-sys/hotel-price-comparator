@@ -4,6 +4,8 @@
   "adults": 5,
   "children": 0,
   "child_ages": "",
+  "rooms": 1,
+  "room_guests": [],
   "currency": "TWD",
   "sites": [
     "tw"
@@ -18,9 +20,14 @@
       "name": "淺草東武飯店",
       "check_in": "2027-01-15",
       "check_out": "2027-01-17",
-      "trip_hotel_id": "57099041",
-      "agoda_path": "/zh-tw/asakusa-tobu-hotel/hotel/tokyo-jp.html",
-      "booking_path": "/hotel/jp/asakusa-tobu.zh-tw.html",
+      "trip_hotel_id": "",
+      "agoda_path": "",
+      "booking_path": "",
+      "rooms": 2,
+      "room_guests": [
+        2,
+        3
+      ],
       "target_any": 27980,
       "target_bf": 30000
     },
@@ -28,9 +35,14 @@
       "name": "東京黎凡特東武酒店",
       "check_in": "2027-01-17",
       "check_out": "2027-01-19",
-      "trip_hotel_id": "686270",
-      "agoda_path": "/zh-tw/tobu-hotel-levant-tokyo/hotel/tokyo-jp.html",
-      "booking_path": "/hotel/jp/tobu-levant-tokyo.zh-tw.html",
+      "trip_hotel_id": "",
+      "agoda_path": "",
+      "booking_path": "",
+      "rooms": 2,
+      "room_guests": [
+        3,
+        2
+      ],
       "target_any": 22156,
       "target_bf": 24000
     }
