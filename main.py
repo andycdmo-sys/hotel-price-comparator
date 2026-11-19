@@ -164,6 +164,7 @@ def _build_hotel_scrapers(
     child_ages: str,
     rooms: int = 1,
     room_guests: list[int] | None = None,
+    room_keyword: str = "",
     currency: str,
     ip_info: str,
     breakfast_options: list[bool],
@@ -181,6 +182,7 @@ def _build_hotel_scrapers(
                 currency=currency,
                 breakfast_only=bf_only,
                 ip_info=ip_info,
+                room_keyword=room_keyword,
             )
             for code in sites
             for bf_only in breakfast_options
@@ -198,6 +200,7 @@ def _build_hotel_scrapers(
                 currency=currency,
                 breakfast_only=bf_only,
                 ip_info=ip_info,
+                room_keyword=room_keyword,
             )
             for bf_only in breakfast_options
         )
@@ -215,6 +218,7 @@ def _build_hotel_scrapers(
                 currency=currency,
                 breakfast_only=bf_only,
                 ip_info=ip_info,
+                room_keyword=room_keyword,
             )
             for bf_only in breakfast_options
         )
@@ -243,6 +247,7 @@ async def _run_profile_batch(
         hotel_rooms = hotel.rooms if hotel.rooms > 1 else profile.rooms
         hotel_room_guests = hotel.room_guests if hotel.room_guests else profile.room_guests
         hotel_adults = sum(hotel_room_guests) if hotel_room_guests else profile.adults
+        hotel_room_keyword = hotel.room_type.strip() if hotel.match_room_type and hotel.room_type.strip() else ""
         scrapers = _build_hotel_scrapers(
             hotel_name=hotel.name,
             trip_hotel_id=hotel.trip_hotel_id,
@@ -255,6 +260,7 @@ async def _run_profile_batch(
             child_ages=profile.child_ages,
             rooms=hotel_rooms,
             room_guests=hotel_room_guests,
+            room_keyword=hotel_room_keyword,
             currency=profile.currency,
             ip_info=ip_info,
             breakfast_options=breakfast_options,

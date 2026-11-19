@@ -407,6 +407,25 @@
       color: #9a3412;
       cursor: pointer;
     }
+    .room-type-bar {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 8px 10px;
+      margin: 8px 0;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .room-type-check {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text);
+      cursor: pointer;
+    }
     .field-label {
       display: block;
       font-size: 0.74rem;
@@ -1017,6 +1036,16 @@
             </label>
           </div>
         </div>
+        <div class="room-type-bar">
+          <div>
+            <label class="field-label">指定房型名稱（選填，例如：豪華雙床房、劇院房）</label>
+            <input class="field-input h-room-type" type="text" placeholder="留空或未勾選下方選項，則依預設找最低價房型">
+          </div>
+          <label class="room-type-check">
+            <input type="checkbox" class="h-match-room-type">
+            <span>確定要針對輸入的房型名稱來比價（未勾選則依預設找最低價房型）</span>
+          </label>
+        </div>
         <div class="hotel-row-line3">
           <label class="field-label">房價網網址（一行一個，選填，系統自動判斷平台）</label>
           <div class="h-urls-list"></div>
@@ -1030,6 +1059,10 @@
       row.querySelector(".h-out").value = item.check_out || "";
       row.querySelector(".h-tany").value = item.target_any ?? "";
       row.querySelector(".h-tbf").value = item.target_bf ?? "";
+      const roomTypeInp = row.querySelector(".h-room-type");
+      const matchRoomChk = row.querySelector(".h-match-room-type");
+      roomTypeInp.value = item.room_type || "";
+      matchRoomChk.checked = Boolean(item.match_room_type && item.room_type);
       const itemSplit = Array.isArray(item.room_guests) ? item.room_guests : [];
       const itemRooms = Number(item.rooms || itemSplit.length || 1);
       const roomsSel = row.querySelector(".h-rooms");
@@ -1108,6 +1141,8 @@
         const hRoomGuests = hRooms >= 2
           ? Array.from(row.querySelectorAll(".h-room-guest-select")).map((s) => Number(s.value || 1))
           : [];
+        const hRoomType = (row.querySelector(".h-room-type")?.value || "").trim();
+        const hMatchRoomType = Boolean(row.querySelector(".h-match-room-type")?.checked) && Boolean(hRoomType);
         hotels.push({
           name,
           check_in,
@@ -1118,6 +1153,8 @@
           booking_path,
           rooms: hRooms,
           room_guests: hRoomGuests,
+          room_type: hRoomType,
+          match_room_type: hMatchRoomType,
           target_any: tAny ? Number(tAny) : null,
           target_bf: tBf ? Number(tBf) : null,
         });
@@ -1279,6 +1316,16 @@
             `⚠️ 「${hotelName}」分配的成人人數與個人檔上方不同，請勾選「依現在分配的方式查詢」，或調整各房人數後再儲存！`;
           useSplitChk.scrollIntoView({ behavior: "smooth", block: "center" });
           useSplitChk.focus();
+          return;
+        }
+        const roomTypeInp = row.querySelector(".h-room-type");
+        const matchRoomChk = row.querySelector(".h-match-room-type");
+        if (matchRoomChk && matchRoomChk.checked && !(roomTypeInp?.value || "").trim()) {
+          const hotelName = (row.querySelector(".h-name")?.value || "").trim() || "該飯店";
+          document.getElementById("manage-status").textContent =
+            `⚠️ 「${hotelName}」已勾選針對指定房型比價，請輸入房型名稱，或取消勾選以依預設最低價比價！`;
+          roomTypeInp.scrollIntoView({ behavior: "smooth", block: "center" });
+          roomTypeInp.focus();
           return;
         }
       }

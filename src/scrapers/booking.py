@@ -148,10 +148,12 @@ def extract_booking_room_table_price(
     children: int = 0,
     breakfast_only: bool = False,
     room_guests: Optional[list[int]] = None,
+    room_keyword: str = "",
 ) -> tuple[Optional[float], str]:
     """從 Booking.com 飯店頁面 `#hprt-table` 列資料擷取最低含稅總價（單房不足或指定配房時計算多房組合）。"""
     explicit_split = [int(g) for g in (room_guests or []) if int(g) > 0]
     use_explicit_split = len(explicit_split) >= 2
+    kw = room_keyword.strip().lower()
     best_price: Optional[float] = None
     best_room = ""
 
@@ -174,6 +176,8 @@ def extract_booking_room_table_price(
             continue
 
         room_name = str(row.get("room") or "").strip() or "標準房型"
+        if kw and kw not in room_name.lower():
+            continue
         max_adults, max_children, max_total = _extract_row_capacity(row)
         if not use_explicit_split and _capacity_fits(max_adults, max_children, max_total, adults, children):
             if best_price is None or total_price < best_price:
@@ -314,6 +318,7 @@ class BookingScraper(BaseHotelScraper):
         currency: str = "TWD",
         breakfast_only: bool = False,
         ip_info: str = "",
+        room_keyword: str = "",
     ) -> None:
         raw_path = hotel_path.strip()
         if raw_path and not raw_path.startswith("/"):
@@ -327,6 +332,7 @@ class BookingScraper(BaseHotelScraper):
         self.currency = currency.strip().upper() or "TWD"
         self.breakfast_only = breakfast_only
         self.ip_info = ip_info.strip()
+        self.room_keyword = room_keyword.strip()
         meal_label = "含早餐" if self.breakfast_only else "不限早餐"
         self.platform_name = f"Booking [{meal_label} | IP:{self.ip_info or 'LOCAL'}]"
 
@@ -416,6 +422,7 @@ class BookingScraper(BaseHotelScraper):
             children=self.children,
             breakfast_only=self.breakfast_only,
             room_guests=self.room_guests,
+            room_keyword=self.room_keyword,
         )
         if price is None:
             return None

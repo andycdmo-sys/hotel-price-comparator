@@ -426,3 +426,63 @@ def test_booking_explicit_room_guests_split() -> None:
     p_2_2_1, lbl_2_2_1 = extract_booking_room_table_price(rows, adults=5, children=0, room_guests=[2, 2, 1])
     assert p_2_2_1 == 9371.0 + 9371.0 + 5500.0
     assert "2+2+1 組合" in lbl_2_2_1
+
+
+def test_room_keyword_filtering_across_platforms() -> None:
+    from src.scrapers.booking import extract_booking_room_table_price
+    from src.scrapers.trip_com import _extract_hotel_price_and_room
+
+    agoda_grid = {
+        "masterRooms": [
+            {
+                "name": "標準雙人房",
+                "rooms": [
+                    {
+                        "name": "標準雙人房",
+                        "currency": "TWD",
+                        "isFit": True,
+                        "availability": 2,
+                        "isBreakfastIncluded": False,
+                        "totalPrice": {"display": 3000.0},
+                    }
+                ],
+            },
+            {
+                "name": "豪華雙床房",
+                "rooms": [
+                    {
+                        "name": "豪華雙床房",
+                        "currency": "TWD",
+                        "isFit": True,
+                        "availability": 2,
+                        "isBreakfastIncluded": False,
+                        "totalPrice": {"display": 4500.0},
+                    }
+                ],
+            },
+        ]
+    }
+    p_ago, r_ago = extract_agoda_room_grid_price(agoda_grid, expected_currency="TWD", room_keyword="豪華雙床")
+    assert p_ago == 4500.0
+    assert "豪華雙床" in r_ago
+
+    booking_rows = [
+        {"room": "標準雙人房", "occ": "最多人數: 2", "price": "TWD 3,200", "tax": "", "cond": "", "maxRooms": 2},
+        {"room": "豪華雙床房", "occ": "最多人數: 2", "price": "TWD 4,800", "tax": "", "cond": "", "maxRooms": 2},
+    ]
+    p_bk, r_bk = extract_booking_room_table_price(booking_rows, adults=2, children=0, room_keyword="豪華雙床")
+    assert p_bk == 4800.0
+    assert r_bk == "豪華雙床房"
+
+    trip_lines = [
+        "找到1處住宿",
+        "淺草東武酒店",
+        "標準雙人房",
+        "總價：TWD 3,500",
+        "查看空房情況",
+    ]
+    p_trip_miss, _ = _extract_hotel_price_and_room(trip_lines, "淺草東武飯店", allow_cta_fallback=False, room_keyword="豪華雙床")
+    assert p_trip_miss is None
+    p_trip_hit, r_trip_hit = _extract_hotel_price_and_room(trip_lines, "淺草東武飯店", allow_cta_fallback=False, room_keyword="標準雙人")
+    assert p_trip_hit == 3500.0
+    assert r_trip_hit == "標準雙人房"

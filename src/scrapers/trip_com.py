@@ -108,8 +108,10 @@ def _extract_hotel_price_and_room(
     lines: list[str],
     hotel_name: str,
     allow_cta_fallback: bool = True,
+    room_keyword: str = "",
 ) -> tuple[Optional[float], str]:
     """從頁面文字行中定位飯店卡片並擷取含稅房價與房型名稱。"""
+    kw = room_keyword.strip().lower()
     short_name = _strip_hotel_suffix(hotel_name)
     extra_tokens = [short_name] if len(short_name) >= 2 else []
     name_tokens = [tok.lower() for tok in (hotel_name, *extra_tokens, *HOTEL_NAME_KEYWORDS) if tok]
@@ -202,6 +204,9 @@ def _extract_hotel_price_and_room(
                     room_type = line
                     break
 
+            if kw and kw not in room_type.lower() and kw not in window_joined:
+                continue
+
             return final_price, room_type
 
         return None, ""
@@ -239,6 +244,7 @@ class TripComScraper(BaseHotelScraper):
         currency: str = "TWD",
         breakfast_only: bool = False,
         ip_info: str = "",
+        room_keyword: str = "",
     ) -> None:
         code = site_code.strip().lower()
         if code not in SITE_MAP:
@@ -262,6 +268,7 @@ class TripComScraper(BaseHotelScraper):
         self.currency = currency.strip().upper() or "TWD"
         self.breakfast_only = breakfast_only
         self.ip_info = ip_info.strip()
+        self.room_keyword = room_keyword.strip()
         meal_label = "含早餐" if self.breakfast_only else "不限早餐"
         self.platform_name = f"Trip.com [{self.site_code.upper()}站 | {meal_label} | IP:{self.ip_info or 'LOCAL'}]"
 
@@ -403,6 +410,7 @@ class TripComScraper(BaseHotelScraper):
                     lines=lines,
                     hotel_name=hotel_name,
                     allow_cta_fallback=(self.site_code != "tw"),
+                    room_keyword=self.room_keyword,
                 )
                 if price is not None:
                     return HotelPriceResult(

@@ -575,6 +575,8 @@ def test_custom_room_guests_profile_and_ui_controls(tmp_path: Path) -> None:
                     "check_out": "2027-01-19",
                     "rooms": 2,
                     "room_guests": [2, 3],
+                    "room_type": "豪華雙床房",
+                    "match_room_type": True,
                 },
                 {
                     "name": "淺草東武飯店",
@@ -582,6 +584,8 @@ def test_custom_room_guests_profile_and_ui_controls(tmp_path: Path) -> None:
                     "check_out": "2027-01-21",
                     "rooms": 3,
                     "room_guests": [2, 2, 1],
+                    "room_type": "標準房",
+                    "match_room_type": False,
                 },
             ],
         },
@@ -591,8 +595,12 @@ def test_custom_room_guests_profile_and_ui_controls(tmp_path: Path) -> None:
     loaded = load_profile(saved_path)
     assert loaded.hotels[0].rooms == 2
     assert loaded.hotels[0].room_guests == [2, 3]
+    assert loaded.hotels[0].room_type == "豪華雙床房"
+    assert loaded.hotels[0].match_room_type is True
     assert loaded.hotels[1].rooms == 3
     assert loaded.hotels[1].room_guests == [2, 2, 1]
+    assert loaded.hotels[1].room_type == "標準房"
+    assert loaded.hotels[1].match_room_type is False
     assert loaded.adults == 5
 
     csv_file = tmp_path / "history_GroupFive.csv"
@@ -611,6 +619,8 @@ def test_custom_room_guests_profile_and_ui_controls(tmp_path: Path) -> None:
     assert 'room-guests-wrap h-room-guests-wrap' in html_content
     assert 'h-room-mismatch-box' in html_content
     assert 'h-room-use-split' in html_content
+    assert 'h-room-type' in html_content
+    assert 'h-match-room-type' in html_content
     assert "依現在分配的方式查詢" in html_content
     assert "renderHotelRoomGuestSelects" in html_content
     assert 'id="cfg-rooms"' not in html_content

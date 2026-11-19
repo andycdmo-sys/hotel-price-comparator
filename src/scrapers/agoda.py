@@ -53,9 +53,11 @@ def extract_agoda_room_grid_price(
     room_grid_data: dict[str, Any],
     breakfast_only: bool = False,
     expected_currency: str = "",
+    room_keyword: str = "",
 ) -> tuple[Optional[float], str]:
     """從 Agoda `GetSecondaryData` 的 `roomGridData` 擷取符合人數與可訂狀態的最低含稅總價。"""
     expected_norm = expected_currency.strip().upper()
+    kw = room_keyword.strip().lower()
     best_price: Optional[float] = None
     best_room_name = ""
 
@@ -72,6 +74,10 @@ def extract_agoda_room_grid_price(
             if avail is not None and avail <= 0:
                 continue
             if breakfast_only and not bool(room.get("isBreakfastIncluded")):
+                continue
+
+            room_display_name = str(room.get("name") or master_name).strip()
+            if kw and kw not in f"{room_display_name} {master_name}".lower():
                 continue
 
             total_val = (room.get("totalPrice") or {}).get("display")
@@ -116,6 +122,7 @@ class AgodaScraper(BaseHotelScraper):
         currency: str = "TWD",
         breakfast_only: bool = False,
         ip_info: str = "",
+        room_keyword: str = "",
     ) -> None:
         cleaned_path = hotel_path.strip()
         if not cleaned_path.startswith("/"):
@@ -128,6 +135,7 @@ class AgodaScraper(BaseHotelScraper):
         self.currency = currency.strip().upper() or "TWD"
         self.breakfast_only = breakfast_only
         self.ip_info = ip_info.strip()
+        self.room_keyword = room_keyword.strip()
         meal_label = "含早餐" if self.breakfast_only else "不限早餐"
         self.platform_name = f"Agoda [{meal_label} | IP:{self.ip_info or 'LOCAL'}]"
 
@@ -290,6 +298,7 @@ class AgodaScraper(BaseHotelScraper):
                     room_grid_data=payload["roomGridData"],
                     breakfast_only=self.breakfast_only,
                     expected_currency=self.currency,
+                    room_keyword=self.room_keyword,
                 )
                 if price is not None:
                     return HotelPriceResult(

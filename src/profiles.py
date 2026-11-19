@@ -72,6 +72,8 @@ class HotelWatchItem:
     booking_path: str = ""
     rooms: int = 1
     room_guests: list[int] = field(default_factory=list)
+    room_type: str = ""
+    match_room_type: bool = False
     target_any: Optional[int] = None
     target_bf: Optional[int] = None
 
@@ -171,6 +173,8 @@ def parse_profile_dict(raw: dict[str, Any], fallback_user_id: str = "") -> UserP
             fallback_rooms=profile_rooms,
             fallback_guests=profile_room_guests,
         )
+        h_room_type = str(item.get("room_type") or "").strip()
+        h_match_room_type = bool(item.get("match_room_type")) and bool(h_room_type)
         hotels.append(
             HotelWatchItem(
                 name=name,
@@ -181,6 +185,8 @@ def parse_profile_dict(raw: dict[str, Any], fallback_user_id: str = "") -> UserP
                 booking_path=parsed_booking,
                 rooms=h_rooms,
                 room_guests=h_room_guests,
+                room_type=h_room_type,
+                match_room_type=h_match_room_type,
                 target_any=_optional_int(item.get("target_any")),
                 target_bf=_optional_int(item.get("target_bf")),
             )
