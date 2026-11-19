@@ -1,13 +1,14 @@
 {
   "user_id": "Kevin",
   "title": "Kevin 的飯店比價看板",
-  "subtitle": "條件：5 成人 ｜ 幣別：TWD 含稅 ｜ 最後更新：2026-11-19 09:27:55",
-  "updated_at": "2026-11-19 09:27:55",
-  "cards_html": "<section class=\"hotel-card\"><div class=\"date-pill\">2027-01-15 ～ 2027-01-17</div><h2 class=\"hotel-name\">淺草東武飯店</h2><div class=\"plans-grid\"><div class=\"plan-box\" data-target-key=\"淺草東武飯店||不限早餐（最低價）\" data-current-price=\"32080\"><div class=\"plan-title\">不限早餐（最低價）</div><div class=\"winner-row\"><span class=\"winner-plat\">🏆 Booking.com 最低</span></div><div class=\"price-main\">TWD 32,080</div><div class=\"room-sub\">雙人間A + 凱蒂貓客房－現代和風－（四人房） (2間組合)</div><div class=\"meta-sub\">歷史最低：TWD 32,080 <span class=\"badge low\">★ 目前即歷史最低</span></div><div class=\"ota-list\"><div class=\"ota-row is-best\"><span class=\"ota-name\">Booking.com</span><span class=\"ota-price\">TWD 32,080</span><a class=\"ota-link\" href=\"https://www.booking.com/hotel/jp/asakusa-tobu.zh-tw.html?checkin=2027-01-15&amp;checkout=2027-01-17&amp;group_adults=5&amp;no_rooms=2&amp;group_children=0&amp;selected_currency=TWD&amp;lang=zh-tw\" target=\"_blank\" rel=\"noopener\">前往</a></div><div class=\"ota-row\"><span class=\"ota-name\">Agoda</span><span class=\"ota-price\">TWD 32,144</span><a class=\"ota-link\" href=\"https://www.agoda.com/zh-tw/asakusa-tobu-hotel/hotel/tokyo-jp.html?checkIn=2027-01-15&amp;los=2&amp;rooms=3&amp;adults=5&amp;children=0&amp;currencyCode=TWD\" target=\"_blank\" rel=\"noopener\">前往</a></div><div class=\"ota-row\"><span class=\"ota-name\">Trip.com (TW站)</span><span class=\"ota-price\">TWD 43,624</span><a class=\"ota-link\" href=\"https://tw.trip.com/hotels/list?flexType=1&amp;districtId=0&amp;searchWord=%E6%B7%BA%E8%8D%89%E6%9D%B1%E6%AD%A6&amp;searchType=H&amp;optionId=57099041&amp;searchValue=31%7C57099041*31*57099041&amp;checkin=2027-01-15&amp;checkout=2027-01-17&amp;crn=2&amp;adult=5&amp;children=0&amp;curr=TWD&amp;locale=zh-TW\" target=\"_blank\" rel=\"noopener\">前往</a></div></div><div class=\"target-row\"><span class=\"target-label\">🎯 目標價</span><input type=\"number\" class=\"target-input\" min=\"0\" step=\"1\" placeholder=\"未設定\" value=\"27980\"><span class=\"target-status\"></span></div></div><div class=\"plan-box\" data-target-key=\"淺草東武飯店||含早餐方案\" data-current-price=\"35366\"><div class=\"plan-title\">含早餐方案</div><div class=\"winner-row\"><span class=\"winner-plat\">🏆 Booking.com 最低</span></div><div class=\"price-main\">TWD 35,366</div><div class=\"room-sub\">雙人間A + 凱蒂貓客房－現代和風－（四人房） (2間組合)</div><div class=\"meta-sub\">歷史最低：TWD 35,366 <span class=\"badge low\">★ 目前即歷史最低</span></div><div class=\"ota-list\"><div class=\"ota-row is-best\"><span class=\"ota-name\">Booking.com</span><span class=\"ota-price\">TWD 35,366</span><a class=\"ota-link\" href=\"https://www.booking.com/hotel/jp/asakusa-tobu.zh-tw.html?checkin=2027-01-15&amp;checkout=2027-01-17&amp;group_adults=5&amp;no_rooms=2&amp;group_children=0&amp;selected_currency=TWD&amp;lang=zh-tw\" target=\"_blank\" rel=\"noopener\">前往</a></div><div class=\"ota-row\"><span class=\"ota-name\">Agoda</span><span class=\"ota-price\">TWD 35,539</span><a class=\"ota-link\" href=\"https://www.agoda.com/zh-tw/asakusa-tobu-hotel/hotel/tokyo-jp.html?checkIn=2027-01-15&amp;los=2&amp;rooms=3&amp;adults=5&amp;children=0&amp;currencyCode=TWD\" target=\"_blank\" rel=\"noopener\">前往</a></div><div class=\"ota-row\"><span class=\"ota-name\">Trip.com (TW站)</span><span class=\"ota-price\">TWD 47,708</span><a class=\"ota-link\" href=\"https://tw.trip.com/hotels/list?flexType=1&amp;districtId=0&amp;searchWord=%E6%B7%BA%E8%8D%89%E6%9D%B1%E6%AD%A6&amp;searchType=H&amp;optionId=57099041&amp;searchValue=31%7C57099041*31*57099041&amp;checkin=2027-01-15&amp;checkout=2027-01-17&amp;crn=2&amp;adult=5&amp;children=0&amp;listFilters=5~1*5*1&amp;curr=TWD&amp;locale=zh-TW\" target=\"_blank\" rel=\"noopener\">前往</a></div></div><div class=\"target-row\"><span class=\"target-label\">🎯 目標價</span><input type=\"number\" class=\"target-input\" min=\"0\" step=\"1\" placeholder=\"未設定\" value=\"30000\"><span class=\"target-status\"></span></div></div></div></section><section class=\"hotel-card\"><div class=\"date-pill\">2027-01-17 ～ 2027-01-19</div><h2 class=\"hotel-name\">東京黎凡特東武酒店</h2><div class=\"plans-grid\"><div class=\"plan-box\" data-target-key=\"東京黎凡特東武酒店||不限早餐（最低價）\" data-current-price=\"18976\"><div class=\"plan-title\">不限早餐（最低價）</div><div class=\"winner-row\"><span class=\"winner-plat\">🏆 Agoda 最低</span></div><div class=\"price-main\">TWD 18,976</div><div class=\"room-sub\">標準房(兩床) - 禁菸</div><div class=\"meta-sub\">歷史最低：TWD 17,198 <span class=\"badge\">比最低高 TWD 1,778</span></div><div class=\"ota-list\"><div class=\"ota-row is-best\"><span class=\"ota-name\">Agoda</span><span class=\"ota-price\">TWD 18,976</span><a class=\"ota-link\" href=\"https://www.agoda.com/zh-tw/tobu-hotel-levant-tokyo/hotel/tokyo-jp.html?checkIn=2027-01-17&amp;los=2&amp;rooms=2&amp;adults=5&amp;children=0&amp;currencyCode=TWD\" target=\"_blank\" rel=\"noopener\">前往</a></div><div class=\"ota-row\"><span class=\"ota-name\">Booking.com</span><span class=\"ota-price\">TWD 22,042</span><a class=\"ota-link\" href=\"https://www.booking.com/hotel/jp/tobu-levant-tokyo.zh-tw.html?checkin=2027-01-17&amp;checkout=2027-01-19&amp;group_adults=5&amp;no_rooms=2&amp;group_children=0&amp;selected_currency=TWD&amp;lang=zh-tw\" target=\"_blank\" rel=\"noopener\">前往</a></div><div class=\"ota-row\"><span class=\"ota-name\">Trip.com (TW站)</span><span class=\"ota-price\">TWD 33,384</span><a class=\"ota-link\" href=\"https://tw.trip.com/hotels/list?flexType=1&amp;districtId=0&amp;searchWord=%E6%9D%B1%E4%BA%AC%E9%BB%8E%E5%87%A1%E7%89%B9%E6%9D%B1%E6%AD%A6&amp;searchType=H&amp;optionId=686270&amp;searchValue=31%7C686270*31*686270&amp;checkin=2027-01-17&amp;checkout=2027-01-19&amp;crn=2&amp;adult=5&amp;children=0&amp;curr=TWD&amp;locale=zh-TW\" target=\"_blank\" rel=\"noopener\">前往</a></div></div><div class=\"target-row\"><span class=\"target-label\">🎯 目標價</span><input type=\"number\" class=\"target-input\" min=\"0\" step=\"1\" placeholder=\"未設定\" value=\"22156\"><span class=\"target-status\"></span></div></div><div class=\"plan-box\" data-target-key=\"東京黎凡特東武酒店||含早餐方案\" data-current-price=\"23273\"><div class=\"plan-title\">含早餐方案</div><div class=\"winner-row\"><span class=\"winner-plat\">🏆 Agoda 最低</span></div><div class=\"price-main\">TWD 23,273</div><div class=\"room-sub\">標準房(兩床) - 禁菸</div><div class=\"meta-sub\">歷史最低：TWD 23,273 <span class=\"badge low\">★ 目前即歷史最低</span></div><div class=\"ota-list\"><div class=\"ota-row is-best\"><span class=\"ota-name\">Agoda</span><span class=\"ota-price\">TWD 23,273</span><a class=\"ota-link\" href=\"https://www.agoda.com/zh-tw/tobu-hotel-levant-tokyo/hotel/tokyo-jp.html?checkIn=2027-01-17&amp;los=2&amp;rooms=2&amp;adults=5&amp;children=0&amp;currencyCode=TWD\" target=\"_blank\" rel=\"noopener\">前往</a></div><div class=\"ota-row\"><span class=\"ota-name\">Booking.com</span><span class=\"ota-price\">TWD 25,590</span><a class=\"ota-link\" href=\"https://www.booking.com/hotel/jp/tobu-levant-tokyo.zh-tw.html?checkin=2027-01-17&amp;checkout=2027-01-19&amp;group_adults=5&amp;no_rooms=2&amp;group_children=0&amp;selected_currency=TWD&amp;lang=zh-tw\" target=\"_blank\" rel=\"noopener\">前往</a></div><div class=\"ota-row\"><span class=\"ota-name\">Trip.com (TW站)</span><span class=\"ota-price\">TWD 38,392</span><a class=\"ota-link\" href=\"https://tw.trip.com/hotels/list?flexType=1&amp;districtId=0&amp;searchWord=%E6%9D%B1%E4%BA%AC%E9%BB%8E%E5%87%A1%E7%89%B9%E6%9D%B1%E6%AD%A6&amp;searchType=H&amp;optionId=686270&amp;searchValue=31%7C686270*31*686270&amp;checkin=2027-01-17&amp;checkout=2027-01-19&amp;crn=2&amp;adult=5&amp;children=0&amp;listFilters=5~1*5*1&amp;curr=TWD&amp;locale=zh-TW\" target=\"_blank\" rel=\"noopener\">前往</a></div></div><div class=\"target-row\"><span class=\"target-label\">🎯 目標價</span><input type=\"number\" class=\"target-input\" min=\"0\" step=\"1\" placeholder=\"未設定\" value=\"24000\"><span class=\"target-status\"></span></div></div></div></section>",
+  "subtitle": "條件：5 成人 ｜ 幣別：TWD 含稅 ｜ 最後更新：2026-11-19 10:01:36",
+  "updated_at": "2026-11-19 10:01:36",
+  "cards_html": "<section class=\"hotel-card\"><div class=\"date-pill\">2027-01-15 ～ 2027-01-17</div><h2 class=\"hotel-name\">淺草東武飯店</h2><div class=\"plans-grid\"><div class=\"plan-box\" data-target-key=\"淺草東武飯店||不限早餐（最低價）\" data-current-price=\"32080\"><div class=\"plan-title\">不限早餐（最低價）</div><div class=\"winner-row\"><span class=\"winner-plat\">🏆 Booking.com 最低</span></div><div class=\"price-main\">TWD 32,080</div><div class=\"room-sub\">雙人間A + 凱蒂貓客房－現代和風－（四人房） (2間組合)</div><div class=\"meta-sub\">歷史最低：TWD 32,080 <span class=\"badge low\">★ 目前即歷史最低</span></div><div class=\"ota-list\"><div class=\"ota-row is-best\"><span class=\"ota-name\">Booking.com</span><span class=\"ota-price\">TWD 32,080</span><a class=\"ota-link\" href=\"https://www.booking.com/hotel/jp/asakusa-tobu.zh-tw.html?checkin=2027-01-15&amp;checkout=2027-01-17&amp;group_adults=5&amp;no_rooms=2&amp;group_children=0&amp;selected_currency=TWD&amp;lang=zh-tw\" target=\"_blank\" rel=\"noopener\">前往</a></div><div class=\"ota-row\"><span class=\"ota-name\">Agoda</span><span class=\"ota-price\">TWD 32,144</span><a class=\"ota-link\" href=\"https://www.agoda.com/zh-tw/asakusa-tobu-hotel/hotel/tokyo-jp.html?checkIn=2027-01-15&amp;los=2&amp;rooms=3&amp;adults=5&amp;children=0&amp;currencyCode=TWD\" target=\"_blank\" rel=\"noopener\">前往</a></div><div class=\"ota-row\"><span class=\"ota-name\">Trip.com (TW站)</span><span class=\"ota-price\">TWD 43,636</span><a class=\"ota-link\" href=\"https://tw.trip.com/hotels/list?flexType=1&amp;districtId=0&amp;searchWord=%E6%B7%BA%E8%8D%89%E6%9D%B1%E6%AD%A6&amp;searchType=H&amp;optionId=57099041&amp;searchValue=31%7C57099041*31*57099041&amp;checkin=2027-01-15&amp;checkout=2027-01-17&amp;crn=2&amp;adult=5&amp;children=0&amp;curr=TWD&amp;locale=zh-TW\" target=\"_blank\" rel=\"noopener\">前往</a></div></div><div class=\"target-row\"><span class=\"target-label\">🎯 目標價</span><input type=\"number\" class=\"target-input\" min=\"0\" step=\"1\" placeholder=\"未設定\" value=\"27980\"><span class=\"target-status\"></span></div></div><div class=\"plan-box\" data-target-key=\"淺草東武飯店||含早餐方案\" data-current-price=\"35366\"><div class=\"plan-title\">含早餐方案</div><div class=\"winner-row\"><span class=\"winner-plat\">🏆 Booking.com 最低</span></div><div class=\"price-main\">TWD 35,366</div><div class=\"room-sub\">雙人間A + 凱蒂貓客房－現代和風－（四人房） (2間組合)</div><div class=\"meta-sub\">歷史最低：TWD 35,366 <span class=\"badge low\">★ 目前即歷史最低</span></div><div class=\"ota-list\"><div class=\"ota-row is-best\"><span class=\"ota-name\">Booking.com</span><span class=\"ota-price\">TWD 35,366</span><a class=\"ota-link\" href=\"https://www.booking.com/hotel/jp/asakusa-tobu.zh-tw.html?checkin=2027-01-15&amp;checkout=2027-01-17&amp;group_adults=5&amp;no_rooms=2&amp;group_children=0&amp;selected_currency=TWD&amp;lang=zh-tw\" target=\"_blank\" rel=\"noopener\">前往</a></div><div class=\"ota-row\"><span class=\"ota-name\">Agoda</span><span class=\"ota-price\">TWD 35,539</span><a class=\"ota-link\" href=\"https://www.agoda.com/zh-tw/asakusa-tobu-hotel/hotel/tokyo-jp.html?checkIn=2027-01-15&amp;los=2&amp;rooms=3&amp;adults=5&amp;children=0&amp;currencyCode=TWD\" target=\"_blank\" rel=\"noopener\">前往</a></div><div class=\"ota-row\"><span class=\"ota-name\">Trip.com (TW站)</span><span class=\"ota-price\">TWD 47,720</span><a class=\"ota-link\" href=\"https://tw.trip.com/hotels/list?flexType=1&amp;districtId=0&amp;searchWord=%E6%B7%BA%E8%8D%89%E6%9D%B1%E6%AD%A6&amp;searchType=H&amp;optionId=57099041&amp;searchValue=31%7C57099041*31*57099041&amp;checkin=2027-01-15&amp;checkout=2027-01-17&amp;crn=2&amp;adult=5&amp;children=0&amp;listFilters=5~1*5*1&amp;curr=TWD&amp;locale=zh-TW\" target=\"_blank\" rel=\"noopener\">前往</a></div></div><div class=\"target-row\"><span class=\"target-label\">🎯 目標價</span><input type=\"number\" class=\"target-input\" min=\"0\" step=\"1\" placeholder=\"未設定\" value=\"30000\"><span class=\"target-status\"></span></div></div></div></section><section class=\"hotel-card\"><div class=\"date-pill\">2027-01-17 ～ 2027-01-19</div><h2 class=\"hotel-name\">東京黎凡特東武酒店</h2><div class=\"plans-grid\"><div class=\"plan-box\" data-target-key=\"東京黎凡特東武酒店||不限早餐（最低價）\" data-current-price=\"18976\"><div class=\"plan-title\">不限早餐（最低價）</div><div class=\"winner-row\"><span class=\"winner-plat\">🏆 Agoda 最低</span></div><div class=\"price-main\">TWD 18,976</div><div class=\"room-sub\">標準房(兩床) - 禁菸</div><div class=\"meta-sub\">歷史最低：TWD 17,198 <span class=\"badge\">比最低高 TWD 1,778</span></div><div class=\"ota-list\"><div class=\"ota-row is-best\"><span class=\"ota-name\">Agoda</span><span class=\"ota-price\">TWD 18,976</span><a class=\"ota-link\" href=\"https://www.agoda.com/zh-tw/tobu-hotel-levant-tokyo/hotel/tokyo-jp.html?checkIn=2027-01-17&amp;los=2&amp;rooms=2&amp;adults=5&amp;children=0&amp;currencyCode=TWD\" target=\"_blank\" rel=\"noopener\">前往</a></div><div class=\"ota-row\"><span class=\"ota-name\">Booking.com</span><span class=\"ota-price\">TWD 22,107</span><a class=\"ota-link\" href=\"https://www.booking.com/hotel/jp/tobu-levant-tokyo.zh-tw.html?checkin=2027-01-17&amp;checkout=2027-01-19&amp;group_adults=5&amp;no_rooms=2&amp;group_children=0&amp;selected_currency=TWD&amp;lang=zh-tw\" target=\"_blank\" rel=\"noopener\">前往</a></div><div class=\"ota-row\"><span class=\"ota-name\">Trip.com (TW站)</span><span class=\"ota-price\">TWD 36,672</span><a class=\"ota-link\" href=\"https://tw.trip.com/hotels/list?flexType=1&amp;districtId=0&amp;searchWord=%E6%9D%B1%E4%BA%AC%E9%BB%8E%E5%87%A1%E7%89%B9%E6%9D%B1%E6%AD%A6&amp;searchType=H&amp;optionId=686270&amp;searchValue=31%7C686270*31*686270&amp;checkin=2027-01-17&amp;checkout=2027-01-19&amp;crn=2&amp;adult=5&amp;children=0&amp;curr=TWD&amp;locale=zh-TW\" target=\"_blank\" rel=\"noopener\">前往</a></div></div><div class=\"target-row\"><span class=\"target-label\">🎯 目標價</span><input type=\"number\" class=\"target-input\" min=\"0\" step=\"1\" placeholder=\"未設定\" value=\"22156\"><span class=\"target-status\"></span></div></div><div class=\"plan-box\" data-target-key=\"東京黎凡特東武酒店||含早餐方案\" data-current-price=\"23273\"><div class=\"plan-title\">含早餐方案</div><div class=\"winner-row\"><span class=\"winner-plat\">🏆 Agoda 最低</span></div><div class=\"price-main\">TWD 23,273</div><div class=\"room-sub\">標準房(兩床) - 禁菸</div><div class=\"meta-sub\">歷史最低：TWD 23,273 <span class=\"badge low\">★ 目前即歷史最低</span></div><div class=\"ota-list\"><div class=\"ota-row is-best\"><span class=\"ota-name\">Agoda</span><span class=\"ota-price\">TWD 23,273</span><a class=\"ota-link\" href=\"https://www.agoda.com/zh-tw/tobu-hotel-levant-tokyo/hotel/tokyo-jp.html?checkIn=2027-01-17&amp;los=2&amp;rooms=2&amp;adults=5&amp;children=0&amp;currencyCode=TWD\" target=\"_blank\" rel=\"noopener\">前往</a></div><div class=\"ota-row\"><span class=\"ota-name\">Booking.com</span><span class=\"ota-price\">TWD 25,668</span><a class=\"ota-link\" href=\"https://www.booking.com/hotel/jp/tobu-levant-tokyo.zh-tw.html?checkin=2027-01-17&amp;checkout=2027-01-19&amp;group_adults=5&amp;no_rooms=2&amp;group_children=0&amp;selected_currency=TWD&amp;lang=zh-tw\" target=\"_blank\" rel=\"noopener\">前往</a></div><div class=\"ota-row\"><span class=\"ota-name\">Trip.com (TW站)</span><span class=\"ota-price\">TWD 41,204</span><a class=\"ota-link\" href=\"https://tw.trip.com/hotels/list?flexType=1&amp;districtId=0&amp;searchWord=%E6%9D%B1%E4%BA%AC%E9%BB%8E%E5%87%A1%E7%89%B9%E6%9D%B1%E6%AD%A6&amp;searchType=H&amp;optionId=686270&amp;searchValue=31%7C686270*31*686270&amp;checkin=2027-01-17&amp;checkout=2027-01-19&amp;crn=2&amp;adult=5&amp;children=0&amp;listFilters=5~1*5*1&amp;curr=TWD&amp;locale=zh-TW\" target=\"_blank\" rel=\"noopener\">前往</a></div></div><div class=\"target-row\"><span class=\"target-label\">🎯 目標價</span><input type=\"number\" class=\"target-input\" min=\"0\" step=\"1\" placeholder=\"未設定\" value=\"24000\"><span class=\"target-status\"></span></div></div></div></section>",
   "chart_payload": {
     "labels": [
       "11-18 17:33",
-      "11-18 21:58"
+      "11-18 21:58",
+      "11-19 10:00"
     ],
     "hotels": [
       "東京黎凡特東武酒店",
@@ -19,14 +20,16 @@
           "label": "東京黎凡特東武酒店",
           "data": [
             17198.0,
-            18976.0
+            18976.0,
+            22107.0
           ]
         },
         {
           "label": "淺草東武飯店",
           "data": [
             32080.0,
-            32080.0
+            32080.0,
+            43636.0
           ]
         }
       ],
@@ -36,21 +39,24 @@
             "label": "Agoda [不限早餐]",
             "data": [
               18760.0,
-              18976.0
+              18976.0,
+              null
             ]
           },
           {
             "label": "Booking [不限早餐]",
             "data": [
               17198.0,
-              22042.0
+              22042.0,
+              22107.0
             ]
           },
           {
             "label": "Trip.com [TW站 | 不限早餐]",
             "data": [
               null,
-              33384.0
+              33384.0,
+              36672.0
             ]
           }
         ],
@@ -59,21 +65,24 @@
             "label": "Agoda [不限早餐]",
             "data": [
               75761.0,
-              32144.0
+              32144.0,
+              null
             ]
           },
           {
             "label": "Booking [不限早餐]",
             "data": [
               32080.0,
-              32080.0
+              32080.0,
+              null
             ]
           },
           {
             "label": "Trip.com [TW站 | 不限早餐]",
             "data": [
               null,
-              43624.0
+              43624.0,
+              43636.0
             ]
           }
         ]
@@ -85,14 +94,16 @@
           "label": "東京黎凡特東武酒店",
           "data": [
             23273.0,
-            23273.0
+            23273.0,
+            25668.0
           ]
         },
         {
           "label": "淺草東武飯店",
           "data": [
             35366.0,
-            35366.0
+            35366.0,
+            47720.0
           ]
         }
       ],
@@ -102,21 +113,24 @@
             "label": "Agoda [含早餐]",
             "data": [
               23273.0,
-              23273.0
+              23273.0,
+              null
             ]
           },
           {
             "label": "Booking [含早餐]",
             "data": [
               25590.0,
-              25590.0
+              25590.0,
+              25668.0
             ]
           },
           {
             "label": "Trip.com [TW站 | 含早餐]",
             "data": [
               null,
-              38392.0
+              38392.0,
+              41204.0
             ]
           }
         ],
@@ -125,21 +139,24 @@
             "label": "Agoda [含早餐]",
             "data": [
               83831.0,
-              35539.0
+              35539.0,
+              null
             ]
           },
           {
             "label": "Booking [含早餐]",
             "data": [
               35366.0,
-              35366.0
+              35366.0,
+              null
             ]
           },
           {
             "label": "Trip.com [TW站 | 含早餐]",
             "data": [
               null,
-              47708.0
+              47708.0,
+              47720.0
             ]
           }
         ]
@@ -150,14 +167,16 @@
         "label": "東京黎凡特東武酒店",
         "data": [
           17198.0,
-          18976.0
+          18976.0,
+          22107.0
         ]
       },
       {
         "label": "淺草東武飯店",
         "data": [
           32080.0,
-          32080.0
+          32080.0,
+          43636.0
         ]
       }
     ],
@@ -167,21 +186,24 @@
           "label": "Agoda [不限早餐]",
           "data": [
             18760.0,
-            18976.0
+            18976.0,
+            null
           ]
         },
         {
           "label": "Booking [不限早餐]",
           "data": [
             17198.0,
-            22042.0
+            22042.0,
+            22107.0
           ]
         },
         {
           "label": "Trip.com [TW站 | 不限早餐]",
           "data": [
             null,
-            33384.0
+            33384.0,
+            36672.0
           ]
         }
       ],
@@ -190,21 +212,24 @@
           "label": "Agoda [不限早餐]",
           "data": [
             75761.0,
-            32144.0
+            32144.0,
+            null
           ]
         },
         {
           "label": "Booking [不限早餐]",
           "data": [
             32080.0,
-            32080.0
+            32080.0,
+            null
           ]
         },
         {
           "label": "Trip.com [TW站 | 不限早餐]",
           "data": [
             null,
-            43624.0
+            43624.0,
+            43636.0
           ]
         }
       ]
@@ -240,6 +265,8 @@
           2,
           3
         ],
+        "room_type": "",
+        "match_room_type": false,
         "target_any": 27980,
         "target_bf": 30000
       },
@@ -255,6 +282,8 @@
           3,
           2
         ],
+        "room_type": "",
+        "match_room_type": false,
         "target_any": 22156,
         "target_bf": 24000
       }
