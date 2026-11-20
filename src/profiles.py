@@ -267,13 +267,18 @@ def save_profile_from_json_str(
 
     profiles_dir.mkdir(parents=True, exist_ok=True)
     target_path = profiles_dir / f"{profile.user_id}.json"
-    if (
-        profile.notify_channel != "none"
-        and _is_masked_notify_target(profile.notify_target)
-        and target_path.exists()
-    ):
+    if target_path.exists():
         existing = load_profile(target_path)
-        if existing.notify_target:
+        if "notify_channel" not in raw:
+            profile.notify_channel = existing.notify_channel
+            profile.notify_target = existing.notify_target
+            profile.notify_on_target = existing.notify_on_target
+            profile.notify_on_lowest = existing.notify_on_lowest
+        elif (
+            profile.notify_channel != "none"
+            and _is_masked_notify_target(profile.notify_target)
+            and existing.notify_target
+        ):
             profile.notify_target = existing.notify_target
     if profile.notify_channel == "none":
         profile.notify_target = ""

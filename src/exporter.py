@@ -943,38 +943,6 @@ def export_to_html(
       gap: 10px;
       margin-bottom: 12px;
     }}
-    .notify-box {{
-      background: #f8fafc;
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 10px 12px;
-      margin-bottom: 12px;
-    }}
-    .notify-grid {{
-      display: grid;
-      grid-template-columns: 200px minmax(0, 1fr);
-      gap: 10px;
-      align-items: start;
-    }}
-    .notify-checks {{
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      margin-top: 8px;
-      font-size: 0.84rem;
-      font-weight: 600;
-    }}
-    .notify-checks label {{
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      cursor: pointer;
-    }}
-    @media (max-width: 600px) {{
-      .notify-grid {{
-        grid-template-columns: 1fr;
-      }}
-    }}
     .manage-grid > div, .hotel-row-line1 > div, .hotel-row-line2 > div {{
       min-width: 0;
     }}
@@ -1249,25 +1217,6 @@ def export_to_html(
           <option value="HKD">HKD (港幣)</option>
           <option value="SGD">SGD (新幣)</option>
         </select>
-      </div>
-    </div>
-    <div class="notify-box">
-      <div class="notify-grid">
-        <div>
-          <label class="field-label">🔔 價格通知（僅通知此代號）</label>
-          <select id="cfg-notify-channel" class="field-input">
-            <option value="none" selected>不啟用通知</option>
-            <option value="line">LINE 通知</option>
-          </select>
-        </div>
-        <div id="cfg-notify-line-fields" class="hidden">
-          <label class="field-label">您的 LINE User ID（公開看板會自動遮罩隱藏）</label>
-          <input id="cfg-notify-target" class="field-input" type="text" placeholder="請貼上您的 LINE User ID（例如 U1234567890abcdef...）">
-          <div class="notify-checks">
-            <label><input type="checkbox" id="cfg-notify-target-hit" checked><span>🎯 低於設定目標價時通知</span></label>
-            <label><input type="checkbox" id="cfg-notify-lowest"><span>📉 創下歷史新低價時通知</span></label>
-          </div>
-        </div>
       </div>
     </div>
     <div id="manage-hotels-list"></div>
@@ -1784,25 +1733,12 @@ def export_to_html(
       listEl.appendChild(row);
     }}
 
-    function toggleNotifyFields() {{
-      const ch = document.getElementById("cfg-notify-channel")?.value || "none";
-      const box = document.getElementById("cfg-notify-line-fields");
-      if (box) box.classList.toggle("hidden", ch !== "line");
-    }}
-
-    document.getElementById("cfg-notify-channel").addEventListener("change", toggleNotifyFields);
-
     function renderManageForm(profileObj) {{
       document.getElementById("cfg-adults").value = String(profileObj?.adults ?? 2);
       const childCount = Number(profileObj?.children ?? 0);
       document.getElementById("cfg-children").value = String(childCount);
       renderChildAgeSelects(childCount, profileObj?.child_ages || "");
       document.getElementById("cfg-currency").value = profileObj?.currency || "TWD";
-      document.getElementById("cfg-notify-channel").value = profileObj?.notify_channel || "none";
-      document.getElementById("cfg-notify-target").value = profileObj?.notify_target || "";
-      document.getElementById("cfg-notify-target-hit").checked = profileObj?.notify_on_target !== false;
-      document.getElementById("cfg-notify-lowest").checked = Boolean(profileObj?.notify_on_lowest);
-      toggleNotifyFields();
       const listEl = document.getElementById("manage-hotels-list");
       listEl.innerHTML = "";
       const hotels = profileObj?.hotels || [];
@@ -1867,10 +1803,6 @@ def export_to_html(
         currency: (document.getElementById("cfg-currency").value || "TWD").trim().toUpperCase(),
         sites: ["tw"],
         platforms: ["trip", "agoda", "booking"],
-        notify_channel: document.getElementById("cfg-notify-channel").value || "none",
-        notify_target: (document.getElementById("cfg-notify-target").value || "").trim(),
-        notify_on_target: Boolean(document.getElementById("cfg-notify-target-hit").checked),
-        notify_on_lowest: Boolean(document.getElementById("cfg-notify-lowest").checked),
         hotels,
       }};
     }}
@@ -2266,24 +2198,6 @@ def export_to_html(
           return;
         }}
       }}
-      const notifyChannel = document.getElementById("cfg-notify-channel").value || "none";
-      const notifyTargetInp = document.getElementById("cfg-notify-target");
-      const notifyTargetHit = document.getElementById("cfg-notify-target-hit").checked;
-      const notifyLowest = document.getElementById("cfg-notify-lowest").checked;
-      if (notifyChannel === "line") {{
-        if (!(notifyTargetInp.value || "").trim()) {{
-          document.getElementById("manage-status").textContent =
-            "⚠️ 已啟用 LINE 通知，請填入您的 LINE User ID，或將通知方式改回「不啟用通知」！";
-          notifyTargetInp.scrollIntoView({{ behavior: "smooth", block: "center" }});
-          notifyTargetInp.focus();
-          return;
-        }}
-        if (!notifyTargetHit && !notifyLowest) {{
-          document.getElementById("manage-status").textContent =
-            "⚠️ 請至少勾選一項通知條件（低於目標價或創歷史新低價）！";
-          return;
-        }}
-      }}
       const profileObj = collectProfileFromForm();
       await syncProfileToCloud(profileObj, false);
     }});
@@ -2302,10 +2216,6 @@ def export_to_html(
         currency: "TWD",
         sites: ["tw"],
         platforms: ["trip", "agoda", "booking"],
-        notify_channel: "none",
-        notify_target: "",
-        notify_on_target: true,
-        notify_on_lowest: false,
         hotels: [],
       }};
       renderManageForm(emptyProfile);
