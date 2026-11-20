@@ -1,0 +1,54 @@
+name: 編譯 Android APK (Capacitor)
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - "mobile/**"
+      - ".github/workflows/build_apk.yml"
+
+jobs:
+  build-apk:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: 檢出專案原始碼
+        uses: actions/checkout@v4
+
+      - name: 設定 Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+          cache-dependency-path: "mobile/package-lock.json"
+
+      - name: 設定 Java 21 (Temurin)
+        uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: "21"
+
+      - name: 設定 Gradle 快取
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: 安裝 Capacitor 套件並同步 Android 專案
+        working-directory: mobile
+        run: |
+          npm ci
+          npx cap sync android
+
+      - name: 編譯 Debug APK
+        working-directory: mobile/android
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleDebug --no-daemon
+
+      - name: 上傳編譯完成的 APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: hotel-price-comparator-apk
+          path: mobile/android/app/build/outputs/apk/debug/app-debug.apk
+          retention-days: 30

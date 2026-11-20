@@ -1,0 +1,15 @@
+{
+  "appId": "com.andycdmo.hotelprice",
+  "appName": "飯店比價看板",
+  "webDir": "www",
+  "server": {
+    "url": "https://andycdmo-sys.github.io/hotel-price-comparator/",
+    "cleartext": false,
+    "allowNavigation": [
+      "andycdmo-sys.github.io"
+    ]
+  },
+  "android": {
+    "backgroundColor": "#f4f6fb"
+  }
+}

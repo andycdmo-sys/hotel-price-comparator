@@ -1,0 +1,17 @@
+{
+  "name": "hotel-price-comparator-app",
+  "version": "1.0.0",
+  "description": "飯店每日比價看板 Android App (Capacitor)",
+  "private": true,
+  "scripts": {
+    "cap:sync": "cap sync android",
+    "cap:open": "cap open android"
+  },
+  "dependencies": {
+    "@capacitor/android": "^7.0.0",
+    "@capacitor/core": "^7.0.0"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^7.0.0"
+  }
+}

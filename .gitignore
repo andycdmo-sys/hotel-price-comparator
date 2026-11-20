@@ -16,3 +16,13 @@ output/*.csv
 !profiles/*.json
 !docs/data/*.json
 logs/
+
+# Capacitor / Android 建置產物與暫存檔
+mobile/node_modules/
+mobile/android/.gradle/
+mobile/android/app/build/
+mobile/android/build/
+mobile/android/local.properties
+mobile/android/capacitor-cordova-android-plugins/
+*.apk
+*.aab
