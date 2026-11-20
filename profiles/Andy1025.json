@@ -4,6 +4,8 @@
   "adults": 2,
   "children": 1,
   "child_ages": "11",
+  "rooms": 1,
+  "room_guests": [],
   "currency": "TWD",
   "sites": [
     "tw"
@@ -13,6 +15,10 @@
     "agoda",
     "booking"
   ],
+  "notify_channel": "line",
+  "notify_target": "andycdmo",
+  "notify_on_target": true,
+  "notify_on_lowest": false,
   "hotels": [
     {
       "name": "沖繩餘家弗飯店",
@@ -20,7 +26,11 @@
       "check_out": "2027-01-27",
       "trip_hotel_id": "704038",
       "agoda_path": "/zh-tw/hotel-yugaf-inn-okinawa/hotel/okinawa-main-island-jp.html",
-      "booking_path": "/hotel/jp/yugafu-inn-okinawa.zh-tw.html",
+      "booking_path": "",
+      "rooms": 1,
+      "room_guests": [],
+      "room_type": "",
+      "match_room_type": false,
       "target_any": null,
       "target_bf": 4193
     },
@@ -30,8 +40,12 @@
       "check_out": "2027-01-28",
       "trip_hotel_id": "106709440",
       "agoda_path": "/zh-tw/ref-okinawa-arena-by-vessel-hotels/hotel/okinawa-main-island-jp.html",
-      "booking_path": "/hotel/jp/rehuchong-nawa-arinaby-betuseruhoteruzu.zh-tw.html",
-      "target_any": 2982,
+      "booking_path": "",
+      "rooms": 1,
+      "room_guests": [],
+      "room_type": "",
+      "match_room_type": false,
+      "target_any": null,
       "target_bf": null
     },
     {
@@ -40,9 +54,13 @@
       "check_out": "2027-01-29",
       "trip_hotel_id": "120097372",
       "agoda_path": "/zh-tw/b-c-hotel/hotel/okinawa-main-island-jp.html",
-      "booking_path": "/hotel/jp/bbyc-naha-hotel-with-rental-car.zh-tw.html",
-      "target_any": 2066,
-      "target_bf": 2066
+      "booking_path": "",
+      "rooms": 1,
+      "room_guests": [],
+      "room_type": "",
+      "match_room_type": false,
+      "target_any": null,
+      "target_bf": null
     },
     {
       "name": "艾斯汀納特飯店",
@@ -50,8 +68,12 @@
       "check_out": "2027-01-30",
       "trip_hotel_id": "2845951",
       "agoda_path": "/zh-tw/estinate-hotel/hotel/okinawa-main-island-jp.html",
-      "booking_path": "/hotel/jp/estination.zh-tw.html",
-      "target_any": 1957,
+      "booking_path": "",
+      "rooms": 1,
+      "room_guests": [],
+      "room_type": "",
+      "match_room_type": false,
+      "target_any": null,
       "target_bf": null
     }
   ]
