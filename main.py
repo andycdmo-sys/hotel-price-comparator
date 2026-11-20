@@ -16,6 +16,7 @@ from src.exporter import (
 )
 from src.ip_checker import detect_current_ip_info
 from src.models import HotelPriceResult
+from src.notifier import load_previous_min_prices, notify_profile_if_needed
 from src.profiles import UserProfile, load_all_profiles, load_profile, profile_to_target_prices
 from src.scrapers import AgodaScraper, BookingScraper, DemoHotelScraper, TripComScraper, run_scrapers
 
@@ -287,10 +288,13 @@ async def _run_profile_batch(
                 print(f"  - [{item.platform}] {item.currency} {item.price:,.0f}{room_info}")
 
     prune_csv_by_profile(csv_path, profile)
+    previous_mins = load_previous_min_prices(csv_path)
     export_to_csv(profile_results, csv_path, append=True)
 
     export_user_dashboard_json(csv_path, json_path, profile=profile)
     print(f"[{profile.user_id}] 已更新 {csv_path} 與 {json_path}")
+
+    notify_profile_if_needed(profile, profile_results, previous_mins=previous_mins)
 
     if profile.user_id == "Andy1025":
         legacy_csv = PROJECT_ROOT / "output" / "okinawa_2027_history.csv"

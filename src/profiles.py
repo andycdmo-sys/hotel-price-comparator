@@ -92,10 +92,34 @@ class UserProfile:
     currency: str = "TWD"
     sites: list[str] = field(default_factory=lambda: ["tw"])
     platforms: list[str] = field(default_factory=lambda: ["trip", "agoda", "booking"])
+    notify_channel: str = "none"
+    notify_target: str = ""
+    notify_on_target: bool = True
+    notify_on_lowest: bool = False
     hotels: list[HotelWatchItem] = field(default_factory=list)
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
+
+    def to_public_dict(self) -> dict[str, Any]:
+        """匯出至公開網頁資料時遮罩通知接收對象，避免暴露個人 ID。"""
+        data = asdict(self)
+        data["notify_target"] = mask_notify_target(self.notify_target)
+        return data
+
+
+def mask_notify_target(val: str) -> str:
+    cleaned = (val or "").strip()
+    if not cleaned:
+        return ""
+    if len(cleaned) > 8:
+        return f"{cleaned[:4]}...{cleaned[-4:]}"
+    return "****"
+
+
+def _is_masked_notify_target(val: str) -> bool:
+    cleaned = (val or "").strip()
+    return bool(cleaned) and ("..." in cleaned or set(cleaned) == {"*"})
 
 
 def validate_user_id(user_id: str) -> str:
@@ -196,6 +220,13 @@ def parse_profile_dict(raw: dict[str, Any], fallback_user_id: str = "") -> UserP
     platforms = [str(p).strip().lower() for p in (raw.get("platforms") or ["trip", "agoda", "booking"]) if str(p).strip()]
     adults_val = max(1, int(raw.get("adults") or (sum(profile_room_guests) if profile_room_guests else 2)))
 
+    notify_channel = str(raw.get("notify_channel") or "none").strip().lower()
+    if notify_channel not in {"none", "line"}:
+        notify_channel = "none"
+    notify_target = str(raw.get("notify_target") or "").strip()
+    notify_on_target = bool(raw.get("notify_on_target", True))
+    notify_on_lowest = bool(raw.get("notify_on_lowest", False))
+
     return UserProfile(
         user_id=user_id,
         title=str(raw.get("title") or f"{user_id} 的飯店比價看板").strip(),
@@ -207,6 +238,10 @@ def parse_profile_dict(raw: dict[str, Any], fallback_user_id: str = "") -> UserP
         currency=str(raw.get("currency") or "TWD").strip().upper() or "TWD",
         sites=sites or ["tw"],
         platforms=platforms or ["trip", "agoda", "booking"],
+        notify_channel=notify_channel,
+        notify_target=notify_target,
+        notify_on_target=notify_on_target,
+        notify_on_lowest=notify_on_lowest,
         hotels=hotels,
     )
 
@@ -232,6 +267,17 @@ def save_profile_from_json_str(
 
     profiles_dir.mkdir(parents=True, exist_ok=True)
     target_path = profiles_dir / f"{profile.user_id}.json"
+    if (
+        profile.notify_channel != "none"
+        and _is_masked_notify_target(profile.notify_target)
+        and target_path.exists()
+    ):
+        existing = load_profile(target_path)
+        if existing.notify_target:
+            profile.notify_target = existing.notify_target
+    if profile.notify_channel == "none":
+        profile.notify_target = ""
+
     target_path.write_text(
         json.dumps(profile.to_dict(), ensure_ascii=False, indent=2) + "\n",
         encoding="utf-8",

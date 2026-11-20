@@ -65,6 +65,7 @@ jobs:
         env:
           TZ: Asia/Taipei
           TARGET_USER_ID: ${{ inputs.user_id }}
+          LINE_CHANNEL_ACCESS_TOKEN: ${{ secrets.LINE_CHANNEL_ACCESS_TOKEN }}
         run: |
           if [ -n "$TARGET_USER_ID" ]; then
             python main.py --profile "$TARGET_USER_ID"
