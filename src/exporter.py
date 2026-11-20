@@ -300,8 +300,17 @@ def _build_cards_html(
                 else f'<span class="badge">比最低高 TWD {diff:,.0f}</span>'
             )
 
-            def _render_ota_row(norm_name: str, rec: HotelPriceResult, is_winner: bool) -> str:
+            def _render_ota_row(norm_name: str, rec: HotelPriceResult, is_winner: bool, rank_idx: int) -> str:
                 short_name = _short_platform_label(norm_name)
+                low_short = short_name.lower()
+                if "agoda" in low_short:
+                    plat_key = "agoda"
+                elif "booking" in low_short:
+                    plat_key = "booking"
+                elif "trip" in low_short:
+                    plat_key = "trip"
+                else:
+                    plat_key = low_short
                 url_clean = _normalize_ota_url(rec.url)
                 go_link = (
                     f'<a class="ota-link" href="{html.escape(url_clean)}" target="_blank" rel="noopener">前往</a>'
@@ -309,8 +318,11 @@ def _build_cards_html(
                     else ""
                 )
                 row_cls = "ota-row is-best" if is_winner else "ota-row"
+                room_label = rec.room_type or "標準房型"
                 return (
-                    f'<div class="{row_cls}">'
+                    f'<div class="{row_cls}" data-plat="{html.escape(plat_key)}" '
+                    f'data-price="{rec.price:.0f}" data-currency="{html.escape(rec.currency)}" '
+                    f'data-room="{html.escape(room_label)}" data-rank="{rank_idx}">'
                     f'<span class="ota-name">{html.escape(short_name)}</span>'
                     f'<span class="ota-price">{html.escape(rec.currency)} {rec.price:,.0f}</span>'
                     f"{go_link}"
@@ -318,12 +330,12 @@ def _build_cards_html(
                 )
 
             primary_rows = [
-                _render_ota_row(norm_n, rec, idx == 0)
+                _render_ota_row(norm_n, rec, idx == 0, idx)
                 for idx, (norm_n, rec) in enumerate(latest_by_plat[:3])
             ]
             extra_rows = [
-                _render_ota_row(norm_n, rec, False)
-                for norm_n, rec in latest_by_plat[3:]
+                _render_ota_row(norm_n, rec, False, idx + 3)
+                for idx, (norm_n, rec) in enumerate(latest_by_plat[3:])
             ]
             more_block = ""
             if extra_rows:
@@ -539,6 +551,40 @@ def export_to_html(
     .ota-row.is-best {{
       color: var(--text);
       font-weight: 700;
+    }}
+    .winner-plat.is-focused {{
+      background: #fef3c7;
+      color: #b45309;
+      border-color: #fcd34d;
+    }}
+    .ota-row.is-focused {{
+      background: #fffbeb;
+      border-radius: 6px;
+      padding: 2px 6px;
+      color: #92400e;
+      font-weight: 700;
+    }}
+    .focus-ota-bar {{
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      margin-top: 10px;
+    }}
+    .focus-ota-label {{
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--muted);
+    }}
+    .focus-ota-select {{
+      padding: 5px 10px;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      background: #ffffff;
+      color: var(--text);
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
     }}
     .ota-name {{
       flex: 1;
@@ -1188,6 +1234,15 @@ def export_to_html(
     <header>
       <h1 id="page-title">🏨 飯店每日比價看板</h1>
       <div id="page-subtitle" class="sub-info">條件：2 成人 + 1 兒童 (11歲) ｜ 幣別：TWD 含稅 ｜ 最後更新：{html.escape(updated_str)}</div>
+      <div class="focus-ota-bar">
+        <label for="focus-ota-select" class="focus-ota-label">⭐ 最明顯顯示平台：</label>
+        <select id="focus-ota-select" class="focus-ota-select">
+          <option value="lowest">🏆 最低價優先（預設）</option>
+          <option value="agoda">Agoda</option>
+          <option value="booking">Booking.com</option>
+          <option value="trip">Trip.com</option>
+        </select>
+      </div>
     </header>
     <div id="cards-container">{"".join(cards_html)}</div>
     <div class="history-wrap">
@@ -1835,6 +1890,112 @@ def export_to_html(
       }}
     }}
 
+    const FOCUS_OTA_KEY = "hpc_focus_ota";
+    const OTA_DISPLAY_NAMES = {{
+      agoda: "Agoda",
+      booking: "Booking.com",
+      trip: "Trip.com",
+    }};
+
+    function detectRowPlatKey(row) {{
+      if (row.dataset.plat) return row.dataset.plat;
+      const nameTxt = (row.querySelector(".ota-name")?.textContent || "").toLowerCase();
+      if (nameTxt.includes("agoda")) return "agoda";
+      if (nameTxt.includes("booking")) return "booking";
+      if (nameTxt.includes("trip")) return "trip";
+      return nameTxt;
+    }}
+
+    function parseRowNumericPrice(row) {{
+      if (row.dataset.price && !isNaN(Number(row.dataset.price))) {{
+        return Number(row.dataset.price);
+      }}
+      const txt = row.querySelector(".ota-price")?.textContent || "";
+      const digits = txt.replace(/[^0-9.]/g, "");
+      return digits ? Number(digits) : 0;
+    }}
+
+    function applyFocusPlatform(selectedPlat = null) {{
+      const selEl = document.getElementById("focus-ota-select");
+      const mode = selectedPlat || selEl?.value || localStorage.getItem(FOCUS_OTA_KEY) || "lowest";
+      if (selEl && selEl.value !== mode) selEl.value = mode;
+      localStorage.setItem(FOCUS_OTA_KEY, mode);
+
+      document.querySelectorAll("#cards-container .plan-box[data-target-key]").forEach((box) => {{
+        const winnerBadge = box.querySelector(".winner-plat");
+        const priceMain = box.querySelector(".price-main");
+        const roomSub = box.querySelector(".room-sub");
+        const otaList = box.querySelector(".ota-list");
+        if (!winnerBadge || !priceMain || !otaList) return;
+
+        if (!box.dataset.defaultWinnerText) {{
+          box.dataset.defaultWinnerText = winnerBadge.textContent || "";
+          box.dataset.defaultPriceText = priceMain.textContent || "";
+          box.dataset.defaultRoomText = roomSub ? (roomSub.textContent || "") : "";
+          box.dataset.defaultCurrentPrice = box.dataset.currentPrice || "0";
+        }}
+
+        const rows = Array.from(otaList.querySelectorAll(".ota-row"));
+        rows.forEach((r, i) => {{
+          if (!r.dataset.rank) r.dataset.rank = String(i);
+          r.classList.remove("is-focused");
+        }});
+
+        if (mode === "lowest") {{
+          winnerBadge.classList.remove("is-focused");
+          winnerBadge.textContent = box.dataset.defaultWinnerText;
+          priceMain.textContent = box.dataset.defaultPriceText;
+          if (roomSub) roomSub.textContent = box.dataset.defaultRoomText;
+          box.dataset.currentPrice = box.dataset.defaultCurrentPrice;
+          rows.sort((a, b) => Number(a.dataset.rank || 0) - Number(b.dataset.rank || 0))
+            .forEach((r) => otaList.appendChild(r));
+          updateTargetBox(box);
+          return;
+        }}
+
+        const matchRow = rows.find((r) => detectRowPlatKey(r) === mode);
+        const labelName = OTA_DISPLAY_NAMES[mode] || mode;
+        if (!matchRow) {{
+          winnerBadge.classList.remove("is-focused");
+          winnerBadge.textContent = `${{box.dataset.defaultWinnerText}}（無 ${{labelName}} 報價）`;
+          priceMain.textContent = box.dataset.defaultPriceText;
+          if (roomSub) roomSub.textContent = box.dataset.defaultRoomText;
+          box.dataset.currentPrice = box.dataset.defaultCurrentPrice;
+          rows.sort((a, b) => Number(a.dataset.rank || 0) - Number(b.dataset.rank || 0))
+            .forEach((r) => otaList.appendChild(r));
+          updateTargetBox(box);
+          return;
+        }}
+
+        const focusPrice = parseRowNumericPrice(matchRow);
+        const focusPriceText = matchRow.querySelector(".ota-price")?.textContent || box.dataset.defaultPriceText;
+        const focusRoom = matchRow.dataset.room || box.dataset.defaultRoomText;
+        const defaultNum = Number(box.dataset.defaultCurrentPrice || 0);
+
+        winnerBadge.classList.add("is-focused");
+        if (defaultNum > 0 && focusPrice > 0 && focusPrice <= defaultNum) {{
+          winnerBadge.textContent = `⭐ 特別關注：${{labelName}}（同時為最低價）`;
+        }} else {{
+          winnerBadge.textContent = `⭐ 特別關注：${{labelName}}（最低 ${{box.dataset.defaultPriceText}}）`;
+        }}
+        priceMain.textContent = focusPriceText;
+        if (roomSub) roomSub.textContent = focusRoom;
+        if (focusPrice > 0) box.dataset.currentPrice = String(focusPrice);
+
+        matchRow.classList.add("is-focused");
+        const others = rows
+          .filter((r) => r !== matchRow)
+          .sort((a, b) => Number(a.dataset.rank || 0) - Number(b.dataset.rank || 0));
+        otaList.appendChild(matchRow);
+        others.forEach((r) => otaList.appendChild(r));
+        updateTargetBox(box);
+      }});
+    }}
+
+    document.getElementById("focus-ota-select").addEventListener("change", (e) => {{
+      applyFocusPlatform(e.target.value);
+    }});
+
     async function loadUserDashboard(userId) {{
       activeUserId = userId;
       localStorage.setItem("hpc_active_user", userId);
@@ -1861,6 +2022,7 @@ def export_to_html(
         activeChartData = data.chart_payload || {{ labels: [], hotels: [], any: {{ overview: [], byHotel: {{}} }}, bf: {{ overview: [], byHotel: {{}} }} }};
         activeProfile = draftProfile || data.profile || {{ user_id: userId, hotels: [] }};
         bindTargetBoxes();
+        applyFocusPlatform();
         renderChartTabs();
         refreshCharts();
         renderManageForm(activeProfile);
