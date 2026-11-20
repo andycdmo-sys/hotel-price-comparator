@@ -1917,7 +1917,9 @@ def export_to_html(
 
     function applyFocusPlatform(selectedPlat = null) {{
       const selEl = document.getElementById("focus-ota-select");
-      const mode = selectedPlat || selEl?.value || localStorage.getItem(FOCUS_OTA_KEY) || "lowest";
+      const mode = selectedPlat !== null
+        ? selectedPlat
+        : (localStorage.getItem(FOCUS_OTA_KEY) || selEl?.value || "lowest");
       if (selEl && selEl.value !== mode) selEl.value = mode;
       localStorage.setItem(FOCUS_OTA_KEY, mode);
 
