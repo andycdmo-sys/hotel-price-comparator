@@ -1235,7 +1235,7 @@ def export_to_html(
       <h1 id="page-title">🏨 飯店每日比價看板</h1>
       <div id="page-subtitle" class="sub-info">條件：2 成人 + 1 兒童 (11歲) ｜ 幣別：TWD 含稅 ｜ 最後更新：{html.escape(updated_str)}</div>
       <div class="focus-ota-bar">
-        <label for="focus-ota-select" class="focus-ota-label">⭐ 最明顯顯示平台：</label>
+        <label for="focus-ota-select" class="focus-ota-label">⭐ 特別關注平台：</label>
         <select id="focus-ota-select" class="focus-ota-select">
           <option value="lowest">🏆 最低價優先（預設）</option>
           <option value="agoda">Agoda</option>
