@@ -45,7 +45,7 @@
       "room_guests": [],
       "room_type": "",
       "match_room_type": false,
-      "target_any": null,
+      "target_any": 2982,
       "target_bf": null
     },
     {
@@ -59,8 +59,8 @@
       "room_guests": [],
       "room_type": "",
       "match_room_type": false,
-      "target_any": null,
-      "target_bf": null
+      "target_any": 2066,
+      "target_bf": 2066
     },
     {
       "name": "艾斯汀納特飯店",
@@ -73,7 +73,7 @@
       "room_guests": [],
       "room_type": "",
       "match_room_type": false,
-      "target_any": null,
+      "target_any": 1957,
       "target_bf": null
     }
   ]
