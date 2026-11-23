@@ -626,6 +626,8 @@ def test_custom_room_guests_profile_and_ui_controls(tmp_path: Path) -> None:
     assert 'id="recent-users-section"' in html_content
     assert 'id="focus-ota-select"' in html_content
     assert 'id="cfg-notify-channel"' not in html_content
+    assert ".target-save-btn" in html_content
+    assert "clearTargetLocalOverrides" in html_content
     assert "applyFocusPlatform" in html_content
     assert "checkUserExists" in html_content
     assert "依現在分配的方式查詢" in html_content

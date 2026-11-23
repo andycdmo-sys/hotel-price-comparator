@@ -360,6 +360,7 @@ def _build_cards_html(
                 f'<div class="target-row">'
                 f'<span class="target-label">🎯 目標價</span>'
                 f'<input type="number" class="target-input" min="0" step="1" placeholder="未設定" value="{html.escape(target_val_attr)}">'
+                f'<button type="button" class="target-save-btn">💾 同步</button>'
                 f'<span class="target-status"></span>'
                 f'</div>'
                 f"</div>"
@@ -643,6 +644,25 @@ def export_to_html(
     }}
     .target-status.hit {{
       color: var(--accent);
+    }}
+    .target-save-btn {{
+      padding: 3px 8px;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      background: #f8fafc;
+      color: #475569;
+      font-size: 0.72rem;
+      font-weight: 600;
+      cursor: pointer;
+    }}
+    .target-save-btn.is-dirty {{
+      background: var(--primary);
+      border-color: var(--primary);
+      color: #ffffff;
+    }}
+    .target-save-btn:disabled {{
+      opacity: 0.6;
+      cursor: wait;
     }}
     .plan-title {{
       font-size: 0.82rem;
@@ -1292,14 +1312,39 @@ def export_to_html(
       }}
     }}
 
+    function clearTargetLocalOverrides(userId) {{
+      const prefix = userId ? `target:${{userId}}:` : "target:";
+      Object.keys(localStorage).forEach((k) => {{
+        if (k.startsWith(prefix)) localStorage.removeItem(k);
+      }});
+    }}
+
     function bindTargetBoxes() {{
       document.querySelectorAll(".plan-box[data-target-key]").forEach((box) => {{
         const key = targetStorageKey(box.dataset.targetKey);
         const legacyKey = "target:" + box.dataset.targetKey;
         const input = box.querySelector(".target-input");
-        const saved = localStorage.getItem(key) ?? localStorage.getItem(legacyKey);
-        if (saved !== null) {{
-          input.value = saved;
+        const saveBtn = box.querySelector(".target-save-btn");
+
+        // 雲端已有設定（含 draftProfile）時，優先以雲端為單一標準，不被本機舊暫存蓋掉
+        const [hotelName, planTitle] = (box.dataset.targetKey || "").split("||");
+        const isBfPlan = (planTitle || "").includes("含早餐");
+        let cloudVal = input.defaultValue;
+        if (activeProfile && Array.isArray(activeProfile.hotels)) {{
+          const matchedHotel = activeProfile.hotels.find((h) => h.name === hotelName);
+          if (matchedHotel) {{
+            const rawTarget = isBfPlan ? matchedHotel.target_bf : matchedHotel.target_any;
+            cloudVal = rawTarget !== null && rawTarget !== undefined && rawTarget !== "" ? String(rawTarget) : "";
+          }}
+        }}
+        if (cloudVal !== "") {{
+          input.value = cloudVal;
+          localStorage.removeItem(key);
+        }} else {{
+          const saved = localStorage.getItem(key) ?? localStorage.getItem(legacyKey);
+          if (saved !== null) {{
+            input.value = saved;
+          }}
         }}
         updateTargetBox(box);
         input.addEventListener("input", () => {{
@@ -1308,9 +1353,44 @@ def export_to_html(
           }} else {{
             localStorage.setItem(key, input.value);
           }}
+          if (saveBtn) {{
+            saveBtn.textContent = "💾 同步";
+            saveBtn.classList.add("is-dirty");
+          }}
           updateTargetBox(box);
           refreshCharts();
         }});
+        if (saveBtn) {{
+          saveBtn.addEventListener("click", async () => {{
+            const valStr = input.value.trim();
+            const parsedNum = valStr ? Number(valStr) : null;
+            document.querySelectorAll("#manage-hotels-list .hotel-edit-row").forEach((row) => {{
+              if ((row.querySelector(".h-name")?.value || "").trim() === hotelName) {{
+                const targetEl = row.querySelector(isBfPlan ? ".h-tbf" : ".h-tany");
+                if (targetEl) targetEl.value = parsedNum !== null && parsedNum > 0 ? String(parsedNum) : "";
+              }}
+            }});
+            if (activeProfile && Array.isArray(activeProfile.hotels)) {{
+              activeProfile.hotels.forEach((h) => {{
+                if (h.name === hotelName) {{
+                  if (isBfPlan) h.target_bf = parsedNum;
+                  else h.target_any = parsedNum;
+                }}
+              }});
+            }}
+            clearTargetLocalOverrides(activeUserId);
+            saveBtn.disabled = true;
+            saveBtn.textContent = "同步中...";
+            try {{
+              const profileObj = collectProfileFromForm();
+              await syncProfileToCloud(profileObj, false);
+              saveBtn.classList.remove("is-dirty");
+              saveBtn.textContent = "已同步 ✓";
+            }} finally {{
+              saveBtn.disabled = false;
+            }}
+          }});
+        }}
       }});
     }}
 
@@ -2164,6 +2244,7 @@ def export_to_html(
         }});
         const resData = await resp.json().catch(() => ({{}}));
         if (!resp.ok || resData.ok === false) throw new Error(resData.error || "SYNC_FAIL");
+        clearTargetLocalOverrides(activeUserId);
         statusEl.textContent = clearing
           ? "✅ 已清空此代號於本機與 GitHub 雲端的所有資料！（約 1～2 分鐘後生效）"
           : "✅ 已儲存至 GitHub 並啟動雲端抓價！請約 1～2 分鐘後重新整理網頁查看價格。";
