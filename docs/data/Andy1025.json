@@ -1,9 +1,9 @@
 {
   "user_id": "Andy1025",
   "title": "Andy1025 的飯店比價看板",
-  "subtitle": "條件：2 成人 + 1 兒童 (11歲) ｜ 幣別：TWD 含稅 ｜ 最後更新：2026-11-23 20:04:41",
-  "updated_at": "2026-11-23 20:04:41",
-  "cards_html": "<section class=\"hotel-card\"><div class=\"date-pill\">2027-01-26 ～ 2027-01-27</div><h2 class=\"hotel-name\">沖繩餘家弗飯店</h2><div class=\"plans-grid\"><div class=\"plan-box\" data-target-key=\"沖繩餘家弗飯店||不限早餐（最低價）\" data-current-price=\"3056\"><div class=\"plan-title\">不限早餐（最低價）</div><div class=\"winner-row\"><span class=\"winner-plat\">🏆 Trip.com (TW站) 最低</span></div><div class=\"price-main\">TWD 3,056</div><div class=\"room-sub\">標準雙床房</div><div class=\"meta-sub\">歷史最低：TWD 3,056 <span class=\"badge low\">★ 目前即歷史最低</span></div><div class=\"ota-list\"><div class=\"ota-row is-best\" data-plat=\"trip\" data-price=\"3056\" data-currency=\"TWD\" data-room=\"標準雙床房\" data-rank=\"0\"><span class=\"ota-name\">Trip.com (TW站)</span><span class=\"ota-price\">TWD 3,056</span><a class=\"ota-link\" href=\"https://tw.trip.com/hotels/list?flexType=1&amp;cityId=35747&amp;provinceId=11059&amp;districtId=0&amp;countryId=78&amp;searchWord=%E6%B2%96%E7%B9%A9%E9%A4%98%E5%AE%B6%E5%BC%97&amp;searchType=H&amp;optionId=704038&amp;searchValue=31%7C704038*31*704038&amp;checkin=2027-01-26&amp;checkout=2027-01-27&amp;crn=1&amp;adult=2&amp;children=1&amp;ages=11&amp;curr=TWD&amp;locale=zh-TW\" target=\"_blank\" rel=\"noopener\">前往</a></div><div class=\"ota-row\" data-plat=\"agoda\" data-price=\"3070\" data-currency=\"TWD\" data-room=\"Standard Twin Room with Balcony Non-Smoking\" data-rank=\"1\"><span class=\"ota-name\">Agoda</span><span class=\"ota-price\">TWD 3,070</span><a class=\"ota-link\" href=\"https://www.agoda.com/zh-tw/hotel-yugaf-inn-okinawa/hotel/okinawa-main-island-jp.html?checkIn=2027-01-26&amp;los=1&amp;rooms=1&amp;adults=2&amp;children=1&amp;childages=11&amp;currencyCode=TWD\" target=\"_blank\" rel=\"noopener\">前往</a></div><div class=\"ota-row\" data-plat=\"booking\" data-price=\"3145\" data-currency=\"TWD\" data-room=\"標準雙床房－禁菸\" data-rank=\"2\"><span class=\"ota-name\">Booking.com</span><span class=\"ota-price\">TWD 3,145</span><a class=\"ota-link\" href=\"https://www.booking.com/hotel/jp/yugafu-inn-okinawa.zh-tw.html?checkin=2027-01-26&amp;checkout=2027-01-27&amp;group_adults=2&amp;no_rooms=1&amp;group_children=1&amp;age=11&amp;selected_currency=TWD&amp;lang=zh-tw\" target=\"_blank\" rel=\"noopener\">前往</a></div></div><div class=\"target-row\"><span class=\"target-label\">🎯 目標價</span><input type=\"number\" class=\"target-input\" min=\"0\" step=\"1\" placeholder=\"未設定\" value=\"\"><button type=\"button\" class=\"target-save-btn\">💾 同步</button><span class=\"target-status\"></span></div></div><div class=\"plan-box\" data-target-key=\"沖繩餘家弗飯店||含早餐方案\" data-current-price=\"4147\"><div class=\"plan-title\">含早餐方案</div><div class=\"winner-row\"><span class=\"winner-plat\">🏆 Trip.com (TW站) 最低</span></div><div class=\"price-main\">TWD 4,147</div><div class=\"room-sub\">標準雙床房</div><div class=\"meta-sub\">歷史最低：TWD 4,147 <span class=\"badge low\">★ 目前即歷史最低</span></div><div class=\"ota-list\"><div class=\"ota-row is-best\" data-plat=\"trip\" data-price=\"4147\" data-currency=\"TWD\" data-room=\"標準雙床房\" data-rank=\"0\"><span class=\"ota-name\">Trip.com (TW站)</span><span class=\"ota-price\">TWD 4,147</span><a class=\"ota-link\" href=\"https://tw.trip.com/hotels/list?flexType=1&amp;cityId=35747&amp;provinceId=11059&amp;districtId=0&amp;countryId=78&amp;searchWord=%E6%B2%96%E7%B9%A9%E9%A4%98%E5%AE%B6%E5%BC%97&amp;searchType=H&amp;optionId=704038&amp;searchValue=31%7C704038*31*704038&amp;checkin=2027-01-26&amp;checkout=2027-01-27&amp;crn=1&amp;adult=2&amp;children=1&amp;ages=11&amp;listFilters=5~1*5*1&amp;curr=TWD&amp;locale=zh-TW\" target=\"_blank\" rel=\"noopener\">前往</a></div><div class=\"ota-row\" data-plat=\"agoda\" data-price=\"4167\" data-currency=\"TWD\" data-room=\"Standard Twin Room with Balcony Non-Smoking\" data-rank=\"1\"><span class=\"ota-name\">Agoda</span><span class=\"ota-price\">TWD 4,167</span><a class=\"ota-link\" href=\"https://www.agoda.com/zh-tw/hotel-yugaf-inn-okinawa/hotel/okinawa-main-island-jp.html?checkIn=2027-01-26&amp;los=1&amp;rooms=1&amp;adults=2&amp;children=1&amp;childages=11&amp;currencyCode=TWD\" target=\"_blank\" rel=\"noopener\">前往</a></div><div class=\"ota-row\" data-plat=\"booking\" data-price=\"4267\" data-currency=\"TWD\" data-room=\"標準雙床房－禁菸\" data-rank=\"2\"><span class=\"ota-name\">Booking.com</span><span class=\"ota-price\">TWD 4,267</span><a class=\"ota-link\" href=\"https://www.booking.com/hotel/jp/yugafu-inn-okinawa.zh-tw.html?checkin=2027-01-26&amp;checkout=2027-01-27&amp;group_adults=2&amp;no_rooms=1&amp;group_children=1&amp;age=11&amp;selected_currency=TWD&amp;lang=zh-tw\" target=\"_blank\" rel=\"noopener\">前往</a></div></div><div class=\"target-row\"><span class=\"target-label\">🎯 目標價</span><input type=\"number\" class=\"target-input\" min=\"0\" step=\"1\" placeholder=\"未設定\" value=\"4193\"><button type=\"button\" class=\"target-save-btn\">💾 同步</button><span class=\"target-status\"></span></div></div></div></section><section class=\"hotel-card\"><div class=\"date-pill\">2027-01-27 ～ 2027-01-28</div><h2 class=\"hotel-name\">REF沖繩體育館by Vessel酒店集團</h2><div class=\"plans-grid\"><div class=\"plan-box\" data-target-key=\"REF沖繩體育館by Vessel酒店集團||不限早餐（最低價）\" data-current-price=\"3256\"><div class=\"plan-title\">不限早餐（最低價）</div><div class=\"winner-row\"><span class=\"winner-plat\">🏆 Trip.com (TW站) 最低</span></div><div class=\"price-main\">TWD 3,256</div><div class=\"room-sub\">標準房-帶淋浴設施（禁菸）</div><div class=\"meta-sub\">歷史最低：TWD 3,243 <span class=\"badge\">比最低高 TWD 13</span></div><div class=\"ota-list\"><div class=\"ota-row is-best\" data-plat=\"trip\" data-price=\"3256\" data-currency=\"TWD\" data-room=\"標準房-帶淋浴設施（禁菸）\" data-rank=\"0\"><span class=\"ota-name\">Trip.com (TW站)</span><span class=\"ota-price\">TWD 3,256</span><a class=\"ota-link\" href=\"https://tw.trip.com/hotels/list?flexType=1&amp;cityId=35747&amp;provinceId=11059&amp;districtId=0&amp;countryId=78&amp;searchWord=REF%E6%B2%96%E7%B9%A9%E9%AB%94%E8%82%B2%E9%A4%A8by%20Vessel%E9%85%92%E5%BA%97%E9%9B%86%E5%9C%98&amp;searchType=H&amp;optionId=106709440&amp;searchValue=31%7C106709440*31*106709440&amp;checkin=2027-01-27&amp;checkout=2027-01-28&amp;crn=1&amp;adult=2&amp;children=1&amp;ages=11&amp;curr=TWD&amp;locale=zh-TW\" target=\"_blank\" rel=\"noopener\">前往</a></div><div class=\"ota-row\" data-plat=\"agoda\" data-price=\"5869\" data-currency=\"TWD\" data-room=\"豪華三人房\" data-rank=\"1\"><span class=\"ota-name\">Agoda</span><span class=\"ota-price\">TWD 5,869</span><a class=\"ota-link\" href=\"https://www.agoda.com/zh-tw/ref-okinawa-arena-by-vessel-hotels/hotel/okinawa-main-island-jp.html?checkIn=2027-01-27&amp;los=1&amp;rooms=1&amp;adults=2&amp;children=1&amp;childages=11&amp;currencyCode=TWD\" target=\"_blank\" rel=\"noopener\">前往</a></div><div class=\"ota-row\" data-plat=\"booking\" data-price=\"6998\" data-currency=\"TWD\" data-room=\"豪華三人房\" data-rank=\"2\"><span class=\"ota-name\">Booking.com</span><span class=\"ota-price\">TWD 6,998</span><a class=\"ota-link\" href=\"https://www.booking.com/hotel/jp/rehuchong-nawa-arinaby-betuseruhoteruzu.zh-tw.html?checkin=2027-01-27&amp;checkout=2027-01-28&amp;group_adults=2&amp;no_rooms=1&amp;group_children=1&amp;age=11&amp;selected_currency=TWD&amp;lang=zh-tw\" target=\"_blank\" rel=\"noopener\">前往</a></div></div><div class=\"target-row\"><span class=\"target-label\">🎯 目標價</span><input type=\"number\" class=\"target-input\" min=\"0\" step=\"1\" placeholder=\"未設定\" value=\"2982\"><button type=\"button\" class=\"target-save-btn\">💾 同步</button><span class=\"target-status\"></span></div></div><div class=\"plan-box\" data-target-key=\"REF沖繩體育館by Vessel酒店集團||含早餐方案\" data-current-price=\"3907\"><div class=\"plan-title\">含早餐方案</div><div class=\"winner-row\"><span class=\"winner-plat\">🏆 Trip.com (TW站) 最低</span></div><div class=\"price-main\">TWD 3,907</div><div class=\"room-sub\">標準房-帶淋浴設施（禁菸）</div><div class=\"meta-sub\">歷史最低：TWD 3,892 <span class=\"badge\">比最低高 TWD 15</span></div><div class=\"ota-list\"><div class=\"ota-row is-best\" data-plat=\"trip\" data-price=\"3907\" data-currency=\"TWD\" data-room=\"標準房-帶淋浴設施（禁菸）\" data-rank=\"0\"><span class=\"ota-name\">Trip.com (TW站)</span><span class=\"ota-price\">TWD 3,907</span><a class=\"ota-link\" href=\"https://tw.trip.com/hotels/list?flexType=1&amp;cityId=35747&amp;provinceId=11059&amp;districtId=0&amp;countryId=78&amp;searchWord=REF%E6%B2%96%E7%B9%A9%E9%AB%94%E8%82%B2%E9%A4%A8by%20Vessel%E9%85%92%E5%BA%97%E9%9B%86%E5%9C%98&amp;searchType=H&amp;optionId=106709440&amp;searchValue=31%7C106709440*31*106709440&amp;checkin=2027-01-27&amp;checkout=2027-01-28&amp;crn=1&amp;adult=2&amp;children=1&amp;ages=11&amp;listFilters=5~1*5*1&amp;curr=TWD&amp;locale=zh-TW\" target=\"_blank\" rel=\"noopener\">前往</a></div><div class=\"ota-row\" data-plat=\"agoda\" data-price=\"7044\" data-currency=\"TWD\" data-room=\"豪華三人房\" data-rank=\"1\"><span class=\"ota-name\">Agoda</span><span class=\"ota-price\">TWD 7,044</span><a class=\"ota-link\" href=\"https://www.agoda.com/zh-tw/ref-okinawa-arena-by-vessel-hotels/hotel/okinawa-main-island-jp.html?checkIn=2027-01-27&amp;los=1&amp;rooms=1&amp;adults=2&amp;children=1&amp;childages=11&amp;currencyCode=TWD\" target=\"_blank\" rel=\"noopener\">前往</a></div><div class=\"ota-row\" data-plat=\"booking\" data-price=\"8397\" data-currency=\"TWD\" data-room=\"豪華三人房\" data-rank=\"2\"><span class=\"ota-name\">Booking.com</span><span class=\"ota-price\">TWD 8,397</span><a class=\"ota-link\" href=\"https://www.booking.com/hotel/jp/rehuchong-nawa-arinaby-betuseruhoteruzu.zh-tw.html?checkin=2027-01-27&amp;checkout=2027-01-28&amp;group_adults=2&amp;no_rooms=1&amp;group_children=1&amp;age=11&amp;selected_currency=TWD&amp;lang=zh-tw\" target=\"_blank\" rel=\"noopener\">前往</a></div></div><div class=\"target-row\"><span class=\"target-label\">🎯 目標價</span><input type=\"number\" class=\"target-input\" min=\"0\" step=\"1\" placeholder=\"未設定\" value=\"\"><button type=\"button\" class=\"target-save-btn\">💾 同步</button><span class=\"target-status\"></span></div></div></div></section><section class=\"hotel-card\"><div class=\"date-pill\">2027-01-28 ～ 2027-01-29</div><h2 class=\"hotel-name\">B/C 那霸飯店</h2><div class=\"plans-grid\"><div class=\"plan-box\" data-target-key=\"B/C 那霸飯店||不限早餐（最低價）\" data-current-price=\"2299\"><div class=\"plan-title\">不限早餐（最低價）</div><div class=\"winner-row\"><span class=\"winner-plat\">🏆 Trip.com (TW站) 最低</span></div><div class=\"price-main\">TWD 2,299</div><div class=\"room-sub\">大床房帶梳化床無煙房（不含租車）</div><div class=\"meta-sub\">歷史最低：TWD 2,291 <span class=\"badge\">比最低高 TWD 8</span></div><div class=\"ota-list\"><div class=\"ota-row is-best\" data-plat=\"trip\" data-price=\"2299\" data-currency=\"TWD\" data-room=\"大床房帶梳化床無煙房（不含租車）\" data-rank=\"0\"><span class=\"ota-name\">Trip.com (TW站)</span><span class=\"ota-price\">TWD 2,299</span><a class=\"ota-link\" href=\"https://tw.trip.com/hotels/list?flexType=1&amp;cityId=35747&amp;provinceId=11059&amp;districtId=0&amp;countryId=78&amp;searchWord=B/C%20%E9%82%A3%E9%9C%B8&amp;searchType=H&amp;optionId=120097372&amp;searchValue=31%7C120097372*31*120097372&amp;checkin=2027-01-28&amp;checkout=2027-01-29&amp;crn=1&amp;adult=2&amp;children=1&amp;ages=11&amp;curr=TWD&amp;locale=zh-TW\" target=\"_blank\" rel=\"noopener\">前往</a></div><div class=\"ota-row\" data-plat=\"agoda\" data-price=\"2773\" data-currency=\"TWD\" data-room=\"客房(大床+沙發床) - 無租車服務\" data-rank=\"1\"><span class=\"ota-name\">Agoda</span><span class=\"ota-price\">TWD 2,773</span><a class=\"ota-link\" href=\"https://www.agoda.com/zh-tw/b-c-hotel/hotel/okinawa-main-island-jp.html?checkIn=2027-01-28&amp;los=1&amp;rooms=1&amp;adults=2&amp;children=1&amp;childages=11&amp;currencyCode=TWD\" target=\"_blank\" rel=\"noopener\">前往</a></div></div><div class=\"target-row\"><span class=\"target-label\">🎯 目標價</span><input type=\"number\" class=\"target-input\" min=\"0\" step=\"1\" placeholder=\"未設定\" value=\"2066\"><button type=\"button\" class=\"target-save-btn\">💾 同步</button><span class=\"target-status\"></span></div></div><div class=\"plan-box\" data-target-key=\"B/C 那霸飯店||含早餐方案\" data-current-price=\"2299\"><div class=\"plan-title\">含早餐方案</div><div class=\"winner-row\"><span class=\"winner-plat\">🏆 Trip.com (TW站) 最低</span></div><div class=\"price-main\">TWD 2,299</div><div class=\"room-sub\">大床房帶梳化床無煙房（不含租車）</div><div class=\"meta-sub\">歷史最低：TWD 2,291 <span class=\"badge\">比最低高 TWD 8</span></div><div class=\"ota-list\"><div class=\"ota-row is-best\" data-plat=\"trip\" data-price=\"2299\" data-currency=\"TWD\" data-room=\"大床房帶梳化床無煙房（不含租車）\" data-rank=\"0\"><span class=\"ota-name\">Trip.com (TW站)</span><span class=\"ota-price\">TWD 2,299</span><a class=\"ota-link\" href=\"https://tw.trip.com/hotels/list?flexType=1&amp;cityId=35747&amp;provinceId=11059&amp;districtId=0&amp;countryId=78&amp;searchWord=B/C%20%E9%82%A3%E9%9C%B8&amp;searchType=H&amp;optionId=120097372&amp;searchValue=31%7C120097372*31*120097372&amp;checkin=2027-01-28&amp;checkout=2027-01-29&amp;crn=1&amp;adult=2&amp;children=1&amp;ages=11&amp;listFilters=5~1*5*1&amp;curr=TWD&amp;locale=zh-TW\" target=\"_blank\" rel=\"noopener\">前往</a></div><div class=\"ota-row\" data-plat=\"agoda\" data-price=\"3975\" data-currency=\"TWD\" data-room=\"加大雙人床房\" data-rank=\"1\"><span class=\"ota-name\">Agoda</span><span class=\"ota-price\">TWD 3,975</span><a class=\"ota-link\" href=\"https://www.agoda.com/zh-tw/b-c-hotel/hotel/okinawa-main-island-jp.html?checkIn=2027-01-28&amp;los=1&amp;rooms=1&amp;adults=2&amp;children=1&amp;childages=11&amp;currencyCode=TWD\" target=\"_blank\" rel=\"noopener\">前往</a></div></div><div class=\"target-row\"><span class=\"target-label\">🎯 目標價</span><input type=\"number\" class=\"target-input\" min=\"0\" step=\"1\" placeholder=\"未設定\" value=\"2066\"><button type=\"button\" class=\"target-save-btn\">💾 同步</button><span class=\"target-status\"></span></div></div></div></section><section class=\"hotel-card\"><div class=\"date-pill\">2027-01-29 ～ 2027-01-30</div><h2 class=\"hotel-name\">艾斯汀納特飯店</h2><div class=\"plans-grid\"><div class=\"plan-box\" data-target-key=\"艾斯汀納特飯店||不限早餐（最低價）\" data-current-price=\"1963\"><div class=\"plan-title\">不限早餐（最低價）</div><div class=\"winner-row\"><span class=\"winner-plat\">🏆 Booking.com 最低</span></div><div class=\"price-main\">TWD 1,963</div><div class=\"room-sub\">標準雙人房</div><div class=\"meta-sub\">歷史最低：TWD 1,951 <span class=\"badge\">比最低高 TWD 12</span></div><div class=\"ota-list\"><div class=\"ota-row is-best\" data-plat=\"booking\" data-price=\"1963\" data-currency=\"TWD\" data-room=\"標準雙人房\" data-rank=\"0\"><span class=\"ota-name\">Booking.com</span><span class=\"ota-price\">TWD 1,963</span><a class=\"ota-link\" href=\"https://www.booking.com/hotel/jp/estination.zh-tw.html?checkin=2027-01-29&amp;checkout=2027-01-30&amp;group_adults=2&amp;no_rooms=1&amp;group_children=1&amp;age=11&amp;selected_currency=TWD&amp;lang=zh-tw\" target=\"_blank\" rel=\"noopener\">前往</a></div><div class=\"ota-row\" data-plat=\"trip\" data-price=\"2125\" data-currency=\"TWD\" data-room=\"標準雙人床房\" data-rank=\"1\"><span class=\"ota-name\">Trip.com (TW站)</span><span class=\"ota-price\">TWD 2,125</span><a class=\"ota-link\" href=\"https://tw.trip.com/hotels/list?flexType=1&amp;cityId=35747&amp;provinceId=11059&amp;districtId=0&amp;countryId=78&amp;searchWord=%E8%89%BE%E6%96%AF%E6%B1%80%E7%B4%8D%E7%89%B9&amp;searchType=H&amp;optionId=2845951&amp;searchValue=31%7C2845951*31*2845951&amp;checkin=2027-01-29&amp;checkout=2027-01-30&amp;crn=1&amp;adult=2&amp;children=1&amp;ages=11&amp;curr=TWD&amp;locale=zh-TW\" target=\"_blank\" rel=\"noopener\">前往</a></div><div class=\"ota-row\" data-plat=\"agoda\" data-price=\"2758\" data-currency=\"TWD\" data-room=\"劇院房(兩床)\" data-rank=\"2\"><span class=\"ota-name\">Agoda</span><span class=\"ota-price\">TWD 2,758</span><a class=\"ota-link\" href=\"https://www.agoda.com/zh-tw/estinate-hotel/hotel/okinawa-main-island-jp.html?checkIn=2027-01-29&amp;los=1&amp;rooms=1&amp;adults=2&amp;children=1&amp;childages=11&amp;currencyCode=TWD\" target=\"_blank\" rel=\"noopener\">前往</a></div></div><div class=\"target-row\"><span class=\"target-label\">🎯 目標價</span><input type=\"number\" class=\"target-input\" min=\"0\" step=\"1\" placeholder=\"未設定\" value=\"1957\"><button type=\"button\" class=\"target-save-btn\">💾 同步</button><span class=\"target-status\"></span></div></div><div class=\"plan-box\" data-target-key=\"艾斯汀納特飯店||含早餐方案\" data-current-price=\"2429\"><div class=\"plan-title\">含早餐方案</div><div class=\"winner-row\"><span class=\"winner-plat\">🏆 Trip.com (TW站) 最低</span></div><div class=\"price-main\">TWD 2,429</div><div class=\"room-sub\">標準雙人床房</div><div class=\"meta-sub\">歷史最低：TWD 2,415 <span class=\"badge\">比最低高 TWD 14</span></div><div class=\"ota-list\"><div class=\"ota-row is-best\" data-plat=\"trip\" data-price=\"2429\" data-currency=\"TWD\" data-room=\"標準雙人床房\" data-rank=\"0\"><span class=\"ota-name\">Trip.com (TW站)</span><span class=\"ota-price\">TWD 2,429</span><a class=\"ota-link\" href=\"https://tw.trip.com/hotels/list?flexType=1&amp;cityId=35747&amp;provinceId=11059&amp;districtId=0&amp;countryId=78&amp;searchWord=%E8%89%BE%E6%96%AF%E6%B1%80%E7%B4%8D%E7%89%B9&amp;searchType=H&amp;optionId=2845951&amp;searchValue=31%7C2845951*31*2845951&amp;checkin=2027-01-29&amp;checkout=2027-01-30&amp;crn=1&amp;adult=2&amp;children=1&amp;ages=11&amp;listFilters=5~1*5*1&amp;curr=TWD&amp;locale=zh-TW\" target=\"_blank\" rel=\"noopener\">前往</a></div><div class=\"ota-row\" data-plat=\"booking\" data-price=\"2431\" data-currency=\"TWD\" data-room=\"標準雙人房\" data-rank=\"1\"><span class=\"ota-name\">Booking.com</span><span class=\"ota-price\">TWD 2,431</span><a class=\"ota-link\" href=\"https://www.booking.com/hotel/jp/estination.zh-tw.html?checkin=2027-01-29&amp;checkout=2027-01-30&amp;group_adults=2&amp;no_rooms=1&amp;group_children=1&amp;age=11&amp;selected_currency=TWD&amp;lang=zh-tw\" target=\"_blank\" rel=\"noopener\">前往</a></div><div class=\"ota-row\" data-plat=\"agoda\" data-price=\"3179\" data-currency=\"TWD\" data-room=\"劇院房(兩床)\" data-rank=\"2\"><span class=\"ota-name\">Agoda</span><span class=\"ota-price\">TWD 3,179</span><a class=\"ota-link\" href=\"https://www.agoda.com/zh-tw/estinate-hotel/hotel/okinawa-main-island-jp.html?checkIn=2027-01-29&amp;los=1&amp;rooms=1&amp;adults=2&amp;children=1&amp;childages=11&amp;currencyCode=TWD\" target=\"_blank\" rel=\"noopener\">前往</a></div></div><div class=\"target-row\"><span class=\"target-label\">🎯 目標價</span><input type=\"number\" class=\"target-input\" min=\"0\" step=\"1\" placeholder=\"未設定\" value=\"\"><button type=\"button\" class=\"target-save-btn\">💾 同步</button><span class=\"target-status\"></span></div></div></div></section>",
+  "subtitle": "條件：2 成人 + 1 兒童 (11歲) ｜ 幣別：TWD 含稅 ｜ 最後更新：2026-11-24 08:04:39",
+  "updated_at": "2026-11-24 08:04:39",
+  "cards_html": "<section class=\"hotel-card\"><div class=\"date-pill\">2027-01-26 ～ 2027-01-27</div><h2 class=\"hotel-name\">沖繩餘家弗飯店</h2><div class=\"plans-grid\"><div class=\"plan-box\" data-target-key=\"沖繩餘家弗飯店||不限早餐（最低價）\" data-current-price=\"3050\"><div class=\"plan-title\">不限早餐（最低價）</div><div class=\"winner-row\"><span class=\"winner-plat\">🏆 Agoda 最低</span></div><div class=\"price-main\">TWD 3,050</div><div class=\"room-sub\">Standard Twin Room with Balcony Non-Smoking</div><div class=\"meta-sub\">歷史最低：TWD 3,050 <span class=\"badge low\">★ 目前即歷史最低</span></div><div class=\"ota-list\"><div class=\"ota-row is-best\" data-plat=\"agoda\" data-price=\"3050\" data-currency=\"TWD\" data-room=\"Standard Twin Room with Balcony Non-Smoking\" data-rank=\"0\"><span class=\"ota-name\">Agoda</span><span class=\"ota-price\">TWD 3,050</span><a class=\"ota-link\" href=\"https://www.agoda.com/zh-tw/hotel-yugaf-inn-okinawa/hotel/okinawa-main-island-jp.html?checkIn=2027-01-26&amp;los=1&amp;rooms=1&amp;adults=2&amp;children=1&amp;childages=11&amp;currencyCode=TWD\" target=\"_blank\" rel=\"noopener\">前往</a></div><div class=\"ota-row\" data-plat=\"trip\" data-price=\"3059\" data-currency=\"TWD\" data-room=\"標準雙床房\" data-rank=\"1\"><span class=\"ota-name\">Trip.com (TW站)</span><span class=\"ota-price\">TWD 3,059</span><a class=\"ota-link\" href=\"https://tw.trip.com/hotels/list?flexType=1&amp;cityId=35747&amp;provinceId=11059&amp;districtId=0&amp;countryId=78&amp;searchWord=%E6%B2%96%E7%B9%A9%E9%A4%98%E5%AE%B6%E5%BC%97&amp;searchType=H&amp;optionId=704038&amp;searchValue=31%7C704038*31*704038&amp;checkin=2027-01-26&amp;checkout=2027-01-27&amp;crn=1&amp;adult=2&amp;children=1&amp;ages=11&amp;curr=TWD&amp;locale=zh-TW\" target=\"_blank\" rel=\"noopener\">前往</a></div><div class=\"ota-row\" data-plat=\"booking\" data-price=\"3125\" data-currency=\"TWD\" data-room=\"標準雙床房－禁菸\" data-rank=\"2\"><span class=\"ota-name\">Booking.com</span><span class=\"ota-price\">TWD 3,125</span><a class=\"ota-link\" href=\"https://www.booking.com/hotel/jp/yugafu-inn-okinawa.zh-tw.html?checkin=2027-01-26&amp;checkout=2027-01-27&amp;group_adults=2&amp;no_rooms=1&amp;group_children=1&amp;age=11&amp;selected_currency=TWD&amp;lang=zh-tw\" target=\"_blank\" rel=\"noopener\">前往</a></div></div><div class=\"target-row\"><span class=\"target-label\">🎯 目標價</span><input type=\"number\" class=\"target-input\" min=\"0\" step=\"1\" placeholder=\"未設定\" value=\"\"><button type=\"button\" class=\"target-save-btn\">💾 同步</button><span class=\"target-status\"></span></div></div><div class=\"plan-box\" data-target-key=\"沖繩餘家弗飯店||含早餐方案\" data-current-price=\"4141\"><div class=\"plan-title\">含早餐方案</div><div class=\"winner-row\"><span class=\"winner-plat\">🏆 Agoda 最低</span></div><div class=\"price-main\">TWD 4,141</div><div class=\"room-sub\">Standard Twin Room with Balcony Non-Smoking</div><div class=\"meta-sub\">歷史最低：TWD 4,141 <span class=\"badge low\">★ 目前即歷史最低</span></div><div class=\"ota-list\"><div class=\"ota-row is-best\" data-plat=\"agoda\" data-price=\"4141\" data-currency=\"TWD\" data-room=\"Standard Twin Room with Balcony Non-Smoking\" data-rank=\"0\"><span class=\"ota-name\">Agoda</span><span class=\"ota-price\">TWD 4,141</span><a class=\"ota-link\" href=\"https://www.agoda.com/zh-tw/hotel-yugaf-inn-okinawa/hotel/okinawa-main-island-jp.html?checkIn=2027-01-26&amp;los=1&amp;rooms=1&amp;adults=2&amp;children=1&amp;childages=11&amp;currencyCode=TWD\" target=\"_blank\" rel=\"noopener\">前往</a></div><div class=\"ota-row\" data-plat=\"trip\" data-price=\"4151\" data-currency=\"TWD\" data-room=\"標準雙床房\" data-rank=\"1\"><span class=\"ota-name\">Trip.com (TW站)</span><span class=\"ota-price\">TWD 4,151</span><a class=\"ota-link\" href=\"https://tw.trip.com/hotels/list?flexType=1&amp;cityId=35747&amp;provinceId=11059&amp;districtId=0&amp;countryId=78&amp;searchWord=%E6%B2%96%E7%B9%A9%E9%A4%98%E5%AE%B6%E5%BC%97&amp;searchType=H&amp;optionId=704038&amp;searchValue=31%7C704038*31*704038&amp;checkin=2027-01-26&amp;checkout=2027-01-27&amp;crn=1&amp;adult=2&amp;children=1&amp;ages=11&amp;listFilters=5~1*5*1&amp;curr=TWD&amp;locale=zh-TW\" target=\"_blank\" rel=\"noopener\">前往</a></div><div class=\"ota-row\" data-plat=\"booking\" data-price=\"4240\" data-currency=\"TWD\" data-room=\"標準雙床房－禁菸\" data-rank=\"2\"><span class=\"ota-name\">Booking.com</span><span class=\"ota-price\">TWD 4,240</span><a class=\"ota-link\" href=\"https://www.booking.com/hotel/jp/yugafu-inn-okinawa.zh-tw.html?checkin=2027-01-26&amp;checkout=2027-01-27&amp;group_adults=2&amp;no_rooms=1&amp;group_children=1&amp;age=11&amp;selected_currency=TWD&amp;lang=zh-tw\" target=\"_blank\" rel=\"noopener\">前往</a></div></div><div class=\"target-row\"><span class=\"target-label\">🎯 目標價</span><input type=\"number\" class=\"target-input\" min=\"0\" step=\"1\" placeholder=\"未設定\" value=\"4193\"><button type=\"button\" class=\"target-save-btn\">💾 同步</button><span class=\"target-status\"></span></div></div></div></section><section class=\"hotel-card\"><div class=\"date-pill\">2027-01-27 ～ 2027-01-28</div><h2 class=\"hotel-name\">REF沖繩體育館by Vessel酒店集團</h2><div class=\"plans-grid\"><div class=\"plan-box\" data-target-key=\"REF沖繩體育館by Vessel酒店集團||不限早餐（最低價）\" data-current-price=\"3259\"><div class=\"plan-title\">不限早餐（最低價）</div><div class=\"winner-row\"><span class=\"winner-plat\">🏆 Trip.com (TW站) 最低</span></div><div class=\"price-main\">TWD 3,259</div><div class=\"room-sub\">標準房-帶淋浴設施（禁菸）</div><div class=\"meta-sub\">歷史最低：TWD 3,243 <span class=\"badge\">比最低高 TWD 16</span></div><div class=\"ota-list\"><div class=\"ota-row is-best\" data-plat=\"trip\" data-price=\"3259\" data-currency=\"TWD\" data-room=\"標準房-帶淋浴設施（禁菸）\" data-rank=\"0\"><span class=\"ota-name\">Trip.com (TW站)</span><span class=\"ota-price\">TWD 3,259</span><a class=\"ota-link\" href=\"https://tw.trip.com/hotels/list?flexType=1&amp;cityId=35747&amp;provinceId=11059&amp;districtId=0&amp;countryId=78&amp;searchWord=REF%E6%B2%96%E7%B9%A9%E9%AB%94%E8%82%B2%E9%A4%A8by%20Vessel%E9%85%92%E5%BA%97%E9%9B%86%E5%9C%98&amp;searchType=H&amp;optionId=106709440&amp;searchValue=31%7C106709440*31*106709440&amp;checkin=2027-01-27&amp;checkout=2027-01-28&amp;crn=1&amp;adult=2&amp;children=1&amp;ages=11&amp;curr=TWD&amp;locale=zh-TW\" target=\"_blank\" rel=\"noopener\">前往</a></div><div class=\"ota-row\" data-plat=\"agoda\" data-price=\"5833\" data-currency=\"TWD\" data-room=\"豪華三人房\" data-rank=\"1\"><span class=\"ota-name\">Agoda</span><span class=\"ota-price\">TWD 5,833</span><a class=\"ota-link\" href=\"https://www.agoda.com/zh-tw/ref-okinawa-arena-by-vessel-hotels/hotel/okinawa-main-island-jp.html?checkIn=2027-01-27&amp;los=1&amp;rooms=1&amp;adults=2&amp;children=1&amp;childages=11&amp;currencyCode=TWD\" target=\"_blank\" rel=\"noopener\">前往</a></div><div class=\"ota-row\" data-plat=\"booking\" data-price=\"6954\" data-currency=\"TWD\" data-room=\"豪華三人房\" data-rank=\"2\"><span class=\"ota-name\">Booking.com</span><span class=\"ota-price\">TWD 6,954</span><a class=\"ota-link\" href=\"https://www.booking.com/hotel/jp/rehuchong-nawa-arinaby-betuseruhoteruzu.zh-tw.html?checkin=2027-01-27&amp;checkout=2027-01-28&amp;group_adults=2&amp;no_rooms=1&amp;group_children=1&amp;age=11&amp;selected_currency=TWD&amp;lang=zh-tw\" target=\"_blank\" rel=\"noopener\">前往</a></div></div><div class=\"target-row\"><span class=\"target-label\">🎯 目標價</span><input type=\"number\" class=\"target-input\" min=\"0\" step=\"1\" placeholder=\"未設定\" value=\"2982\"><button type=\"button\" class=\"target-save-btn\">💾 同步</button><span class=\"target-status\"></span></div></div><div class=\"plan-box\" data-target-key=\"REF沖繩體育館by Vessel酒店集團||含早餐方案\" data-current-price=\"3911\"><div class=\"plan-title\">含早餐方案</div><div class=\"winner-row\"><span class=\"winner-plat\">🏆 Trip.com (TW站) 最低</span></div><div class=\"price-main\">TWD 3,911</div><div class=\"room-sub\">標準房-帶淋浴設施（禁菸）</div><div class=\"meta-sub\">歷史最低：TWD 3,892 <span class=\"badge\">比最低高 TWD 19</span></div><div class=\"ota-list\"><div class=\"ota-row is-best\" data-plat=\"trip\" data-price=\"3911\" data-currency=\"TWD\" data-room=\"標準房-帶淋浴設施（禁菸）\" data-rank=\"0\"><span class=\"ota-name\">Trip.com (TW站)</span><span class=\"ota-price\">TWD 3,911</span><a class=\"ota-link\" href=\"https://tw.trip.com/hotels/list?flexType=1&amp;cityId=35747&amp;provinceId=11059&amp;districtId=0&amp;countryId=78&amp;searchWord=REF%E6%B2%96%E7%B9%A9%E9%AB%94%E8%82%B2%E9%A4%A8by%20Vessel%E9%85%92%E5%BA%97%E9%9B%86%E5%9C%98&amp;searchType=H&amp;optionId=106709440&amp;searchValue=31%7C106709440*31*106709440&amp;checkin=2027-01-27&amp;checkout=2027-01-28&amp;crn=1&amp;adult=2&amp;children=1&amp;ages=11&amp;listFilters=5~1*5*1&amp;curr=TWD&amp;locale=zh-TW\" target=\"_blank\" rel=\"noopener\">前往</a></div><div class=\"ota-row\" data-plat=\"agoda\" data-price=\"7000\" data-currency=\"TWD\" data-room=\"豪華三人房\" data-rank=\"1\"><span class=\"ota-name\">Agoda</span><span class=\"ota-price\">TWD 7,000</span><a class=\"ota-link\" href=\"https://www.agoda.com/zh-tw/ref-okinawa-arena-by-vessel-hotels/hotel/okinawa-main-island-jp.html?checkIn=2027-01-27&amp;los=1&amp;rooms=1&amp;adults=2&amp;children=1&amp;childages=11&amp;currencyCode=TWD\" target=\"_blank\" rel=\"noopener\">前往</a></div><div class=\"ota-row\" data-plat=\"booking\" data-price=\"8345\" data-currency=\"TWD\" data-room=\"豪華三人房\" data-rank=\"2\"><span class=\"ota-name\">Booking.com</span><span class=\"ota-price\">TWD 8,345</span><a class=\"ota-link\" href=\"https://www.booking.com/hotel/jp/rehuchong-nawa-arinaby-betuseruhoteruzu.zh-tw.html?checkin=2027-01-27&amp;checkout=2027-01-28&amp;group_adults=2&amp;no_rooms=1&amp;group_children=1&amp;age=11&amp;selected_currency=TWD&amp;lang=zh-tw\" target=\"_blank\" rel=\"noopener\">前往</a></div></div><div class=\"target-row\"><span class=\"target-label\">🎯 目標價</span><input type=\"number\" class=\"target-input\" min=\"0\" step=\"1\" placeholder=\"未設定\" value=\"\"><button type=\"button\" class=\"target-save-btn\">💾 同步</button><span class=\"target-status\"></span></div></div></div></section><section class=\"hotel-card\"><div class=\"date-pill\">2027-01-28 ～ 2027-01-29</div><h2 class=\"hotel-name\">B/C 那霸飯店</h2><div class=\"plans-grid\"><div class=\"plan-box\" data-target-key=\"B/C 那霸飯店||不限早餐（最低價）\" data-current-price=\"2301\"><div class=\"plan-title\">不限早餐（最低價）</div><div class=\"winner-row\"><span class=\"winner-plat\">🏆 Trip.com (TW站) 最低</span></div><div class=\"price-main\">TWD 2,301</div><div class=\"room-sub\">大床房帶梳化床無煙房（不含租車）</div><div class=\"meta-sub\">歷史最低：TWD 2,291 <span class=\"badge\">比最低高 TWD 10</span></div><div class=\"ota-list\"><div class=\"ota-row is-best\" data-plat=\"trip\" data-price=\"2301\" data-currency=\"TWD\" data-room=\"大床房帶梳化床無煙房（不含租車）\" data-rank=\"0\"><span class=\"ota-name\">Trip.com (TW站)</span><span class=\"ota-price\">TWD 2,301</span><a class=\"ota-link\" href=\"https://tw.trip.com/hotels/list?flexType=1&amp;cityId=35747&amp;provinceId=11059&amp;districtId=0&amp;countryId=78&amp;searchWord=B/C%20%E9%82%A3%E9%9C%B8&amp;searchType=H&amp;optionId=120097372&amp;searchValue=31%7C120097372*31*120097372&amp;checkin=2027-01-28&amp;checkout=2027-01-29&amp;crn=1&amp;adult=2&amp;children=1&amp;ages=11&amp;curr=TWD&amp;locale=zh-TW\" target=\"_blank\" rel=\"noopener\">前往</a></div><div class=\"ota-row\" data-plat=\"agoda\" data-price=\"2756\" data-currency=\"TWD\" data-room=\"客房(大床+沙發床) - 無租車服務\" data-rank=\"1\"><span class=\"ota-name\">Agoda</span><span class=\"ota-price\">TWD 2,756</span><a class=\"ota-link\" href=\"https://www.agoda.com/zh-tw/b-c-hotel/hotel/okinawa-main-island-jp.html?checkIn=2027-01-28&amp;los=1&amp;rooms=1&amp;adults=2&amp;children=1&amp;childages=11&amp;currencyCode=TWD\" target=\"_blank\" rel=\"noopener\">前往</a></div></div><div class=\"target-row\"><span class=\"target-label\">🎯 目標價</span><input type=\"number\" class=\"target-input\" min=\"0\" step=\"1\" placeholder=\"未設定\" value=\"2066\"><button type=\"button\" class=\"target-save-btn\">💾 同步</button><span class=\"target-status\"></span></div></div><div class=\"plan-box\" data-target-key=\"B/C 那霸飯店||含早餐方案\" data-current-price=\"2301\"><div class=\"plan-title\">含早餐方案</div><div class=\"winner-row\"><span class=\"winner-plat\">🏆 Trip.com (TW站) 最低</span></div><div class=\"price-main\">TWD 2,301</div><div class=\"room-sub\">大床房帶梳化床無煙房（不含租車）</div><div class=\"meta-sub\">歷史最低：TWD 2,291 <span class=\"badge\">比最低高 TWD 10</span></div><div class=\"ota-list\"><div class=\"ota-row is-best\" data-plat=\"trip\" data-price=\"2301\" data-currency=\"TWD\" data-room=\"大床房帶梳化床無煙房（不含租車）\" data-rank=\"0\"><span class=\"ota-name\">Trip.com (TW站)</span><span class=\"ota-price\">TWD 2,301</span><a class=\"ota-link\" href=\"https://tw.trip.com/hotels/list?flexType=1&amp;cityId=35747&amp;provinceId=11059&amp;districtId=0&amp;countryId=78&amp;searchWord=B/C%20%E9%82%A3%E9%9C%B8&amp;searchType=H&amp;optionId=120097372&amp;searchValue=31%7C120097372*31*120097372&amp;checkin=2027-01-28&amp;checkout=2027-01-29&amp;crn=1&amp;adult=2&amp;children=1&amp;ages=11&amp;listFilters=5~1*5*1&amp;curr=TWD&amp;locale=zh-TW\" target=\"_blank\" rel=\"noopener\">前往</a></div><div class=\"ota-row\" data-plat=\"agoda\" data-price=\"3950\" data-currency=\"TWD\" data-room=\"加大雙人床房\" data-rank=\"1\"><span class=\"ota-name\">Agoda</span><span class=\"ota-price\">TWD 3,950</span><a class=\"ota-link\" href=\"https://www.agoda.com/zh-tw/b-c-hotel/hotel/okinawa-main-island-jp.html?checkIn=2027-01-28&amp;los=1&amp;rooms=1&amp;adults=2&amp;children=1&amp;childages=11&amp;currencyCode=TWD\" target=\"_blank\" rel=\"noopener\">前往</a></div></div><div class=\"target-row\"><span class=\"target-label\">🎯 目標價</span><input type=\"number\" class=\"target-input\" min=\"0\" step=\"1\" placeholder=\"未設定\" value=\"2066\"><button type=\"button\" class=\"target-save-btn\">💾 同步</button><span class=\"target-status\"></span></div></div></div></section><section class=\"hotel-card\"><div class=\"date-pill\">2027-01-29 ～ 2027-01-30</div><h2 class=\"hotel-name\">艾斯汀納特飯店</h2><div class=\"plans-grid\"><div class=\"plan-box\" data-target-key=\"艾斯汀納特飯店||不限早餐（最低價）\" data-current-price=\"1951\"><div class=\"plan-title\">不限早餐（最低價）</div><div class=\"winner-row\"><span class=\"winner-plat\">🏆 Booking.com 最低</span></div><div class=\"price-main\">TWD 1,951</div><div class=\"room-sub\">標準雙人房</div><div class=\"meta-sub\">歷史最低：TWD 1,951 <span class=\"badge low\">★ 目前即歷史最低</span></div><div class=\"ota-list\"><div class=\"ota-row is-best\" data-plat=\"booking\" data-price=\"1951\" data-currency=\"TWD\" data-room=\"標準雙人房\" data-rank=\"0\"><span class=\"ota-name\">Booking.com</span><span class=\"ota-price\">TWD 1,951</span><a class=\"ota-link\" href=\"https://www.booking.com/hotel/jp/estination.zh-tw.html?checkin=2027-01-29&amp;checkout=2027-01-30&amp;group_adults=2&amp;no_rooms=1&amp;group_children=1&amp;age=11&amp;selected_currency=TWD&amp;lang=zh-tw\" target=\"_blank\" rel=\"noopener\">前往</a></div><div class=\"ota-row\" data-plat=\"trip\" data-price=\"2150\" data-currency=\"TWD\" data-room=\"標準雙人床房\" data-rank=\"1\"><span class=\"ota-name\">Trip.com (TW站)</span><span class=\"ota-price\">TWD 2,150</span><a class=\"ota-link\" href=\"https://tw.trip.com/hotels/list?flexType=1&amp;cityId=35747&amp;provinceId=11059&amp;districtId=0&amp;countryId=78&amp;searchWord=%E8%89%BE%E6%96%AF%E6%B1%80%E7%B4%8D%E7%89%B9&amp;searchType=H&amp;optionId=2845951&amp;searchValue=31%7C2845951*31*2845951&amp;checkin=2027-01-29&amp;checkout=2027-01-30&amp;crn=1&amp;adult=2&amp;children=1&amp;ages=11&amp;curr=TWD&amp;locale=zh-TW\" target=\"_blank\" rel=\"noopener\">前往</a></div><div class=\"ota-row\" data-plat=\"agoda\" data-price=\"2758\" data-currency=\"TWD\" data-room=\"劇院房(兩床)\" data-rank=\"2\"><span class=\"ota-name\">Agoda</span><span class=\"ota-price\">TWD 2,758</span><a class=\"ota-link\" href=\"https://www.agoda.com/zh-tw/estinate-hotel/hotel/okinawa-main-island-jp.html?checkIn=2027-01-29&amp;los=1&amp;rooms=1&amp;adults=2&amp;children=1&amp;childages=11&amp;currencyCode=TWD\" target=\"_blank\" rel=\"noopener\">前往</a></div></div><div class=\"target-row\"><span class=\"target-label\">🎯 目標價</span><input type=\"number\" class=\"target-input\" min=\"0\" step=\"1\" placeholder=\"未設定\" value=\"1957\"><button type=\"button\" class=\"target-save-btn\">💾 同步</button><span class=\"target-status\"></span></div></div><div class=\"plan-box\" data-target-key=\"艾斯汀納特飯店||含早餐方案\" data-current-price=\"2416\"><div class=\"plan-title\">含早餐方案</div><div class=\"winner-row\"><span class=\"winner-plat\">🏆 Booking.com 最低</span></div><div class=\"price-main\">TWD 2,416</div><div class=\"room-sub\">標準雙人房</div><div class=\"meta-sub\">歷史最低：TWD 2,415 <span class=\"badge\">比最低高 TWD 1</span></div><div class=\"ota-list\"><div class=\"ota-row is-best\" data-plat=\"booking\" data-price=\"2416\" data-currency=\"TWD\" data-room=\"標準雙人房\" data-rank=\"0\"><span class=\"ota-name\">Booking.com</span><span class=\"ota-price\">TWD 2,416</span><a class=\"ota-link\" href=\"https://www.booking.com/hotel/jp/estination.zh-tw.html?checkin=2027-01-29&amp;checkout=2027-01-30&amp;group_adults=2&amp;no_rooms=1&amp;group_children=1&amp;age=11&amp;selected_currency=TWD&amp;lang=zh-tw\" target=\"_blank\" rel=\"noopener\">前往</a></div><div class=\"ota-row\" data-plat=\"trip\" data-price=\"2458\" data-currency=\"TWD\" data-room=\"標準雙人床房\" data-rank=\"1\"><span class=\"ota-name\">Trip.com (TW站)</span><span class=\"ota-price\">TWD 2,458</span><a class=\"ota-link\" href=\"https://tw.trip.com/hotels/list?flexType=1&amp;cityId=35747&amp;provinceId=11059&amp;districtId=0&amp;countryId=78&amp;searchWord=%E8%89%BE%E6%96%AF%E6%B1%80%E7%B4%8D%E7%89%B9&amp;searchType=H&amp;optionId=2845951&amp;searchValue=31%7C2845951*31*2845951&amp;checkin=2027-01-29&amp;checkout=2027-01-30&amp;crn=1&amp;adult=2&amp;children=1&amp;ages=11&amp;listFilters=5~1*5*1&amp;curr=TWD&amp;locale=zh-TW\" target=\"_blank\" rel=\"noopener\">前往</a></div><div class=\"ota-row\" data-plat=\"agoda\" data-price=\"3179\" data-currency=\"TWD\" data-room=\"劇院房(兩床)\" data-rank=\"2\"><span class=\"ota-name\">Agoda</span><span class=\"ota-price\">TWD 3,179</span><a class=\"ota-link\" href=\"https://www.agoda.com/zh-tw/estinate-hotel/hotel/okinawa-main-island-jp.html?checkIn=2027-01-29&amp;los=1&amp;rooms=1&amp;adults=2&amp;children=1&amp;childages=11&amp;currencyCode=TWD\" target=\"_blank\" rel=\"noopener\">前往</a></div></div><div class=\"target-row\"><span class=\"target-label\">🎯 目標價</span><input type=\"number\" class=\"target-input\" min=\"0\" step=\"1\" placeholder=\"未設定\" value=\"\"><button type=\"button\" class=\"target-save-btn\">💾 同步</button><span class=\"target-status\"></span></div></div></div></section>",
   "chart_payload": {
     "labels": [
       "11-17 16:57",
@@ -30,7 +30,8 @@
       "11-22 20:01",
       "11-23 08:01",
       "11-23 16:34",
-      "11-23 20:01"
+      "11-23 20:01",
+      "11-24 08:01"
     ],
     "hotels": [
       "B/C 那霸飯店",
@@ -67,7 +68,8 @@
             2315.0,
             2315.0,
             2301.0,
-            2299.0
+            2299.0,
+            2301.0
           ]
         },
         {
@@ -97,7 +99,8 @@
             3243.0,
             3243.0,
             3258.0,
-            3256.0
+            3256.0,
+            3259.0
           ]
         },
         {
@@ -127,7 +130,8 @@
             3181.0,
             3070.0,
             3058.0,
-            3056.0
+            3056.0,
+            3050.0
           ]
         },
         {
@@ -157,7 +161,8 @@
             1963.0,
             1963.0,
             1963.0,
-            1963.0
+            1963.0,
+            1951.0
           ]
         }
       ],
@@ -190,7 +195,8 @@
               3975.0,
               2773.0,
               2773.0,
-              2773.0
+              2773.0,
+              2756.0
             ]
           },
           {
@@ -220,7 +226,8 @@
               2315.0,
               2315.0,
               2301.0,
-              2299.0
+              2299.0,
+              2301.0
             ]
           }
         ],
@@ -252,7 +259,8 @@
               5870.0,
               5870.0,
               5870.0,
-              5869.0
+              5869.0,
+              5833.0
             ]
           },
           {
@@ -282,7 +290,8 @@
               6998.0,
               6998.0,
               6998.0,
-              6998.0
+              6998.0,
+              6954.0
             ]
           },
           {
@@ -312,7 +321,8 @@
               3243.0,
               3243.0,
               3258.0,
-              3256.0
+              3256.0,
+              3259.0
             ]
           }
         ],
@@ -344,7 +354,8 @@
               3181.0,
               3070.0,
               3070.0,
-              3070.0
+              3070.0,
+              3050.0
             ]
           },
           {
@@ -374,7 +385,8 @@
               3840.0,
               3145.0,
               3145.0,
-              3145.0
+              3145.0,
+              3125.0
             ]
           },
           {
@@ -404,7 +416,8 @@
               3794.0,
               3102.0,
               3058.0,
-              3056.0
+              3056.0,
+              3059.0
             ]
           }
         ],
@@ -426,6 +439,7 @@
               3050.0,
               2758.0,
               2758.0,
+              null,
               null,
               null,
               null,
@@ -466,7 +480,8 @@
               1963.0,
               1963.0,
               1963.0,
-              1963.0
+              1963.0,
+              1951.0
             ]
           },
           {
@@ -496,7 +511,8 @@
               2163.0,
               2163.0,
               null,
-              2125.0
+              2125.0,
+              2150.0
             ]
           }
         ]
@@ -531,7 +547,8 @@
             2315.0,
             2315.0,
             2301.0,
-            2299.0
+            2299.0,
+            2301.0
           ]
         },
         {
@@ -561,7 +578,8 @@
             3892.0,
             3892.0,
             3910.0,
-            3907.0
+            3907.0,
+            3911.0
           ]
         },
         {
@@ -591,7 +609,8 @@
             4852.0,
             4167.0,
             4150.0,
-            4147.0
+            4147.0,
+            4141.0
           ]
         },
         {
@@ -621,7 +640,8 @@
             2431.0,
             2431.0,
             2431.0,
-            2429.0
+            2429.0,
+            2416.0
           ]
         }
       ],
@@ -654,7 +674,8 @@
               3975.0,
               3975.0,
               3975.0,
-              3975.0
+              3975.0,
+              3950.0
             ]
           },
           {
@@ -684,7 +705,8 @@
               2315.0,
               2315.0,
               2301.0,
-              2299.0
+              2299.0,
+              2301.0
             ]
           }
         ],
@@ -716,7 +738,8 @@
               7045.0,
               7045.0,
               7045.0,
-              7044.0
+              7044.0,
+              7000.0
             ]
           },
           {
@@ -746,7 +769,8 @@
               8397.0,
               8397.0,
               8397.0,
-              8397.0
+              8397.0,
+              8345.0
             ]
           },
           {
@@ -776,7 +800,8 @@
               3892.0,
               3892.0,
               3910.0,
-              3907.0
+              3907.0,
+              3911.0
             ]
           }
         ],
@@ -808,7 +833,8 @@
               4852.0,
               4167.0,
               4167.0,
-              4167.0
+              4167.0,
+              4141.0
             ]
           },
           {
@@ -838,7 +864,8 @@
               4962.0,
               4267.0,
               4267.0,
-              4267.0
+              4267.0,
+              4240.0
             ]
           },
           {
@@ -868,7 +895,8 @@
               4902.0,
               4210.0,
               4150.0,
-              4147.0
+              4147.0,
+              4151.0
             ]
           }
         ],
@@ -890,6 +918,7 @@
               3333.0,
               3333.0,
               3179.0,
+              null,
               null,
               null,
               null,
@@ -930,7 +959,8 @@
               2431.0,
               2431.0,
               2431.0,
-              2431.0
+              2431.0,
+              2416.0
             ]
           },
           {
@@ -960,7 +990,8 @@
               2472.0,
               2472.0,
               2457.0,
-              2429.0
+              2429.0,
+              2458.0
             ]
           }
         ]
@@ -994,7 +1025,8 @@
           2315.0,
           2315.0,
           2301.0,
-          2299.0
+          2299.0,
+          2301.0
         ]
       },
       {
@@ -1024,7 +1056,8 @@
           3243.0,
           3243.0,
           3258.0,
-          3256.0
+          3256.0,
+          3259.0
         ]
       },
       {
@@ -1054,7 +1087,8 @@
           3181.0,
           3070.0,
           3058.0,
-          3056.0
+          3056.0,
+          3050.0
         ]
       },
       {
@@ -1084,7 +1118,8 @@
           1963.0,
           1963.0,
           1963.0,
-          1963.0
+          1963.0,
+          1951.0
         ]
       }
     ],
@@ -1117,7 +1152,8 @@
             3975.0,
             2773.0,
             2773.0,
-            2773.0
+            2773.0,
+            2756.0
           ]
         },
         {
@@ -1147,7 +1183,8 @@
             2315.0,
             2315.0,
             2301.0,
-            2299.0
+            2299.0,
+            2301.0
           ]
         }
       ],
@@ -1179,7 +1216,8 @@
             5870.0,
             5870.0,
             5870.0,
-            5869.0
+            5869.0,
+            5833.0
           ]
         },
         {
@@ -1209,7 +1247,8 @@
             6998.0,
             6998.0,
             6998.0,
-            6998.0
+            6998.0,
+            6954.0
           ]
         },
         {
@@ -1239,7 +1278,8 @@
             3243.0,
             3243.0,
             3258.0,
-            3256.0
+            3256.0,
+            3259.0
           ]
         }
       ],
@@ -1271,7 +1311,8 @@
             3181.0,
             3070.0,
             3070.0,
-            3070.0
+            3070.0,
+            3050.0
           ]
         },
         {
@@ -1301,7 +1342,8 @@
             3840.0,
             3145.0,
             3145.0,
-            3145.0
+            3145.0,
+            3125.0
           ]
         },
         {
@@ -1331,7 +1373,8 @@
             3794.0,
             3102.0,
             3058.0,
-            3056.0
+            3056.0,
+            3059.0
           ]
         }
       ],
@@ -1353,6 +1396,7 @@
             3050.0,
             2758.0,
             2758.0,
+            null,
             null,
             null,
             null,
@@ -1393,7 +1437,8 @@
             1963.0,
             1963.0,
             1963.0,
-            1963.0
+            1963.0,
+            1951.0
           ]
         },
         {
@@ -1423,7 +1468,8 @@
             2163.0,
             2163.0,
             null,
-            2125.0
+            2125.0,
+            2150.0
           ]
         }
       ]

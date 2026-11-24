@@ -1,10 +1,12 @@
 ﻿hotel_name,platform,check_in,check_out,price,currency,room_type,url,scraped_at,error
 礁溪老爺酒店,Booking [不限早餐 | IP:US (135.119.239.52)],2026-11-30,2026-12-01,12093,TWD,Standard Suite - Double bed,https://www.booking.com/hotel/tw/yilan-chiaohsi-royal.zh-tw.html?checkin=2026-11-30&checkout=2026-12-01&group_adults=2&no_rooms=1&group_children=0&selected_currency=TWD&lang=zh-tw,2026-11-20T20:05:29+08:00,
+礁溪老爺酒店,Booking [不限早餐 | IP:US (20.161.69.71)],2026-11-30,2026-12-01,12093,TWD,Standard Suite - Double bed,https://www.booking.com/hotel/tw/yilan-chiaohsi-royal.zh-tw.html?checkin=2026-11-30&checkout=2026-12-01&group_adults=2&no_rooms=1&group_children=0&selected_currency=TWD&lang=zh-tw,2026-11-24T08:05:09+08:00,
 礁溪老爺酒店,Booking [不限早餐 | IP:US (20.171.3.177)],2026-11-30,2026-12-01,12093,TWD,Standard Suite - Double bed,https://www.booking.com/hotel/tw/yilan-chiaohsi-royal.zh-tw.html?checkin=2026-11-30&checkout=2026-12-01&group_adults=2&no_rooms=1&group_children=0&selected_currency=TWD&lang=zh-tw,2026-11-22T08:05:16+08:00,
 礁溪老爺酒店,Booking [不限早餐 | IP:US (20.3.76.36)],2026-11-30,2026-12-01,12093,TWD,Standard Suite - Double bed,https://www.booking.com/hotel/tw/yilan-chiaohsi-royal.zh-tw.html?checkin=2026-11-30&checkout=2026-12-01&group_adults=2&no_rooms=1&group_children=0&selected_currency=TWD&lang=zh-tw,2026-11-21T08:05:27+08:00,
 礁溪老爺酒店,Booking [不限早餐 | IP:US (20.51.198.200)],2026-11-30,2026-12-01,12093,TWD,Standard Suite - Double bed,https://www.booking.com/hotel/tw/yilan-chiaohsi-royal.zh-tw.html?checkin=2026-11-30&checkout=2026-12-01&group_adults=2&no_rooms=1&group_children=0&selected_currency=TWD&lang=zh-tw,2026-11-23T08:05:21+08:00,
 礁溪老爺酒店,Booking [不限早餐 | IP:US (52.155.61.50)],2026-11-30,2026-12-01,12093,TWD,Standard Suite - Double bed,https://www.booking.com/hotel/tw/yilan-chiaohsi-royal.zh-tw.html?checkin=2026-11-30&checkout=2026-12-01&group_adults=2&no_rooms=1&group_children=0&selected_currency=TWD&lang=zh-tw,2026-11-21T20:05:46+08:00,
 礁溪老爺酒店,Booking [含早餐 | IP:US (135.119.239.52)],2026-11-30,2026-12-01,12093,TWD,Standard Suite - Double bed,https://www.booking.com/hotel/tw/yilan-chiaohsi-royal.zh-tw.html?checkin=2026-11-30&checkout=2026-12-01&group_adults=2&no_rooms=1&group_children=0&selected_currency=TWD&lang=zh-tw,2026-11-20T20:05:37+08:00,
+礁溪老爺酒店,Booking [含早餐 | IP:US (20.161.69.71)],2026-11-30,2026-12-01,12093,TWD,Standard Suite - Double bed,https://www.booking.com/hotel/tw/yilan-chiaohsi-royal.zh-tw.html?checkin=2026-11-30&checkout=2026-12-01&group_adults=2&no_rooms=1&group_children=0&selected_currency=TWD&lang=zh-tw,2026-11-24T08:05:17+08:00,
 礁溪老爺酒店,Booking [含早餐 | IP:US (20.171.3.177)],2026-11-30,2026-12-01,12093,TWD,Standard Suite - Double bed,https://www.booking.com/hotel/tw/yilan-chiaohsi-royal.zh-tw.html?checkin=2026-11-30&checkout=2026-12-01&group_adults=2&no_rooms=1&group_children=0&selected_currency=TWD&lang=zh-tw,2026-11-22T08:05:24+08:00,
 礁溪老爺酒店,Booking [含早餐 | IP:US (20.3.76.36)],2026-11-30,2026-12-01,12093,TWD,Standard Suite - Double bed,https://www.booking.com/hotel/tw/yilan-chiaohsi-royal.zh-tw.html?checkin=2026-11-30&checkout=2026-12-01&group_adults=2&no_rooms=1&group_children=0&selected_currency=TWD&lang=zh-tw,2026-11-21T08:05:35+08:00,
 礁溪老爺酒店,Booking [含早餐 | IP:US (20.51.198.200)],2026-11-30,2026-12-01,12093,TWD,Standard Suite - Double bed,https://www.booking.com/hotel/tw/yilan-chiaohsi-royal.zh-tw.html?checkin=2026-11-30&checkout=2026-12-01&group_adults=2&no_rooms=1&group_children=0&selected_currency=TWD&lang=zh-tw,2026-11-23T08:05:29+08:00,
@@ -37,6 +39,7 @@
 礁溪老爺酒店,Trip.com [TW站 | 不限早餐 | IP:US (172.149.48.205)],2026-11-30,2026-12-01,,TWD,,,2026-11-18T16:33:13+08:00,未在頁面中找到 礁溪老爺酒店 的 TWD 房價
 礁溪老爺酒店,Trip.com [TW站 | 不限早餐 | IP:US (172.200.165.147)],2026-11-30,2026-12-01,,TWD,,,2026-11-20T04:04:56+08:00,未在頁面中找到 礁溪老爺酒店 的 TWD 房價
 礁溪老爺酒店,Trip.com [TW站 | 不限早餐 | IP:US (172.214.44.50)],2026-11-30,2026-12-01,,TWD,,,2026-11-18T15:29:24+08:00,未在頁面中找到 礁溪老爺酒店 的 TWD 房價
+礁溪老爺酒店,Trip.com [TW站 | 不限早餐 | IP:US (20.161.69.71)],2026-11-30,2026-12-01,,TWD,,,2026-11-24T08:04:48+08:00,未在頁面中找到 礁溪老爺酒店 的 TWD 房價
 礁溪老爺酒店,Trip.com [TW站 | 不限早餐 | IP:US (20.171.3.177)],2026-11-30,2026-12-01,,TWD,,,2026-11-22T08:04:54+08:00,未在頁面中找到 礁溪老爺酒店 的 TWD 房價
 礁溪老爺酒店,Trip.com [TW站 | 不限早餐 | IP:US (20.172.111.88)],2026-11-30,2026-12-01,,TWD,,,2026-11-19T20:35:34+08:00,未在頁面中找到 礁溪老爺酒店 的 TWD 房價
 礁溪老爺酒店,Trip.com [TW站 | 不限早餐 | IP:US (20.3.76.36)],2026-11-30,2026-12-01,,TWD,,,2026-11-21T08:05:06+08:00,未在頁面中找到 礁溪老爺酒店 的 TWD 房價
@@ -54,6 +57,7 @@
 礁溪老爺酒店,Trip.com [TW站 | 含早餐 | IP:US (172.149.48.205)],2026-11-30,2026-12-01,,TWD,,,2026-11-18T16:33:20+08:00,未在頁面中找到 礁溪老爺酒店 的 TWD 房價
 礁溪老爺酒店,Trip.com [TW站 | 含早餐 | IP:US (172.200.165.147)],2026-11-30,2026-12-01,,TWD,,,2026-11-20T04:05:03+08:00,未在頁面中找到 礁溪老爺酒店 的 TWD 房價
 礁溪老爺酒店,Trip.com [TW站 | 含早餐 | IP:US (172.214.44.50)],2026-11-30,2026-12-01,,TWD,,,2026-11-18T15:29:31+08:00,未在頁面中找到 礁溪老爺酒店 的 TWD 房價
+礁溪老爺酒店,Trip.com [TW站 | 含早餐 | IP:US (20.161.69.71)],2026-11-30,2026-12-01,,TWD,,,2026-11-24T08:04:55+08:00,未在頁面中找到 礁溪老爺酒店 的 TWD 房價
 礁溪老爺酒店,Trip.com [TW站 | 含早餐 | IP:US (20.171.3.177)],2026-11-30,2026-12-01,,TWD,,,2026-11-22T08:05:00+08:00,未在頁面中找到 礁溪老爺酒店 的 TWD 房價
 礁溪老爺酒店,Trip.com [TW站 | 含早餐 | IP:US (20.172.111.88)],2026-11-30,2026-12-01,,TWD,,,2026-11-19T20:35:41+08:00,未在頁面中找到 礁溪老爺酒店 的 TWD 房價
 礁溪老爺酒店,Trip.com [TW站 | 含早餐 | IP:US (20.3.76.36)],2026-11-30,2026-12-01,,TWD,,,2026-11-21T08:05:13+08:00,未在頁面中找到 礁溪老爺酒店 的 TWD 房價
